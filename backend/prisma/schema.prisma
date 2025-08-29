@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role     @default(STUDENT)
+  clubId    String?
+  club      Club?    @relation(fields: [clubId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  eventRegistrations EventRegistration[]
+  testimonials       Testimonial[]
+  
+  @@map("users")
+}
+
+enum Role {
+  STUDENT
+  CLUB_HEAD
+  ADMIN
+}
+
+model Club {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  imageUrl    String?
+  clubHeadId  String? @unique
+  
+  members User[]
+  events  Event[]
+  mentors Mentor[]
+  
+  @@map("clubs")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  date        DateTime
+  capacity    Int
+  clubId      String
+  club        Club     @relation(fields: [clubId], references: [id])
+  createdAt   DateTime @default(now())
+  
+  registrations EventRegistration[]
+  
+  @@map("events")
+}
+
+model EventRegistration {
+  id           String   @id @default(cuid())
+  userId       String
+  eventId      String
+  registeredAt DateTime @default(now())
+  
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+  
+  @@unique([userId, eventId])
+  @@map("event_registrations")
+}
+
+model Testimonial {
+  id        String  @id @default(cuid())
+  content   String
+  userId    String
+  approved  Boolean @default(false)
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id])
+  
+  @@map("testimonials")
+}
+
+model Mentor {
+  id        String @id @default(cuid())
+  name      String
+  expertise String
+  imageUrl  String
+  clubId    String
+  club      Club   @relation(fields: [clubId], references: [id])
+  
+  @@map("mentors")
+}
