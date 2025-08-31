@@ -1,4 +1,5 @@
 import { Router } from 'express';
+const jwt = require('jsonwebtoken');
 // import { register, login, getMe } from '../controllers/authController';
 // import { authenticateToken } from '../middleware/auth';
 
