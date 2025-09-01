@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth";
 import eventsRoutes from "./routes/events";
+import clubsRoutes from "./routes/clubs";
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ app.get("/api/test", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventsRoutes);
+app.use("/api/clubs", clubsRoutes);
 
 export default app;
