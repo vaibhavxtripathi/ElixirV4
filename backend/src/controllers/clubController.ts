@@ -48,7 +48,10 @@ export const createClub = async (req: any, res: Response) => {
     if (clubhead) {
       await prisma.user.update({
         where: { id: clubhead.id },
-        data: { role: Role.CLUB_HEAD },
+        data: {
+          role: Role.CLUB_HEAD,
+          clubId: club.id,
+        },
       });
     }
     return res.status(201).json({ club });
