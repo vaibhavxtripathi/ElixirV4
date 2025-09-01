@@ -1,5 +1,6 @@
-import express from 'express';
-import dotenv from 'dotenv';
+import express from "express";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
@@ -9,13 +10,15 @@ const app = express();
 app.use(express.json());
 
 // Simple test route
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is working!' });
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "Server is working!" });
 });
 
 // Test API route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API is working!' });
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API is working!" });
 });
+
+app.use("/api/auth", authRoutes);
 
 export default app;

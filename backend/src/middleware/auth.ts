@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { verifyToken } from "../utils/jwt";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -8,15 +9,32 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+export const authenticateToken = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
-    return res.status(401).json({ message: "Access token required" });
+    if (!token) {
+      return res.status(401).json({ message: "Access token required" });
+    }
+
+    const payload = verifyToken(token);
+    req.user = payload;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
+};
 
-  // For now, just pass through - we'll add real verification later
-  req.user = { userId: "1", email: "test@test.com", role: "STUDENT" };
-  next();
+export const requireRole = (roles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    if (!roles.includes(req.user.role))
+      return res.status(403).json({ message: "Forbidden" });
+    next();
+  };
 };
