@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth";
 import eventsRoutes from "./routes/events";
 import clubsRoutes from "./routes/clubs";
+import blogsRoutes from "./routes/blogs";
+import mentorsRoutes from "./routes/mentors";
+import usersRoutes from "./routes/users";
 
 dotenv.config();
 
@@ -24,5 +27,8 @@ app.get("/api/test", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventsRoutes);
 app.use("/api/clubs", clubsRoutes);
+app.use("/api/blogs", blogsRoutes);
+app.use("/api/mentors", mentorsRoutes);
+app.use("/api/users", usersRoutes);
 
 export default app;
