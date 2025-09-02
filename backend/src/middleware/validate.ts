@@ -1,0 +1,17 @@
+import { ZodError, treeifyError } from "zod";
+import { Request, Response, NextFunction } from "express";
+
+export const validate =
+  (schema: any) => (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse({ body: req.body, query: req.query, params: req.params });
+      next();
+    } catch (err) {
+      if (err instanceof ZodError) {
+        return res
+          .status(400)
+          .json({ message: "Validation error", errors: treeifyError(err) });
+      }
+      next(err);
+    }
+  };
