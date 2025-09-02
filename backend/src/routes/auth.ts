@@ -1,14 +1,14 @@
-import { Router } from "express";
-import { register, login, getMe } from "../controllers/authController";
-import { authenticateToken } from "../middleware/auth";
+import { Router } from 'express';
+import { register, login, getMe } from '../controllers/authController';
+import { authenticateToken } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { registerSchema, loginSchema } from '../validators/auth';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
-// Public
-router.post("/register", register); // POST /api/auth/register
-router.post("/login", login); // POST /api/auth/login
-
-// Protected
-router.get("/me", authenticateToken, getMe); // GET /api/auth/me
+router.post('/register', validate(registerSchema), asyncHandler(register));
+router.post('/login', validate(loginSchema), asyncHandler(login));
+router.get('/me', authenticateToken, asyncHandler(getMe));
 
 export default router;
