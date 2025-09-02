@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 
 //get all mentors => publicly on /mentors
 export const getAllMentors = async (req: Request, res: Response) => {

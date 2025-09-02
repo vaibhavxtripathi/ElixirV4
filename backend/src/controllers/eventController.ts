@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 
 // get all events (publically on landing page)
 export const getAllEvents = async (req: Request, res: Response) => {
@@ -41,7 +39,7 @@ export const createEvent = async (req: any, res: Response) => {
     if (!user?.club) {
       return res
         .status(400)
-        .json({ message: "You must be a club head to register an event" });
+        .json({ message: "You must be a club head to create an event" });
     }
 
     const event = await prisma.event.create({
