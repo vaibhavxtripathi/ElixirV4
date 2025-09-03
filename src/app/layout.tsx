@@ -1,5 +1,6 @@
 import "./globals.css";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import Navbar from "@/components/Navbar";
 
 export const metadata = {
   title: "Elixir",
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <Navbar />
+          {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );
