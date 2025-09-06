@@ -1,4 +1,3 @@
-
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -11,7 +10,8 @@ export default function RegisterButton({ eventId }: { eventId: string }) {
   const [err, setErr] = useState<string | null>(null);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => (await api.post(`/events/${eventId}/register`)).data,
+    mutationFn: async () =>
+      (await api.post(`/events/${eventId}/register`)).data,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["my-registrations"] });
       router.push("/student");
@@ -29,7 +29,7 @@ export default function RegisterButton({ eventId }: { eventId: string }) {
       <button
         onClick={() => mutate()}
         disabled={isPending}
-        className="px-3 py-1 rounded bg-indigo-600 text-white text-sm"
+        className="px-3 py-1 rounded bg-blue-600 text-white text-sm"
       >
         {isPending ? "Registering..." : "Register"}
       </button>

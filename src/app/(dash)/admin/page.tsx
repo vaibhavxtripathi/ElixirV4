@@ -218,7 +218,7 @@ export default function AdminDashboard() {
             <button
               onClick={() => createBlog.mutate()}
               disabled={createBlog.isPending}
-              className="bg-indigo-600 text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
             >
               {createBlog.isPending ? "Creating..." : "Create Blog"}
             </button>
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
             <button
               onClick={() => createMentor.mutate()}
               disabled={createMentor.isPending}
-              className="bg-indigo-600 text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
             >
               {createMentor.isPending ? "Creating..." : "Create Mentor"}
             </button>

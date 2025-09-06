@@ -11,7 +11,12 @@ export default function ClubHeadDashboard() {
     queryFn: async () => (await api.get("/events?page=1&limit=50")).data,
   });
 
-  const [form, setForm] = useState({ title: "", description: "", data: "", imageUrl: "" });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    data: "",
+    imageUrl: "",
+  });
   const createMutation = useMutation({
     mutationFn: async () => (await api.post("/events", form)).data,
     onSuccess: () => {
@@ -19,7 +24,8 @@ export default function ClubHeadDashboard() {
       qc.invalidateQueries({ queryKey: ["events-list-own"] });
       alert("Event created");
     },
-    onError: (e: any) => alert(e?.response?.data?.message || "Failed to create event"),
+    onError: (e: any) =>
+      alert(e?.response?.data?.message || "Failed to create event"),
   });
 
   return (
@@ -40,7 +46,9 @@ export default function ClubHeadDashboard() {
               className="border rounded px-3 py-2"
               placeholder="Description"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
             <input
               className="border rounded px-3 py-2"
@@ -57,7 +65,7 @@ export default function ClubHeadDashboard() {
             <button
               onClick={() => createMutation.mutate()}
               disabled={createMutation.isPending}
-              className="bg-indigo-600 text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
             >
               {createMutation.isPending ? "Creating..." : "Create Event"}
             </button>
@@ -70,12 +78,16 @@ export default function ClubHeadDashboard() {
           <div className="space-y-3">
             {(data?.events || []).map((e: any) => (
               <div key={e.id} className="rounded border p-4">
-                <div className="text-sm text-gray-500">{new Date(e.date).toLocaleString()}</div>
+                <div className="text-sm text-gray-500">
+                  {new Date(e.date).toLocaleString()}
+                </div>
                 <div className="font-semibold">{e.title}</div>
                 <div className="text-sm text-gray-600">{e.description}</div>
               </div>
             ))}
-            {!isLoading && (data?.events || []).length === 0 && <p className="text-gray-600">No events yet.</p>}
+            {!isLoading && (data?.events || []).length === 0 && (
+              <p className="text-gray-600">No events yet.</p>
+            )}
           </div>
         </section>
       </main>

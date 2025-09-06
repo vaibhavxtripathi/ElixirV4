@@ -29,7 +29,7 @@ export default function HomePage() {
       {/* Showcase layout replica (chrome only, no content) */}
       <section className="relative mt-20">
         {/* top glow */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(126,96,186,0.45),rgba(126,96,186,0.15)_40%,transparent_65%)] blur-2xl" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[90%] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.45),rgba(59,130,246,0.15)_40%,transparent_65%)] blur-2xl" />
 
         <div className="mx-auto w-[min(1200px,95%)] rounded-2xl border border-white/10 bg-white/5 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur">
           {/* window top bar */}

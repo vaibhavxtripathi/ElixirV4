@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className="bg-[#09041D]">
+      <body className="bg-[#0A0B1A]">
         <ReactQueryProvider>
           <Navbar />
           {children}
