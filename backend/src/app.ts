@@ -8,6 +8,7 @@ import clubsRoutes from "./routes/clubs";
 import blogsRoutes from "./routes/blogs";
 import mentorsRoutes from "./routes/mentors";
 import usersRoutes from "./routes/users";
+import testimonialsRoutes from "./routes/testimonials";
 
 const cors = require("cors");
 const morgan = require("morgan");
@@ -36,5 +37,6 @@ app.use("/api/clubs", clubsRoutes);
 app.use("/api/blogs", blogsRoutes);
 app.use("/api/mentors", mentorsRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/testimonials", testimonialsRoutes);
 
 export default app;

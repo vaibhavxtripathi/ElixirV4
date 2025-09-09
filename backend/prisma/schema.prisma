@@ -103,3 +103,14 @@ enum BlogStatus {
   PUBLISHED
   ARCHIVED
 }
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  batchYear Int
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("testimonials")
+}

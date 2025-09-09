@@ -3,7 +3,7 @@ import Separator from "./Separator";
 
 export default function Footer() {
   return (
-    <footer className="text-white">
+    <footer className="text-white h-fit mt-20">
       <Separator />
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col gap-8">

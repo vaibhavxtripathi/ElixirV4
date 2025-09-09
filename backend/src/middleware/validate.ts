@@ -1,4 +1,4 @@
-import { ZodError, treeifyError } from "zod";
+import { ZodError } from "zod";
 import { Request, Response, NextFunction } from "express";
 
 export const validate =
@@ -10,7 +10,7 @@ export const validate =
       if (err instanceof ZodError) {
         return res
           .status(400)
-          .json({ message: "Validation error", errors: treeifyError(err) });
+          .json({ message: "Validation error", errors: err.issues });
       }
       next(err);
     }
