@@ -176,13 +176,7 @@ export default function StudentDashboard() {
                                 <Calendar className="w-4 h-4" />
                                 {new Date(
                                   registration.event.date
-                                ).toLocaleDateString()}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {new Date(
-                                  registration.event.date
-                                ).toLocaleTimeString()}
+                                ).toLocaleString()}
                               </div>
                               {registration.event.club && (
                                 <div className="flex items-center gap-1">

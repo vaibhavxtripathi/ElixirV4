@@ -41,6 +41,7 @@ import {
   Plus,
   MoreHorizontal,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   LineChart,
   Line,
@@ -103,10 +104,12 @@ export default function AdminDashboard() {
     mutationFn: async () => (await api.post("/blogs", blogForm)).data,
     onSuccess: () => {
       setBlogForm({ title: "", content: "", imageUrl: "", status: "DRAFT" });
-      alert("Blog created");
+      toast.success("Blog created");
     },
     onError: (e: unknown) =>
-      alert((e as any)?.response?.data?.message || "Failed to create blog"),
+      toast.error(
+        (e as any)?.response?.data?.message || "Failed to create blog"
+      ),
   });
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
@@ -147,10 +150,10 @@ export default function AdminDashboard() {
     mutationFn: async () => (await api.post("/mentors", mentorForm)).data,
     onSuccess: () => {
       setMentorForm({ name: "", expertise: "", imageUrl: "", clubId: "" });
-      alert("Mentor created");
+      toast.success("Mentor created");
     },
     onError: (e: any) =>
-      alert(e?.response?.data?.message || "Failed to create mentor"),
+      toast.error(e?.response?.data?.message || "Failed to create mentor"),
   });
 
   const changeRole = useMutation({
@@ -163,10 +166,12 @@ export default function AdminDashboard() {
     }) => (await api.put(`/users/${userId}/role`, { newRole })).data,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users-list"] });
-      alert("Role updated");
+      toast.success("Role updated");
     },
     onError: (e: unknown) =>
-      alert((e as any)?.response?.data?.message || "Failed to change role"),
+      toast.error(
+        (e as any)?.response?.data?.message || "Failed to change role"
+      ),
   });
 
   const assignClub = useMutation({
@@ -179,10 +184,10 @@ export default function AdminDashboard() {
     }) => (await api.put(`/users/${userId}/club`, { clubId })).data,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users-list"] });
-      alert("Assigned to club");
+      toast.success("Assigned to club");
     },
     onError: (e: unknown) =>
-      alert((e as any)?.response?.data?.message || "Failed to assign"),
+      toast.error((e as any)?.response?.data?.message || "Failed to assign"),
   });
 
   const [clubSel, setClubSel] = useState<Record<string, string>>({});

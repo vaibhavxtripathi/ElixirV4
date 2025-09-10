@@ -2,6 +2,7 @@ import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 import ConditionalLayout from "@/components/ConditionalLayout";
 
 export const metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className="bg-[#0A0B1A] min-h-screen flex flex-col font-sans">
         <ReactQueryProvider>
           <ConditionalLayout>{children}</ConditionalLayout>
+          <Toaster richColors />
         </ReactQueryProvider>
       </body>
     </html>

@@ -23,6 +23,7 @@ import {
   Activity,
   Clock,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useState } from "react";
 
 interface Event {
@@ -47,14 +48,21 @@ export default function ClubHeadDashboard() {
     imageUrl: "",
   });
   const createMutation = useMutation({
-    mutationFn: async () => (await api.post("/events", form)).data,
+    mutationFn: async () => {
+      const payload = {
+        ...form,
+        // Ensure ISO format from the local datetime input
+        data: form.data ? new Date(form.data).toISOString() : "",
+      };
+      return (await api.post("/events", payload)).data;
+    },
     onSuccess: () => {
       setForm({ title: "", description: "", data: "", imageUrl: "" });
       qc.invalidateQueries({ queryKey: ["events-list-own"] });
-      alert("Event created");
+      toast.success("Event created");
     },
     onError: (e: any) =>
-      alert(e?.response?.data?.message || "Failed to create event"),
+      toast.error(e?.response?.data?.message || "Failed to create event"),
   });
 
   return (
@@ -170,12 +178,13 @@ export default function ClubHeadDashboard() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="event-date" className="text-white">
-                    Event Date
+                    Event Date & Time
                   </Label>
                   <Input
                     id="event-date"
-                    placeholder="2025-12-01T10:00:00Z"
+                    type="datetime-local"
                     value={form.data}
+                    min={new Date().toISOString().slice(0, 16)}
                     onChange={(e) => setForm({ ...form, data: e.target.value })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />

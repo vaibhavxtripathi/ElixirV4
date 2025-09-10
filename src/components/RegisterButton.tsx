@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function RegisterButton({ eventId }: { eventId: string }) {
   const qc = useQueryClient();
@@ -15,13 +16,14 @@ export default function RegisterButton({ eventId }: { eventId: string }) {
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ["my-registrations"] });
       router.push("/student");
+      toast.success("Registered successfully");
     },
     onError: (e: unknown) => {
       const msg = (e as any)?.response?.data?.message || "Failed to register";
       setErr(msg);
       if ((e as any)?.response?.status === 401) router.push("/login");
       if ((e as any)?.response?.status === 403)
-        alert("Only students can register.");
+        toast.error("Only students can register.");
     },
   });
 

@@ -156,7 +156,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       className="bg-[#0A0B1A] border-r border-white/10"
       {...props}
     >
-      <SidebarHeader className="border-b border-white/10">
+      <SidebarHeader className="border-b bg-[#0A0B1A] border-white/10">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
