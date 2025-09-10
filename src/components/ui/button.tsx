@@ -21,6 +21,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         gradient:
           "bg-[#0F172A] text-white border border-[#3B82F6] shadow-[inset_0_0_16px_#3B82F680] hover:shadow-[inset_0_0_18px_#3B82F6cc] transition-all duration-200",
+        gradientOutline:
+          "bg-[#0B131F] text-white border border-[#142A4F] shadow-[inset_0_0_6px_#11254566] hover:shadow-[inset_0_0_8px_#1125453d] transition-all duration-200",
       },
       size: {
         default: "h-9 px-4 py-2",

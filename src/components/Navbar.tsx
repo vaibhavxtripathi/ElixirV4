@@ -5,6 +5,7 @@ import { clearToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import AuthDialog from "@/components/auth-dialog";
 
 export default function Navbar() {
   const router = useRouter();
@@ -66,29 +67,27 @@ export default function Navbar() {
 
           {/* Auth actions */}
           <div className="flex items-center justify-end gap-4">
-            {isLoading ? (
-              <span className="text-white">Loading...</span>
-            ) : me?.user ? (
+            {me?.user ? (
               <div className="flex items-center gap-3">
                 <span className="text-white">Hi, {me.user.firstName}</span>
-                <button
-                  onClick={logout}
-                  className="text-white/80 hover:text-white transition-colors"
-                >
+                <Button onClick={logout} variant="gradient">
                   Logout
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="text-white hover:text-white/80 transition-colors"
-                >
-                  Login
-                </Link>
-                <Button asChild variant="gradient">
-                  <Link href="/register">Get Started</Link>
-                </Button>
+                <AuthDialog
+                  defaultMode="login"
+                  trigger={
+                    <div className="text-white hover:text-white/80 transition-colors mr-4">
+                      Login
+                    </div>
+                  }
+                />
+                <AuthDialog
+                  defaultMode="signup"
+                  trigger={<Button variant="gradient">Get Started</Button>}
+                />
               </div>
             )}
           </div>

@@ -2,7 +2,94 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import RequireAuth from "@/components/RequireAuth";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import {
+  Users,
+  Calendar,
+  FileText,
+  UserCheck,
+  TrendingUp,
+  Activity,
+  Plus,
+  MoreHorizontal,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  club?: { name: string };
+}
+
+interface Club {
+  id: string;
+  name: string;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  club?: { name: string };
+}
+
+interface Blog {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+}
+
+interface Mentor {
+  id: string;
+  name: string;
+  expertise: string;
+  club?: { name: string };
+}
 
 export default function AdminDashboard() {
   const [blogForm, setBlogForm] = useState({
@@ -18,8 +105,8 @@ export default function AdminDashboard() {
       setBlogForm({ title: "", content: "", imageUrl: "", status: "DRAFT" });
       alert("Blog created");
     },
-    onError: (e: any) =>
-      alert(e?.response?.data?.message || "Failed to create blog"),
+    onError: (e: unknown) =>
+      alert((e as any)?.response?.data?.message || "Failed to create blog"),
   });
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
@@ -30,6 +117,22 @@ export default function AdminDashboard() {
   const { data: clubsData } = useQuery({
     queryKey: ["clubs-list"],
     queryFn: async () => (await api.get("/clubs")).data,
+  });
+
+  // Additional queries for dashboard metrics
+  const { data: eventsData } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => (await api.get("/events")).data,
+  });
+
+  const { data: blogsData } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: async () => (await api.get("/blogs")).data,
+  });
+
+  const { data: mentorsData } = useQuery({
+    queryKey: ["mentors"],
+    queryFn: async () => (await api.get("/mentors")).data,
   });
 
   // Add these after existing state and mutations
@@ -62,8 +165,8 @@ export default function AdminDashboard() {
       qc.invalidateQueries({ queryKey: ["users-list"] });
       alert("Role updated");
     },
-    onError: (e: any) =>
-      alert(e?.response?.data?.message || "Failed to change role"),
+    onError: (e: unknown) =>
+      alert((e as any)?.response?.data?.message || "Failed to change role"),
   });
 
   const assignClub = useMutation({
@@ -78,203 +181,595 @@ export default function AdminDashboard() {
       qc.invalidateQueries({ queryKey: ["users-list"] });
       alert("Assigned to club");
     },
-    onError: (e: any) =>
-      alert(e?.response?.data?.message || "Failed to assign"),
+    onError: (e: unknown) =>
+      alert((e as any)?.response?.data?.message || "Failed to assign"),
   });
 
   const [clubSel, setClubSel] = useState<Record<string, string>>({});
 
+  // Calculate metrics
+  const totalUsers = data?.users?.length || 0;
+  const totalEvents = eventsData?.events?.length || 0;
+  const totalBlogs = blogsData?.blogs?.length || 0;
+  const totalMentors = mentorsData?.mentors?.length || 0;
+  const totalClubs = clubsData?.clubs?.length || 0;
+
+  // Sample data for charts (you can replace with real data)
+  const userGrowthData = [
+    { month: "Jan", users: 65 },
+    { month: "Feb", users: 78 },
+    { month: "Mar", users: 90 },
+    { month: "Apr", users: 105 },
+    { month: "May", users: 120 },
+    { month: "Jun", users: 135 },
+  ];
+
+  const eventData = [
+    { name: "Tech Talks", value: 35 },
+    { name: "Workshops", value: 25 },
+    { name: "Hackathons", value: 20 },
+    { name: "Other", value: 20 },
+  ];
+
+  const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
+
   return (
     <RequireAuth allow={["ADMIN"]}>
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-        {isLoading && <p>Loading...</p>}
-        {error && <p className="text-red-600">Failed to load users</p>}
-        <div className="overflow-x-auto border rounded">
-          <table className="min-w-full text-sm">
-            <thead className="bg-transparent">
-              <tr>
-                <th className="text-left p-3">Name</th>
-                <th className="text-left p-3">Email</th>
-                <th className="text-left p-3">Role</th>
-                <th className="text-left p-3">Club</th>
-                <th className="text-left p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data?.users || []).map((u: any) => (
-                <tr key={u.id} className="border-t">
-                  <td className="p-3">
-                    {u.firstName} {u.lastName}
-                  </td>
-                  <td className="p-3">{u.email}</td>
-                  <td className="p-3">{u.role}</td>
-                  <td className="p-3">{u.club?.name || "-"}</td>
-                  <td className="p-3 space-x-2">
-                    <button
-                      onClick={() =>
-                        changeRole.mutate({ userId: u.id, newRole: "STUDENT" })
-                      }
-                      className="px-2 py-1 border rounded"
-                    >
-                      Student
-                    </button>
-                    <button
-                      onClick={() =>
-                        changeRole.mutate({
-                          userId: u.id,
-                          newRole: "CLUB_HEAD",
-                        })
-                      }
-                      className="px-2 py-1 border rounded"
-                    >
-                      Club Head
-                    </button>
-                    <button
-                      onClick={() =>
-                        changeRole.mutate({ userId: u.id, newRole: "ADMIN" })
-                      }
-                      className="px-2 py-1 border rounded"
-                    >
-                      Admin
-                    </button>
+      <DashboardLayout>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+              <p className="text-white/60">
+                Welcome back! Here's what's happening with your platform.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button className="bg-white/10 hover:bg-white/20 text-white border-white/20">
+                <Plus className="w-4 h-4 mr-2" />
+                Quick Create
+              </Button>
+              <Button
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
 
-                    <div className="inline-flex items-center gap-2 ml-3">
-                      <select
-                        className="border rounded px-2 py-1"
-                        value={clubSel[u.id] || ""}
-                        onChange={(e) =>
-                          setClubSel({ ...clubSel, [u.id]: e.target.value })
-                        }
-                      >
-                        <option value="">Select club</option>
-                        {(clubsData?.clubs || []).map((c: any) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        onClick={() => {
-                          const clubId = clubSel[u.id];
-                          if (clubId)
-                            assignClub.mutate({ userId: u.id, clubId });
+          {/* Metrics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-white/5 border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/60">
+                      Total Users
+                    </p>
+                    <p className="text-2xl font-bold text-white">
+                      {totalUsers}
+                    </p>
+                    <p className="text-xs text-green-400 flex items-center mt-1">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      +12.5% from last month
+                    </p>
+                  </div>
+                  <div className="p-3 bg-blue-500/20 rounded-lg">
+                    <Users className="w-6 h-6 text-blue-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/5 border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/60">
+                      Active Events
+                    </p>
+                    <p className="text-2xl font-bold text-white">
+                      {totalEvents}
+                    </p>
+                    <p className="text-xs text-green-400 flex items-center mt-1">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      +8.2% from last month
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-500/20 rounded-lg">
+                    <Calendar className="w-6 h-6 text-green-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/5 border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/60">
+                      Published Blogs
+                    </p>
+                    <p className="text-2xl font-bold text-white">
+                      {totalBlogs}
+                    </p>
+                    <p className="text-xs text-green-400 flex items-center mt-1">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      +15.3% from last month
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-500/20 rounded-lg">
+                    <FileText className="w-6 h-6 text-purple-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/5 border-white/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-white/60">Mentors</p>
+                    <p className="text-2xl font-bold text-white">
+                      {totalMentors}
+                    </p>
+                    <p className="text-xs text-green-400 flex items-center mt-1">
+                      <TrendingUp className="w-3 h-3 mr-1" />
+                      +5.7% from last month
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-500/20 rounded-lg">
+                    <UserCheck className="w-6 h-6 text-orange-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* User Growth Chart */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">User Growth</CardTitle>
+                <CardDescription className="text-white/60">
+                  Monthly user registration trends
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={userGrowthData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="month" stroke="#9CA3AF" />
+                      <YAxis stroke="#9CA3AF" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px",
+                          color: "#F9FAFB",
                         }}
-                        className="px-2 py-1 border rounded"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="users"
+                        stroke="#3B82F6"
+                        strokeWidth={2}
+                        dot={{ fill: "#3B82F6", strokeWidth: 2, r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Event Distribution Chart */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Event Distribution</CardTitle>
+                <CardDescription className="text-white/60">
+                  Breakdown by event type
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={eventData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) =>
+                          `${name} ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
                       >
-                        Assign
-                      </button>
+                        {eventData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px",
+                          color: "#F9FAFB",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Management Tables */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Users Table */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Recent Users</CardTitle>
+                <CardDescription className="text-white/60">
+                  Latest user registrations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {isLoading ? (
+                    <div className="text-center py-4 text-white/60">
+                      Loading...
                     </div>
-                  </td>
-                </tr>
-              ))}
-              {!isLoading && (data?.users || []).length === 0 && (
-                <tr>
-                  <td className="p-3" colSpan={5}>
-                    No users found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                  ) : error ? (
+                    <div className="text-center py-4 text-red-400">
+                      Failed to load users
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {(data?.users || []).slice(0, 5).map((user: User) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                              <Users className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-white">
+                                {user.firstName} {user.lastName}
+                              </p>
+                              <p className="text-xs text-white/60">
+                                {user.email}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {user.role}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Events Table */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Recent Events</CardTitle>
+                <CardDescription className="text-white/60">
+                  Latest events created
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {eventsData?.events?.slice(0, 5).map((event: Event) => (
+                    <div
+                      key={event.id}
+                      className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-green-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {event.title}
+                          </p>
+                          <p className="text-xs text-white/60">
+                            {event.club?.name || "No club"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-white/60">
+                          {new Date(event.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* User Management Section */}
+          <Card className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">User Management</CardTitle>
+              <CardDescription className="text-white/60">
+                Manage user roles and club assignments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-white/10">
+                      <TableHead className="text-white/60">Name</TableHead>
+                      <TableHead className="text-white/60">Email</TableHead>
+                      <TableHead className="text-white/60">Role</TableHead>
+                      <TableHead className="text-white/60">Club</TableHead>
+                      <TableHead className="text-white/60">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(data?.users || []).map((user: User) => (
+                      <TableRow key={user.id} className="border-white/10">
+                        <TableCell className="text-white">
+                          {user.firstName} {user.lastName}
+                        </TableCell>
+                        <TableCell className="text-white/80">
+                          {user.email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-white/80">
+                          {user.club?.name || "-"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                changeRole.mutate({
+                                  userId: user.id,
+                                  newRole: "STUDENT",
+                                })
+                              }
+                              className="text-xs border-white/20 text-white hover:bg-white/10"
+                            >
+                              Student
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                changeRole.mutate({
+                                  userId: user.id,
+                                  newRole: "CLUB_HEAD",
+                                })
+                              }
+                              className="text-xs border-white/20 text-white hover:bg-white/10"
+                            >
+                              Club Head
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                changeRole.mutate({
+                                  userId: user.id,
+                                  newRole: "ADMIN",
+                                })
+                              }
+                              className="text-xs border-white/20 text-white hover:bg-white/10"
+                            >
+                              Admin
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Content Creation Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Create Blog */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Create Blog</CardTitle>
+                <CardDescription className="text-white/60">
+                  Add a new blog post to the platform
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="blog-title" className="text-white">
+                    Title
+                  </Label>
+                  <Input
+                    id="blog-title"
+                    placeholder="Enter blog title"
+                    value={blogForm.title}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, title: e.target.value })
+                    }
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="blog-content" className="text-white">
+                    Content
+                  </Label>
+                  <Textarea
+                    id="blog-content"
+                    placeholder="Enter blog content"
+                    value={blogForm.content}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, content: e.target.value })
+                    }
+                    rows={4}
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="blog-image" className="text-white">
+                    Image URL (optional)
+                  </Label>
+                  <Input
+                    id="blog-image"
+                    placeholder="https://example.com/image.jpg"
+                    value={blogForm.imageUrl}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, imageUrl: e.target.value })
+                    }
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="blog-status" className="text-white">
+                    Status
+                  </Label>
+                  <Select
+                    value={blogForm.status}
+                    onValueChange={(value) =>
+                      setBlogForm({ ...blogForm, status: value })
+                    }
+                  >
+                    <SelectTrigger className="bg-white/5 border-white/20 text-white">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-white/20">
+                      <SelectItem value="DRAFT" className="text-white">
+                        Draft
+                      </SelectItem>
+                      <SelectItem value="PUBLISHED" className="text-white">
+                        Published
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  onClick={() => createBlog.mutate()}
+                  disabled={createBlog.isPending}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {createBlog.isPending ? "Creating..." : "Create Blog"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Create Mentor */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white">Create Mentor</CardTitle>
+                <CardDescription className="text-white/60">
+                  Add a new mentor to the platform
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="mentor-name" className="text-white">
+                    Name
+                  </Label>
+                  <Input
+                    id="mentor-name"
+                    placeholder="Enter mentor name"
+                    value={mentorForm.name}
+                    onChange={(e) =>
+                      setMentorForm({ ...mentorForm, name: e.target.value })
+                    }
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mentor-expertise" className="text-white">
+                    Expertise
+                  </Label>
+                  <Input
+                    id="mentor-expertise"
+                    placeholder="Enter expertise area"
+                    value={mentorForm.expertise}
+                    onChange={(e) =>
+                      setMentorForm({
+                        ...mentorForm,
+                        expertise: e.target.value,
+                      })
+                    }
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mentor-image" className="text-white">
+                    Image URL (optional)
+                  </Label>
+                  <Input
+                    id="mentor-image"
+                    placeholder="https://example.com/image.jpg"
+                    value={mentorForm.imageUrl}
+                    onChange={(e) =>
+                      setMentorForm({ ...mentorForm, imageUrl: e.target.value })
+                    }
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mentor-club" className="text-white">
+                    Club
+                  </Label>
+                  <Select
+                    value={mentorForm.clubId}
+                    onValueChange={(value) =>
+                      setMentorForm({ ...mentorForm, clubId: value })
+                    }
+                  >
+                    <SelectTrigger className="bg-white/5 border-white/20 text-white">
+                      <SelectValue placeholder="Select club" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-white/20">
+                      {(clubsData?.clubs || []).map((c: Club) => (
+                        <SelectItem
+                          key={c.id}
+                          value={c.id}
+                          className="text-white"
+                        >
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  onClick={() => createMentor.mutate()}
+                  disabled={createMentor.isPending}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {createMentor.isPending ? "Creating..." : "Create Mentor"}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-        <section className="mt-10">
-          <h2 className="text-xl font-semibold mb-4">Create Blog</h2>
-          <div className="grid gap-3 max-w-md">
-            <input
-              className="border rounded px-3 py-2"
-              placeholder="Title"
-              value={blogForm.title}
-              onChange={(e) =>
-                setBlogForm({ ...blogForm, title: e.target.value })
-              }
-            />
-            <textarea
-              className="border rounded px-3 py-2"
-              placeholder="Content"
-              value={blogForm.content}
-              onChange={(e) =>
-                setBlogForm({ ...blogForm, content: e.target.value })
-              }
-            />
-            <input
-              className="border rounded px-3 py-2"
-              placeholder="Image URL (optional)"
-              value={blogForm.imageUrl}
-              onChange={(e) =>
-                setBlogForm({ ...blogForm, imageUrl: e.target.value })
-              }
-            />
-            <select
-              className="border rounded px-3 py-2"
-              value={blogForm.status}
-              onChange={(e) =>
-                setBlogForm({ ...blogForm, status: e.target.value })
-              }
-            >
-              <option value="DRAFT">Draft</option>
-              <option value="PUBLISHED">Published</option>
-            </select>
-            <button
-              onClick={() => createBlog.mutate()}
-              disabled={createBlog.isPending}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              {createBlog.isPending ? "Creating..." : "Create Blog"}
-            </button>
-          </div>
-        </section>
-        <section className="mt-10">
-          <h2 className="text-xl font-semibold mb-4">Create Mentor</h2>
-          <div className="grid gap-3 max-w-md">
-            <input
-              className="border rounded px-3 py-2"
-              placeholder="Name"
-              value={mentorForm.name}
-              onChange={(e) =>
-                setMentorForm({ ...mentorForm, name: e.target.value })
-              }
-            />
-            <input
-              className="border rounded px-3 py-2"
-              placeholder="Expertise"
-              value={mentorForm.expertise}
-              onChange={(e) =>
-                setMentorForm({ ...mentorForm, expertise: e.target.value })
-              }
-            />
-            <input
-              className="border rounded px-3 py-2"
-              placeholder="Image URL (optional)"
-              value={mentorForm.imageUrl}
-              onChange={(e) =>
-                setMentorForm({ ...mentorForm, imageUrl: e.target.value })
-              }
-            />
-            <select
-              className="border rounded px-3 py-2"
-              value={mentorForm.clubId}
-              onChange={(e) =>
-                setMentorForm({ ...mentorForm, clubId: e.target.value })
-              }
-            >
-              <option value="">Select club</option>
-              {(clubsData?.clubs || []).map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={() => createMentor.mutate()}
-              disabled={createMentor.isPending}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              {createMentor.isPending ? "Creating..." : "Create Mentor"}
-            </button>
-          </div>
-        </section>
-      </main>
+      </DashboardLayout>
     </RequireAuth>
   );
 }

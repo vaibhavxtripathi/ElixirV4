@@ -16,11 +16,12 @@ export default function RegisterButton({ eventId }: { eventId: string }) {
       await qc.invalidateQueries({ queryKey: ["my-registrations"] });
       router.push("/student");
     },
-    onError: (e: any) => {
-      const msg = e?.response?.data?.message || "Failed to register";
+    onError: (e: unknown) => {
+      const msg = (e as any)?.response?.data?.message || "Failed to register";
       setErr(msg);
-      if (e?.response?.status === 401) router.push("/login");
-      if (e?.response?.status === 403) alert("Only students can register.");
+      if ((e as any)?.response?.status === 401) router.push("/login");
+      if ((e as any)?.response?.status === 403)
+        alert("Only students can register.");
     },
   });
 
