@@ -557,42 +557,42 @@ export default function AdminDashboard() {
                                 })
                               }
                               className="text-xs border-white/20 text-white hover:bg-white/10"
-                            >
-                              Student
+                    >
+                      Student
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() =>
-                                changeRole.mutate({
+                      onClick={() =>
+                        changeRole.mutate({
                                   userId: user.id,
-                                  newRole: "CLUB_HEAD",
-                                })
-                              }
+                          newRole: "CLUB_HEAD",
+                        })
+                      }
                               className="text-xs border-white/20 text-white hover:bg-white/10"
-                            >
-                              Club Head
+                    >
+                      Club Head
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() =>
+                      onClick={() =>
                                 changeRole.mutate({
                                   userId: user.id,
                                   newRole: "ADMIN",
                                 })
-                              }
+                      }
                               className="text-xs border-white/20 text-white hover:bg-white/10"
-                            >
-                              Admin
+                    >
+                      Admin
                             </Button>
-                          </div>
+                    </div>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              </div>
+        </div>
             </CardContent>
           </Card>
 
@@ -614,10 +614,10 @@ export default function AdminDashboard() {
                   <Input
                     id="blog-title"
                     placeholder="Enter blog title"
-                    value={blogForm.title}
-                    onChange={(e) =>
-                      setBlogForm({ ...blogForm, title: e.target.value })
-                    }
+              value={blogForm.title}
+              onChange={(e) =>
+                setBlogForm({ ...blogForm, title: e.target.value })
+              }
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
@@ -628,10 +628,10 @@ export default function AdminDashboard() {
                   <Textarea
                     id="blog-content"
                     placeholder="Enter blog content"
-                    value={blogForm.content}
-                    onChange={(e) =>
-                      setBlogForm({ ...blogForm, content: e.target.value })
-                    }
+              value={blogForm.content}
+              onChange={(e) =>
+                setBlogForm({ ...blogForm, content: e.target.value })
+              }
                     rows={4}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
@@ -643,10 +643,10 @@ export default function AdminDashboard() {
                   <Input
                     id="blog-image"
                     placeholder="https://example.com/image.jpg"
-                    value={blogForm.imageUrl}
-                    onChange={(e) =>
-                      setBlogForm({ ...blogForm, imageUrl: e.target.value })
-                    }
+              value={blogForm.imageUrl}
+              onChange={(e) =>
+                setBlogForm({ ...blogForm, imageUrl: e.target.value })
+              }
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
@@ -655,7 +655,7 @@ export default function AdminDashboard() {
                     Status
                   </Label>
                   <Select
-                    value={blogForm.status}
+              value={blogForm.status}
                     onValueChange={(value) =>
                       setBlogForm({ ...blogForm, status: value })
                     }
@@ -674,11 +674,11 @@ export default function AdminDashboard() {
                   </Select>
                 </div>
                 <Button
-                  onClick={() => createBlog.mutate()}
-                  disabled={createBlog.isPending}
+              onClick={() => createBlog.mutate()}
+              disabled={createBlog.isPending}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {createBlog.isPending ? "Creating..." : "Create Blog"}
+            >
+              {createBlog.isPending ? "Creating..." : "Create Blog"}
                 </Button>
               </CardContent>
             </Card>
@@ -699,10 +699,10 @@ export default function AdminDashboard() {
                   <Input
                     id="mentor-name"
                     placeholder="Enter mentor name"
-                    value={mentorForm.name}
-                    onChange={(e) =>
-                      setMentorForm({ ...mentorForm, name: e.target.value })
-                    }
+              value={mentorForm.name}
+              onChange={(e) =>
+                setMentorForm({ ...mentorForm, name: e.target.value })
+              }
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
@@ -713,8 +713,8 @@ export default function AdminDashboard() {
                   <Input
                     id="mentor-expertise"
                     placeholder="Enter expertise area"
-                    value={mentorForm.expertise}
-                    onChange={(e) =>
+              value={mentorForm.expertise}
+              onChange={(e) =>
                       setMentorForm({
                         ...mentorForm,
                         expertise: e.target.value,
@@ -730,10 +730,10 @@ export default function AdminDashboard() {
                   <Input
                     id="mentor-image"
                     placeholder="https://example.com/image.jpg"
-                    value={mentorForm.imageUrl}
-                    onChange={(e) =>
-                      setMentorForm({ ...mentorForm, imageUrl: e.target.value })
-                    }
+              value={mentorForm.imageUrl}
+              onChange={(e) =>
+                setMentorForm({ ...mentorForm, imageUrl: e.target.value })
+              }
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
@@ -742,7 +742,7 @@ export default function AdminDashboard() {
                     Club
                   </Label>
                   <Select
-                    value={mentorForm.clubId}
+              value={mentorForm.clubId}
                     onValueChange={(value) =>
                       setMentorForm({ ...mentorForm, clubId: value })
                     }
@@ -757,18 +757,18 @@ export default function AdminDashboard() {
                           value={c.id}
                           className="text-white"
                         >
-                          {c.name}
+                  {c.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <Button
-                  onClick={() => createMentor.mutate()}
-                  disabled={createMentor.isPending}
+              onClick={() => createMentor.mutate()}
+              disabled={createMentor.isPending}
                   className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {createMentor.isPending ? "Creating..." : "Create Mentor"}
+            >
+              {createMentor.isPending ? "Creating..." : "Create Mentor"}
                 </Button>
               </CardContent>
             </Card>

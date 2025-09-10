@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { DateTimePicker } from "@/components/date-time-picker";
 
 interface Event {
   id: string;
@@ -48,14 +49,7 @@ export default function ClubHeadDashboard() {
     imageUrl: "",
   });
   const createMutation = useMutation({
-    mutationFn: async () => {
-      const payload = {
-        ...form,
-        // Ensure ISO format from the local datetime input
-        data: form.data ? new Date(form.data).toISOString() : "",
-      };
-      return (await api.post("/events", payload)).data;
-    },
+    mutationFn: async () => (await api.post("/events", form)).data,
     onSuccess: () => {
       setForm({ title: "", description: "", data: "", imageUrl: "" });
       qc.invalidateQueries({ queryKey: ["events-list-own"] });
@@ -180,12 +174,9 @@ export default function ClubHeadDashboard() {
                   <Label htmlFor="event-date" className="text-white">
                     Event Date & Time
                   </Label>
-                  <Input
-                    id="event-date"
-                    type="datetime-local"
+                  <DateTimePicker
                     value={form.data}
-                    min={new Date().toISOString().slice(0, 16)}
-                    onChange={(e) => setForm({ ...form, data: e.target.value })}
+                    onChange={(iso) => setForm({ ...form, data: iso })}
                     className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
                   />
                 </div>
