@@ -1,4 +1,5 @@
 import { TestimonialsSection } from "@/components/testimonials-with-marquee";
+import { Header } from "@/components/Header";
 
 interface BackendTestimonial {
   id: string | number;
@@ -49,25 +50,11 @@ export default async function HomePage() {
   }));
   return (
     <main className="relative min-h-[88vh] text-white">
-      <div className="max-w-7xl mx-auto px-4 pt-36 md:pt-40">
-        {/* badge */}
-        <div className="flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/90 backdrop-blur">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-            Elixir Tech Community
-          </div>
-        </div>
-
-        {/* headline */}
-        <h1 className="mt-6 text-center text-transparent text-5xl leading-tight tracking-tight md:text-7xl bg-clip-text bg-gradient-to-b from-white to-white/60">
-          Think better with Elixir
-        </h1>
-
-        {/* subtext */}
-        <p className="mt-4 text-center text-lg text-white/70 md:text-xl">
-          We build the future of technology with you
-        </p>
-      </div>
+      <Header
+        badge="Elixir Tech Community"
+        title="Think better with Elixir"
+        subtitle="We build the future of technology with you"
+      />
 
       {/* Showcase layout replica (chrome only, no content) */}
       <section className="relative mt-20">
@@ -119,8 +106,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      <section className="mt-12">
+      <section>
         <TestimonialsSection
+          badge="Testimonials"
           headline="What our alumni say"
           subtext="Real voices from the Elixir community."
           testimonials={testimonials}
