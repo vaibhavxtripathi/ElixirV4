@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import AuthDialog from "@/components/auth-dialog";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const router = useRouter();
@@ -21,7 +22,12 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 z-50 w-full mx-auto">
+    <motion.nav
+      className="fixed top-0 z-50 w-full mx-auto"
+      initial={{ opacity: 0, y: -100 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="backdrop-blur-md border border-white/10 rounded-md px-6 py-4">
         <div className="grid grid-cols-3 items-center w-full backdrop-saturate-200">
           {/* Logo */}
@@ -79,7 +85,7 @@ export default function Navbar() {
                 <AuthDialog
                   defaultMode="login"
                   trigger={
-                    <div className="text-white hover:text-white/80 transition-colors mr-4">
+                    <div className="text-white hover:text-white/80 transition-colors mr-4 cursor-pointer">
                       Login
                     </div>
                   }
@@ -93,6 +99,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
