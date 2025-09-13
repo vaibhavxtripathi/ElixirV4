@@ -15,7 +15,7 @@ export const Header = ({
   return (
     <motion.div
       className="max-w-7xl mx-auto px-4 pt-36 md:pt-40"
-      initial="hidden"
+      initial={"hidden"}
       whileInView="show"
       viewport={{ once: true, amount: 0.3 }}
       variants={containerStagger(0.12, 0)}
