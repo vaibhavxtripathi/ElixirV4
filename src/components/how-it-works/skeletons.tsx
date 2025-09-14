@@ -8,11 +8,11 @@ import {
 } from "@/icons/general";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { DivideX } from "@/components/divide";
+import { DivideX } from "../divide";
 import { motion, useMotionValue, useTransform } from "motion/react";
-import { Card } from "@/components/tech-card";
+import { Card } from "../tech-card";
 import { Scale } from "../scale";
-import { LogoSVG } from "@/components/logo";
+import { LogoSVG } from "../logo";
 import { IntegrationsLogo } from "@/icons/bento-icons";
 
 export const DesignYourWorkflowSkeleton = () => {
@@ -31,7 +31,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <CenterSVG className="absolute top-24 right-[107px]" />
       </div>
 
-      <div className="mt-12 flex flex-row gap-4.5">
+      <div className="mt-12 flex flex-row gap-10">
         <Card
           title="Anthropic"
           subtitle="Claude 4"
@@ -338,15 +338,15 @@ export const DeployAndScaleSkeleton = () => {
     <div
       className="relative h-full w-full overflow-hidden"
       ref={containerRef}
-      style={{
-        maskImage:
-          "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-        WebkitMaskImage:
-          "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-      }}
+      // style={{
+      //   maskImage:
+      //     "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+      //   WebkitMaskImage:
+      //     "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+      // }}
     >
       <motion.div
-        className="absolute left-1/2 flex w-full -translate-x-1/2 flex-col items-center"
+        className="absolute  flex w-full -translate-x-1/2 flex-col items-center"
         style={{ y }}
       >
         {extendedCards.map((card, index) => (
