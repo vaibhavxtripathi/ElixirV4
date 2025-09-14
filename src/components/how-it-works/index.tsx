@@ -59,15 +59,33 @@ export const HowItWorks = () => {
     return () => clearInterval(interval);
   }, [activeTab]);
   return (
-    <Container className="border-divide border-x">
-      <div className="flex flex-col items-center pt-16">
-        {/* Desktop Tabs */}
-        <div className="border-divide divide-divide mt-16 hidden w-full grid-cols-2 divide-x border-t lg:grid">
-          <div className="divide-divide divide-y">
+    <section className="relative py-24 md:py-32">
+      <Container>
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/90 backdrop-blur mb-6">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
+            How it works
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-4">
+            Get started in minutes
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Simple steps to integrate Elixir into your workflow
+          </p>
+        </div>
+
+        <div className="w-full grid-cols-2 divide-x border-t border-white/10 lg:grid">
+          {/* Left Column - Feature Cards */}
+          <div className="divide-y divide-white/10">
             {tabs.map((tab, index) => (
               <button
                 key={tab.title}
-                className="group relative flex w-full flex-col items-start overflow-hidden px-12 py-8 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                className={cn(
+                  "group relative flex w-full flex-col items-start overflow-hidden px-6 py-8 transition-all duration-200",
+                  "hover:bg-white/5",
+                  tab.id === activeTab.id &&
+                    "bg-white/10 border border-white/20"
+                )}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab.id === activeTab.id && (
@@ -76,24 +94,30 @@ export const HowItWorks = () => {
                 {tab.id === activeTab.id && <Loader duration={DURATION} />}
                 <div
                   className={cn(
-                    "text-charcoal-700 relative z-20 flex items-center gap-2 font-medium dark:text-neutral-100",
-                    activeTab.id !== tab.id && "group-hover:text-brand"
+                    "relative z-20 flex items-center gap-3 font-medium text-white/90",
+                    activeTab.id !== tab.id && "group-hover:text-white"
                   )}
                 >
-                  <tab.icon className="shrink-0" /> {tab.title}
+                  <tab.icon className="shrink-0 h-4 w-4" />
+                  <span className="text-base">{tab.title}</span>
                 </div>
                 <p
                   className={cn(
-                    "relative z-20 mt-2 text-left text-sm text-gray-600 dark:text-neutral-300",
-                    activeTab.id === tab.id && "text-charcoal-700"
+                    "relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed",
+                    activeTab.id === tab.id && "text-white/90"
                   )}
                 >
                   {tab.description}
                 </p>
+                {tab.id === activeTab.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500" />
+                )}
               </button>
             ))}
           </div>
-          <div className="relative h-full max-h-[370px] overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] mask-r-from-90% mask-l-from-90% mask-radial-from-20% [background-size:10px_10px]">
+
+          {/* Right Column - Visual Content */}
+          <div className="relative h-full min-h-[500px] overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab.id}
@@ -109,26 +133,34 @@ export const HowItWorks = () => {
           </div>
         </div>
         {/* Mobile Tabs */}
-        <div className="divide-divide border-divide mt-16 flex w-full flex-col divide-y overflow-hidden border-t lg:hidden">
+        <div className="mt-8 flex w-full flex-col divide-y divide-white/10 border-t border-white/10 lg:hidden">
           {tabs.map((tab, index) => (
             <div
               key={tab.title + "mobile"}
-              className="group relative flex w-full flex-col items-start overflow-hidden px-4 py-4 md:px-12 md:py-8"
+              className={cn(
+                "group relative flex w-full flex-col items-start overflow-hidden px-6 py-8",
+                "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]",
+                tab.id === activeTab.id && "bg-white/10 border border-white/20"
+              )}
             >
-              <div className="text-charcoal-700 relative z-20 flex items-center gap-2 font-medium dark:text-neutral-100">
-                <tab.icon className="shrink-0" /> {tab.title}
+              <div className="relative z-20 flex items-center gap-3 font-medium text-white/90">
+                <tab.icon className="shrink-0 h-4 w-4" />
+                <span className="text-base">{tab.title}</span>
               </div>
-              <p className="relative z-20 mt-2 text-left text-sm text-gray-600 dark:text-neutral-300">
+              <p className="relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed">
                 {tab.description}
               </p>
-              <div className="relative mx-auto h-80 w-full overflow-hidden mask-t-from-90% mask-r-from-90% mask-b-from-90% mask-l-from-90% sm:h-80 sm:w-160">
+              {tab.id === activeTab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500" />
+              )}
+              <div className="relative mx-auto mt-6 h-80 w-full overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]">
                 {tab.skeleton}
               </div>
             </div>
           ))}
         </div>
-      </div>
-    </Container>
+      </Container>
+    </section>
   );
 };
 
@@ -150,15 +182,16 @@ const Canvas = ({
   activeTab: Tab;
   duration: number;
 }) => {
+  console.log("Canvas rendering for tab:", activeTab.id);
   return (
     <>
       <div className="absolute inset-x-0 z-20 h-full w-full bg-white mask-t-from-50% dark:bg-neutral-900" />
       <PixelatedCanvas
         key={activeTab.id}
         isActive={true}
-        fillColor="var(--color-canvas)"
-        backgroundColor="var(--color-canvas-fill)"
-        size={2.5}
+        fillColor="#C32131"
+        backgroundColor="#1a1a1a"
+        size={3}
         duration={duration}
         className="absolute inset-0 scale-[1.01] opacity-20"
       />
