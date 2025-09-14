@@ -64,7 +64,10 @@ export default async function HomePage() {
 
       <AboutElixir />
 
-      {/* <HowItWorks /> */}
+      <div className="their-component-wrapper dark">
+        <HowItWorks />
+      </div>
+
 
       <section>
         <TestimonialsSection
