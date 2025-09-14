@@ -19,6 +19,13 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
   fillColor = "var(--color-brand, #f17463)",
   backgroundColor = "var(--color-gray-200, white)",
 }) => {
+  console.log("PixelatedCanvas props:", {
+    isActive,
+    fillColor,
+    backgroundColor,
+    size,
+    duration,
+  });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [filledSquares, setFilledSquares] = useState<Set<number>>(new Set());
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -43,6 +50,7 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
         const parent = canvasRef.current.parentElement;
         const width = parent.clientWidth;
         const height = parent.clientHeight;
+        console.log("PixelatedCanvas dimensions:", { width, height });
         setDimensions({ width, height });
       }
     };
