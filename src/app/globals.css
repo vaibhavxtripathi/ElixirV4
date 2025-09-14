@@ -206,7 +206,7 @@
   --color-divide: var(--divide);
   --color-primary: var(--primary);
   --color-canvas: var(--canvas);
-  --color-canvas-fill: var(--color-canvas-fill);
+  --color-canvas-fill: var(--canvas-fill);
   --color-dots: var(--dots);
   --color-line: var(--line);
   --color-pattern-fg: var(--pattern-fg);
@@ -313,7 +313,4 @@
 }
 
 /* Background pattern utility */
-.bg-pattern {
-  background-image: var(--background-repeating-gradient);
-  background-size: var(--repeat-gradient-size);
-}
+
