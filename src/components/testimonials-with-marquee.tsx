@@ -67,7 +67,7 @@ export function TestimonialsSection({
 
         {/* Row 1 - Infinite scroll */}
         <motion.div
-          className="relative w-full overflow-hidden"
+          className="relative w-full overflow-hidden mt-10"
           variants={fadeIn}
         >
           <div className="flex overflow-hidden py-0 px-5 [--gap:1.5rem] [gap:var(--gap)]">
