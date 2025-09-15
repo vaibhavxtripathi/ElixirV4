@@ -9,6 +9,7 @@ import {
   DeployAndScaleSkeleton,
   DesignYourWorkflowSkeleton,
 } from "./skeletons";
+import { Header } from "../Header";
 
 type Tab = {
   title: string;
@@ -46,8 +47,10 @@ export const HowItWorks = () => {
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [showGrid, setShowGrid] = useState(false);
 
   const DURATION = 8000;
+  const GRID_DELAY = 2500; // wait for pixelated canvas animation
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,25 +61,28 @@ export const HowItWorks = () => {
 
     return () => clearInterval(interval);
   }, [activeTab]);
-  return (
-    <section className="relative py-24 md:py-32">
-      <Container>
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/90 backdrop-blur mb-6">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-            How it works
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 mb-4">
-            Get started in minutes
-          </h2>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto">
-            Simple steps to integrate Elixir into your workflow
-          </p>
-        </div>
 
-        <div className="w-full grid-cols-2 divide-x border-t border-white/10 lg:grid">
+  // Toggle grid visibility after canvas animation completes for the active item
+  useEffect(() => {
+    setShowGrid(false);
+    const t = setTimeout(() => setShowGrid(true), GRID_DELAY);
+    return () => clearTimeout(t);
+  }, [activeTab]);
+  return (
+    <section className="relative py-8 lg:py-12">
+      <Container>
+        <Header
+          badge="How it works?"
+          title="What is Elixir and how it works"
+          subtitle="What is Elixir and how it works"
+          variant="secondary"
+        />
+
+        <div className="mt-20 relative w-full grid-cols-2 items-stretch divide-x divide-white/10 border-t border-b border-l border-r border-white/10 lg:grid">
+          {/* Ensure center divider is always visible above masked content */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block z-50" />
           {/* Left Column - Feature Cards */}
-          <div className="divide-y divide-white/10">
+          <div className="hidden divide-y divide-white/10 lg:block">
             {tabs.map((tab, index) => (
               <button
                 key={tab.title}
@@ -84,18 +90,29 @@ export const HowItWorks = () => {
                   "group relative flex w-full flex-col items-start overflow-hidden px-6 py-8 transition-all duration-200",
                   "hover:bg-white/5",
                   tab.id === activeTab.id &&
-                    "bg-white/10 border border-white/20"
+                    "bg-gradient-to-b from-white/5 to-transparent border border-blue-500/20 ring-1 ring-blue-500/10"
                 )}
                 onClick={() => setActiveTab(tab)}
               >
+                {/* Grid background only for active card after animation */}
+                {tab.id === activeTab.id && showGrid && (
+                  <div
+                    className="pointer-events-none absolute inset-0 z-0 opacity-30 bg-[image:repeating-linear-gradient(0deg,var(--grid-color)_0,var(--grid-color)_1px,transparent_1px,transparent_8px),repeating-linear-gradient(90deg,var(--grid-color)_0,var(--grid-color)_1px,transparent_1px,transparent_8px)]"
+                    style={{
+                      ["--grid-color" as any]: "rgba(255,255,255,0.18)",
+                    }}
+                  />
+                )}
                 {tab.id === activeTab.id && (
                   <Canvas activeTab={tab} duration={2500} />
                 )}
                 {tab.id === activeTab.id && <Loader duration={DURATION} />}
                 <div
                   className={cn(
-                    "relative z-20 flex items-center gap-3 font-medium text-white/90",
-                    activeTab.id !== tab.id && "group-hover:text-white"
+                    "relative z-20 flex items-center gap-3 font-semibold",
+                    activeTab.id === tab.id
+                      ? "text-white"
+                      : "text-white/90 group-hover:text-white"
                   )}
                 >
                   <tab.icon className="shrink-0 h-4 w-4" />
@@ -103,21 +120,43 @@ export const HowItWorks = () => {
                 </div>
                 <p
                   className={cn(
-                    "relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed",
-                    activeTab.id === tab.id && "text-white/90"
+                    "relative z-20 mt-3 text-left text-sm leading-relaxed",
+                    activeTab.id === tab.id ? "text-white/85" : "text-white/70"
                   )}
                 >
                   {tab.description}
                 </p>
                 {tab.id === activeTab.id && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500" />
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
                 )}
               </button>
             ))}
           </div>
 
           {/* Right Column - Visual Content */}
-          <div className="relative h-full min-h-[500px] overflow-hidden">
+          <div
+            className="relative h-full overflow-hidden opacity-70"
+            style={{
+              maskImage:
+                "radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 35%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0) 90%)",
+              WebkitMaskImage:
+                "radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 35%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0) 90%)",
+            }}
+          >
+            {showGrid && (
+              <div
+                className="pointer-events-none absolute inset-0 z-0 opacity-40 bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
+                style={{ ["--color-dots" as any]: "rgba(255,255,255,0.28)" }}
+              />
+            )}
+            {/* Consistent vertical vignette */}
+            <div
+              className="pointer-events-none absolute inset-0 z-10"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.6) 100%)",
+              }}
+            />
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab.id}
@@ -133,31 +172,24 @@ export const HowItWorks = () => {
           </div>
         </div>
         {/* Mobile Tabs */}
-        <div className="mt-8 flex w-full flex-col divide-y divide-white/10 border-t border-white/10 lg:hidden">
-          {tabs.map((tab, index) => (
-            <div
-              key={tab.title + "mobile"}
-              className={cn(
-                "group relative flex w-full flex-col items-start overflow-hidden px-6 py-8",
-                "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]",
-                tab.id === activeTab.id && "bg-white/10 border border-white/20"
-              )}
-            >
-              <div className="relative z-20 flex items-center gap-3 font-medium text-white/90">
-                <tab.icon className="shrink-0 h-4 w-4" />
-                <span className="text-base">{tab.title}</span>
-              </div>
-              <p className="relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed">
-                {tab.description}
-              </p>
-              {tab.id === activeTab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500" />
-              )}
-              <div className="relative mx-auto mt-6 h-80 w-full overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]">
-                {tab.skeleton}
-              </div>
+        <div className="mt-8 w-full lg:hidden">
+          <div
+            className={cn(
+              "relative flex w-full flex-col items-start overflow-hidden rounded-md border border-white/10 bg-white/5 px-6 py-8",
+              "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
+            )}
+          >
+            <div className="relative z-20 flex items-center gap-3 font-medium text-white/90">
+              <activeTab.icon className="shrink-0 h-4 w-4" />
+              <span className="text-base">{activeTab.title}</span>
             </div>
-          ))}
+            <p className="relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed">
+              {activeTab.description}
+            </p>
+            <div className="relative mx-auto mt-6 h-80 w-full overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]">
+              {activeTab.skeleton}
+            </div>
+          </div>
         </div>
       </Container>
     </section>
@@ -167,9 +199,9 @@ export const HowItWorks = () => {
 const Loader = ({ duration = 2500 }: { duration?: number }) => {
   return (
     <motion.div
-      className="bg-brand absolute inset-x-0 bottom-0 z-30 h-0.5 w-full rounded-full"
-      initial={{ width: 0 }}
-      animate={{ width: "100%" }}
+      className="absolute inset-x-0 bottom-0 z-30 h-0.5 w-full rounded-full bg-[#080914]"
+      initial={{ width: "0%", backgroundColor: "#080914" }}
+      animate={{ width: "100%", backgroundColor: "#2563eb" }}
       transition={{ duration: duration / 1000 }}
     />
   );
@@ -182,14 +214,12 @@ const Canvas = ({
   activeTab: Tab;
   duration: number;
 }) => {
-  console.log("Canvas rendering for tab:", activeTab.id);
   return (
     <>
-      <div className="absolute inset-x-0 z-20 h-full w-full bg-white mask-t-from-50% dark:bg-neutral-900" />
       <PixelatedCanvas
         key={activeTab.id}
         isActive={true}
-        fillColor="#C32131"
+        fillColor="#2563eb"
         backgroundColor="#1a1a1a"
         size={3}
         duration={duration}
