@@ -7,10 +7,12 @@ export const Header = ({
   badge,
   title,
   subtitle,
+  variant,
 }: {
   badge: string;
   title: string;
   subtitle: string;
+  variant: "default" | "secondary";
 }) => {
   return (
     <motion.div
