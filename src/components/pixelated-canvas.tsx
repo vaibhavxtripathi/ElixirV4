@@ -140,10 +140,17 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
         if (filledSquares.has(squareIndex)) {
           const x = col * SQUARE_SIZE;
           const y = row * SQUARE_SIZE;
+
+          // Apply a vertical fade: fully visible near the top, gradually
+          // decreasing opacity towards the bottom to create a gradient look.
+          const verticalProgress = y / Math.max(1, dimensions.height);
+          const opacity = Math.max(0, 1 - verticalProgress * 0.85);
+          ctx.globalAlpha = opacity;
           ctx.fillRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
         }
       }
     }
+    ctx.globalAlpha = 1;
   }, [filledSquares, dimensions, fillColor, backgroundColor]);
 
   return (
