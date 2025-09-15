@@ -26,12 +26,12 @@ export const DesignYourWorkflowSkeleton = () => {
           cta="Connected"
           tone="default"
         />
-        <LeftSVG className="absolute top-12 -left-32" />
-        <RightSVG className="absolute top-12 -right-32" />
-        <CenterSVG className="absolute top-24 right-[107px]" />
+        <LeftSVG className="absolute top-14 -left-[128px]" />
+        <RightSVG className="absolute top-14 -right-[149px]" />
+        <CenterSVG className="absolute top-24 right-[80px]" />
       </div>
 
-      <div className="mt-12 flex flex-row gap-10">
+      <div className="mt-12 flex flex-row gap-8">
         <Card
           title="Anthropic"
           subtitle="Claude 4"
@@ -80,7 +80,7 @@ export const ConnectYourTooklsSkeleton = () => {
         transition={{ duration: 0.5 }}
         className="relative h-70 w-60 -translate-x-2 rounded-2xl border-t border-gray-300 bg-white p-4 shadow-2xl md:translate-x-0 dark:border-neutral-700 dark:bg-neutral-900"
       >
-        <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-white shadow-xl">
+        <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-inherit  shadow-xl">
           <Scale />
           <OpenAILogo className="relative z-20 h-8 w-8" />
         </div>
@@ -147,7 +147,7 @@ export const ConnectYourTooklsSkeleton = () => {
         className="absolute inset-x-0 z-30 hidden items-center justify-center md:flex"
       >
         <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
-        <div className="h-[2px] w-38 bg-blue-500" />
+        <div className="h-[2px] w-36 bg-blue-500" />
         <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
       </motion.div>
       <motion.div
@@ -440,7 +440,7 @@ const DeployCard = ({
         <span className="text-charcoal-700 text-xs font-normal">
           {subtitle}
         </span>
-        <div className="size-1 rounded-full bg-gray-400"></div>
+        <div className="h-[1px] w-4 bg-gray-400"></div>
         <span className="text-charcoal-700 text-xs font-normal">{branch}</span>
       </div>
     </div>
@@ -467,7 +467,7 @@ const LeftSVG = (props: React.SVGProps<SVGSVGElement>) => {
       }}
       className={props.className}
     >
-      <mask id="path-1-inside-1_557_1106" fill="var(--color-line)">
+      <mask id="path-1-inside-1_557_1106" fill="gray">
         <path d="M127.457 0.0891113L127.576 95.9138L0.939007 96.0718L0.839368 16.2472C0.828338 7.41063 7.98283 0.238242 16.8194 0.227212L127.457 0.0891113Z" />
       </mask>
       <path
@@ -503,9 +503,9 @@ const LeftSVG = (props: React.SVGProps<SVGSVGElement>) => {
           }}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="var(--color-line)" stopOpacity="0.5" offset="0" />
+          <stop stopColor="gray" stopOpacity="0.5" offset="0" />
           <stop stopColor="#5787FF" stopOpacity="1" offset="0.5" />
-          <stop stopColor="var(--color-line)" stopOpacity="0" offset="1" />
+          <stop stopColor="gray" stopOpacity="0" offset="1" />
         </motion.linearGradient>
       </defs>
     </motion.svg>
@@ -516,9 +516,9 @@ const RightSVG = (props: React.SVGProps<SVGSVGElement>) => {
   const PATH = `M0.619629 0L0.500018 95.8247L0.619629 0ZM128.137 95.984L128.237 16.1593C128.249 6.77047 120.647 -0.850179 111.258 -0.861898L111.256 1.1381C119.54 1.14844 126.247 7.87255 126.237 16.1568L126.137 95.9815L128.137 95.984ZM128.237 16.1593C128.249 6.77047 120.647 -0.850179 111.258 -0.861898L0.620877 -0.999999L0.618381 0.999999L111.256 1.1381C119.54 1.14844 126.247 7.87255 126.237 16.1568L128.237 16.1593ZM0.500018 95.8247L127.137 95.9827L0.500018 95.8247Z`;
   return (
     <motion.svg
-      width="128"
+      width="150"
       height="96"
-      viewBox="0 0 128 96"
+      viewBox="0 0 150 96"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       initial={{
@@ -532,7 +532,7 @@ const RightSVG = (props: React.SVGProps<SVGSVGElement>) => {
       }}
       className={props.className}
     >
-      <mask id="path-1-inside-1_557_1107" fill="var(--color-line)">
+      <mask id="path-1-inside-1_557_1107" fill="gray">
         <path d="M0.619629 0L0.500018 95.8247L127.137 95.9827L127.237 16.1581C127.248 7.32152 120.093 0.149131 111.257 0.138101L0.619629 0Z" />
       </mask>
       <path
@@ -581,9 +581,9 @@ const RightSVG = (props: React.SVGProps<SVGSVGElement>) => {
 const CenterSVG = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <motion.svg
-      width="2"
-      height="56"
-      viewBox="0 0 2 56"
+      width="1.5"
+      height="90"
+      viewBox="0 0 2 78"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       initial={{
@@ -597,7 +597,7 @@ const CenterSVG = (props: React.SVGProps<SVGSVGElement>) => {
       }}
       className={props.className}
     >
-      <line x1="1" y1="56" x2="1" stroke="var(--color-line)" strokeWidth="2" />
+      <line x1="1" y1="56" x2="1" stroke="gray" strokeWidth="2" />
       <line
         x1="1"
         y1="56"
@@ -627,7 +627,7 @@ const CenterSVG = (props: React.SVGProps<SVGSVGElement>) => {
           }}
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="var(--color-line)" stopOpacity="1" offset="0" />
+          <stop stopColor="gray" stopOpacity="1" offset="0" />
           <stop stopColor="#F17463" stopOpacity="0.5" offset="0.5" />
           <stop stopColor="#F17463" stopOpacity="0" offset="1" />
         </motion.linearGradient>
