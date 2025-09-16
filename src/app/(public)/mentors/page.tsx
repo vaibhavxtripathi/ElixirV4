@@ -1,32 +1,53 @@
 export const metadata = {
-    title: "Mentors | Elixir",
-    description: "Meet our expert mentors.",
-  };
-  
-  async function getMentors() {
-    const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-    const res = await fetch(`${base}/mentors`, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error("Failed to fetch mentors");
-    return res.json();
-  }
-  
-  export default async function MentorsPage() {
-    const data = await getMentors();
-    const mentors = data.mentors || [];
-  
-    return (
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Mentors</h1>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {mentors.map((mentor: any) => (
-            <div key={mentor.id} className="border rounded p-6">
-              <h3 className="text-lg font-semibold mb-2">{mentor.name}</h3>
-              <p className="text-gray-600 mb-3">{mentor.expertise}</p>
-              <div className="text-sm text-gray-500">Club: {mentor.club?.name}</div>
+  title: "Mentors | Elixir",
+  description: "Meet our expert mentors.",
+};
+
+async function getMentors() {
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+  const res = await fetch(`${base}/mentors`, { next: { revalidate: 60 } });
+  if (!res.ok) throw new Error("Failed to fetch mentors");
+  return res.json();
+}
+
+import { CometCard } from "@/components/ui/comet-card";
+
+export default async function MentorsPage() {
+  const data = await getMentors();
+  const mentors = data.mentors || [];
+
+  return (
+    <main className="mx-auto max-w-6xl px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Mentors</h1>
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {mentors.map((m: any) => (
+          <CometCard key={m.id} className="rounded-2xl">
+            <div className="relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-900/5 p-5 dark:bg-blue-900/5">
+              <div className="relative h-40 w-full overflow-hidden rounded-xl">
+                <img
+                  src={m.imageUrl || m.avatar || "/avatar.png"}
+                  alt={m.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-white/90">
+                  {m.name}
+                </h3>
+                <p className="mt-1 text-sm text-white/70">
+                  {m.expertise || m.title || m.role}
+                </p>
+                <div className="mt-2 text-xs text-white/60">
+                  {m.club?.name ? `Club: ${m.club.name}` : null}
+                </div>
+              </div>
             </div>
-          ))}
-          {mentors.length === 0 && <p className="text-gray-600 col-span-full">No mentors yet.</p>}
-        </div>
-      </main>
-    );
-  }
+          </CometCard>
+        ))}
+        {mentors.length === 0 && (
+          <p className="col-span-full text-white/60">No mentors yet.</p>
+        )}
+      </div>
+    </main>
+  );
+}
