@@ -4,7 +4,7 @@ export const metadata = {
 };
 
 async function getMentors() {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
     const res = await fetch(`${base}/mentors`, { next: { revalidate: 60 } });
     if (!res.ok) return { mentors: [] };

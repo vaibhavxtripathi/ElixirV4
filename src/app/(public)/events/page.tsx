@@ -5,7 +5,7 @@ export const metadata = {
 };
 
 async function getEvents(page = 1, limit = 12) {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
     const res = await fetch(`${base}/events?page=${page}&limit=${limit}`, {
       next: { revalidate: 60 },

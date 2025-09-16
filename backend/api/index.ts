@@ -1,9 +1,13 @@
 import app from "../src/app";
+import serverless from "serverless-http";
 
-export default function handler(req: any, res: any) {
+const serverlessHandler = serverless(app);
+
+export default async function handler(req: any, res: any) {
+  // Vercel strips the /api prefix, so we need to re-add it for Express
   const originalUrl = req.url || "/";
   if (!originalUrl.startsWith("/api")) {
-    req.url = "/api" + (originalUrl === "/" ? "" : originalUrl);
+    req.url = `/api${originalUrl}`;
   }
-  return app(req, res);
+  return serverlessHandler(req, res);
 }
