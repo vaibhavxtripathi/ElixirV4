@@ -12,12 +12,23 @@ import testimonialsRoutes from "./routes/testimonials";
 const cors = require("cors");
 const morgan = require("morgan");
 
-
 const app = express();
 app.set("trust proxy", 1);
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") || "*" }));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN?.split(",") || [
+      "https://elixir-v4.vercel.app",
+      "https://elixir-v4-git-main.vercel.app",
+      "https://elixir-v4-git-develop.vercel.app",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 app.use(express.json());
