@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 export default function Navbar() {
   const router = useRouter();
-  const { data: me, isLoading } = useQuery({
+  const { data: me } = useQuery({
     queryKey: ["me"],
     queryFn: async () => (await api.get("/auth/me")).data,
     retry: false,
