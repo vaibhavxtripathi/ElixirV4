@@ -21,8 +21,8 @@ export const DesignYourWorkflowSkeleton = () => {
     <div className="mt-12 flex flex-col items-center">
       <div className="relative">
         <Card
-          title="Slack"
-          subtitle="#standups"
+          title="Elixir"
+          subtitle="#elixir"
           logo={<SlackLogo />}
           cta="Connected"
           tone="default"
@@ -34,24 +34,24 @@ export const DesignYourWorkflowSkeleton = () => {
 
       <div className="mt-12 flex flex-row gap-8">
         <Card
-          title="Anthropic"
-          subtitle="Claude 4"
+          title="GDG"
+          subtitle="Google"
           logo={<AnthropicLogo />}
           cta="UI Generator"
           tone="danger"
           delay={0.2}
         />
         <Card
-          title="Meta"
-          subtitle="Llama 2"
+          title="GFG"
+          subtitle="vibin'"
           logo={<MetaLogo />}
           cta="Text Generator"
           tone="default"
           delay={0.4}
         />
         <Card
-          title="OpenAI"
-          subtitle="GPT-5"
+          title="CodeChef"
+          subtitle="CodeChef"
           logo={<OpenAILogo />}
           cta="Code Generator"
           tone="success"
