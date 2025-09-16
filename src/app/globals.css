@@ -69,6 +69,7 @@
   }
   .theme {
     --animate-marquee: marquee var(--duration) linear infinite;
+    --animate-meteor: meteor 5s linear infinite;
   }
   :root {
     --background: 0 0% 100%;
@@ -210,6 +211,19 @@
   --color-dots: var(--dots);
   --color-line: var(--line);
   --color-pattern-fg: var(--pattern-fg);
+  @keyframes meteor {
+  0% {
+    transform: rotate(var(--angle)) translateX(0);
+    opacity: 1;
+    }
+  70% {
+    opacity: 1;
+    }
+  100% {
+    transform: rotate(var(--angle)) translateX(-500px);
+    opacity: 0;
+    }
+  }
 }
 
 /* Shadow utility */
