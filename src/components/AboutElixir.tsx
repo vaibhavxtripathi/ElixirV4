@@ -2,43 +2,9 @@
 
 import { Header } from "@/components/Header";
 import { motion } from "framer-motion";
-
-const features = [
-  {
-    title: "Multi-Provider Marketplace",
-    description:
-      "No vendor lock‑in, choose the best tools and mentors anytime.",
-    accent: "from-indigo-400/30 to-transparent",
-  },
-  {
-    title: "Fine‑Tuning & Training",
-    description:
-      "Grow through projects, workshops, and custom learning tracks.",
-    accent: "from-fuchsia-400/30 to-transparent",
-  },
-  {
-    title: "High Reliability",
-    description:
-      "Consistent events and support powered by a thriving community.",
-    accent: "from-violet-400/30 to-transparent",
-  },
-  {
-    title: "Cloud‑Native Mindset",
-    description:
-      "Ship fast with modern tooling, automation, and best practices.",
-    accent: "from-amber-300/25 to-transparent",
-  },
-  {
-    title: "Pre‑Configured Templates",
-    description: "Starter kits for hackathons, research, and product sprints.",
-    accent: "from-purple-400/30 to-transparent",
-  },
-  {
-    title: "Ready to Use",
-    description: "Jump in with curated resources, OSS workflows, and guidance.",
-    accent: "from-cyan-300/25 to-transparent",
-  },
-];
+import { features } from "@/data/features";
+import { cn } from "@/lib/utils";
+import { Scale } from "@/components/scale";
 
 export function AboutElixir() {
   return (
@@ -47,22 +13,28 @@ export function AboutElixir() {
         badge="About Elixir"
         title="All the community features you expect"
         subtitle="On your own path, with the strength of many"
+        variant="secondary"
       />
 
       <div className="mx-auto mt-12 grid w-[min(1200px,95%)] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {features.map((f, idx) => (
+        {features.map((f: any, idx: number) => (
           <motion.div
             key={f.title}
             initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, delay: idx * 0.05, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur"
+            className={cn(
+              "group relative overflow-hidden rounded-2xl border border-white/10 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]"
+            )}
           >
+            {/* Background layers */}
+            <Scale className="absolute inset-0 -z-10 opacity-0 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:scale-105" />
             <div
-              className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${f.accent}`}
+              className={`pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b ${f.accent}`}
             />
-            <div className="relative">
+            {/* Content above backgrounds */}
+            <div className="relative z-10">
               <h3 className="text-lg font-semibold text-white/90">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-white/70">
                 {f.description}
