@@ -19,10 +19,14 @@ export default function RegisterButton({ eventId }: { eventId: string }) {
       toast.success("Registered successfully");
     },
     onError: (e: unknown) => {
-      const msg = (e as any)?.response?.data?.message || "Failed to register";
+      const maybeAxiosError = e as {
+        response?: { status?: number; data?: { message?: string } };
+      };
+      const msg =
+        maybeAxiosError.response?.data?.message || "Failed to register";
       setErr(msg);
-      if ((e as any)?.response?.status === 401) router.push("/login");
-      if ((e as any)?.response?.status === 403)
+      if (maybeAxiosError.response?.status === 401) router.push("/login");
+      if (maybeAxiosError.response?.status === 403)
         toast.error("Only students can register.");
     },
   });

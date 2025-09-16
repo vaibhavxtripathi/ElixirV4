@@ -29,25 +29,42 @@ export default async function EventsPage({
     <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
       <h1 className="text-2xl font-bold mb-4">Events</h1>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((e: any) => (
-          <div key={e.id} className="flex items-center justify-center">
-            <CardFlip
-              title={e.title || e.name || "Event"}
-              subtitle={e.organizer || e.club?.name || e.location || ""}
-              description={e.description || ""}
-              features={
-                [
-                  e.date ? new Date(e.date).toLocaleString() : undefined,
-                  e.location,
-                  e.category,
-                  e.speakers?.[0]?.name,
-                ].filter(Boolean) as string[]
-              }
-              eventId={String(e.id)}
-              imageUrl={e.imageUrl || e.image || e.banner || e.cover}
-            />
-          </div>
-        ))}
+        {events.map(
+          (e: {
+            id: string | number;
+            title?: string;
+            name?: string;
+            organizer?: string;
+            club?: { name?: string };
+            location?: string;
+            description?: string;
+            date?: string;
+            category?: string;
+            speakers?: Array<{ name?: string }>;
+            imageUrl?: string;
+            image?: string;
+            banner?: string;
+            cover?: string;
+          }) => (
+            <div key={e.id} className="flex items-center justify-center">
+              <CardFlip
+                title={e.title || e.name || "Event"}
+                subtitle={e.organizer || e.club?.name || e.location || ""}
+                description={e.description || ""}
+                features={
+                  [
+                    e.date ? new Date(e.date).toLocaleString() : undefined,
+                    e.location,
+                    e.category,
+                    e.speakers?.[0]?.name,
+                  ].filter(Boolean) as string[]
+                }
+                eventId={String(e.id)}
+                imageUrl={e.imageUrl ?? e.image ?? e.banner ?? e.cover ?? ""}
+              />
+            </div>
+          )
+        )}
       </div>
 
       <div className="flex items-center gap-2 mt-8">

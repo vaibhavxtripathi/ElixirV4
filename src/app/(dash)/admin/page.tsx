@@ -108,10 +108,14 @@ export default function AdminDashboard() {
       setBlogForm({ title: "", content: "", imageUrl: "", status: "DRAFT" });
       toast.success("Blog created");
     },
-    onError: (e: unknown) =>
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(
-        (e as any)?.response?.data?.message || "Failed to create blog"
-      ),
+        maybeAxiosError.response?.data?.message || "Failed to create blog"
+      );
+    },
   });
   const qc = useQueryClient();
   const { data, isLoading, error } = useQuery({
@@ -154,8 +158,14 @@ export default function AdminDashboard() {
       setMentorForm({ name: "", expertise: "", imageUrl: "", clubId: "" });
       toast.success("Mentor created");
     },
-    onError: (e: any) =>
-      toast.error(e?.response?.data?.message || "Failed to create mentor"),
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to create mentor"
+      );
+    },
   });
 
   const changeRole = useMutation({
@@ -170,10 +180,14 @@ export default function AdminDashboard() {
       qc.invalidateQueries({ queryKey: ["users-list"] });
       toast.success("Role updated");
     },
-    onError: (e: unknown) =>
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(
-        (e as any)?.response?.data?.message || "Failed to change role"
-      ),
+        maybeAxiosError.response?.data?.message || "Failed to change role"
+      );
+    },
   });
 
   const assignClub = useMutation({
@@ -188,8 +202,14 @@ export default function AdminDashboard() {
       qc.invalidateQueries({ queryKey: ["users-list"] });
       toast.success("Assigned to club");
     },
-    onError: (e: unknown) =>
-      toast.error((e as any)?.response?.data?.message || "Failed to assign"),
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to assign"
+      );
+    },
   });
 
   const [clubSel, setClubSel] = useState<Record<string, string>>({});
@@ -237,7 +257,8 @@ export default function AdminDashboard() {
             <div>
               <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
               <p className="text-white/60">
-                Welcome back! Here's what's happening with your platform.
+                Welcome back! Here&apos;s what&apos;s happening with your
+                platform.
               </p>
             </div>
             <div className="flex items-center gap-3">

@@ -16,6 +16,7 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export interface CardFlipProps {
   title: string;
@@ -70,10 +71,12 @@ export default function CardFlip({
           )}
         >
           {imageUrl && (
-            <img
+            <Image
               src={imageUrl}
               alt={title}
               className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           )}
           {!imageUrl && (

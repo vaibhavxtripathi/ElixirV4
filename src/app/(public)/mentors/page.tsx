@@ -20,30 +20,41 @@ export default async function MentorsPage() {
     <main className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Mentors</h1>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {mentors.map((m: any) => (
-          <CometCard key={m.id} className="rounded-2xl">
-            <div className="relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-900/5 p-5 dark:bg-blue-900/5">
-              <div className="relative h-40 w-full overflow-hidden rounded-xl">
-                <img
-                  src={m.imageUrl || m.avatar || "/avatar.png"}
-                  alt={m.name}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="mt-4">
-                <h3 className="text-lg font-semibold text-white/90">
-                  {m.name}
-                </h3>
-                <p className="mt-1 text-sm text-white/70">
-                  {m.expertise || m.title || m.role}
-                </p>
-                <div className="mt-2 text-xs text-white/60">
-                  {m.club?.name ? `Club: ${m.club.name}` : null}
+        {mentors.map(
+          (m: {
+            id: string | number;
+            imageUrl?: string;
+            avatar?: string;
+            name: string;
+            expertise?: string;
+            title?: string;
+            role?: string;
+            club?: { name?: string };
+          }) => (
+            <CometCard key={m.id} className="rounded-2xl">
+              <div className="relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-900/5 p-5 dark:bg-blue-900/5">
+                <div className="relative h-40 w-full overflow-hidden rounded-xl">
+                  <img
+                    src={m.imageUrl || m.avatar || "/avatar.png"}
+                    alt={m.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold text-white/90">
+                    {m.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-white/70">
+                    {m.expertise || m.title || m.role}
+                  </p>
+                  <div className="mt-2 text-xs text-white/60">
+                    {m.club?.name ? `Club: ${m.club.name}` : null}
+                  </div>
                 </div>
               </div>
-            </div>
-          </CometCard>
-        ))}
+            </CometCard>
+          )
+        )}
         {mentors.length === 0 && (
           <p className="col-span-full text-white/60">No mentors yet.</p>
         )}

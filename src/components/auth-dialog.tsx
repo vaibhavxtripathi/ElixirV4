@@ -79,8 +79,11 @@ export default function AuthDialog({
       setOpen(false);
       router.push(roleToDashboard(me.data.user?.role));
     } catch (e: unknown) {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
       setErr(
-        (e as any)?.response?.data?.message ||
+        maybeAxiosError.response?.data?.message ||
           (mode === "login" ? "Login failed" : "Registration failed")
       );
     }

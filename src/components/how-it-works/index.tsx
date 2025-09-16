@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/container";
 import { PixelatedCanvas } from "@/components/pixelated-canvas";
 import { cn } from "@/lib/utils";
@@ -19,32 +19,35 @@ type Tab = {
 };
 
 export const HowItWorks = () => {
-  const tabs = [
-    {
-      title: "Install Jibril sensor",
-      description:
-        "Add our lightweight eBPF sensor to your GitHub Actions or container runtime in under 5 minutes",
-      icon: FirstIcon,
-      id: "install",
-      skeleton: <DesignYourWorkflowSkeleton />,
-    },
-    {
-      title: "Detect abnormal behavior",
-      description:
-        "Monitor runtime execution for malicious patterns like reverse shells, data exfiltration, and cryptominers",
-      icon: SecondIcon,
-      id: "detect",
-      skeleton: <ConnectYourTooklsSkeleton />,
-    },
-    {
-      title: "Block threats in real-time",
-      description:
-        "Automatically terminate malicious processes and prevent supply chain attacks before damage occurs",
-      icon: ThirdIcon,
-      id: "block",
-      skeleton: <DeployAndScaleSkeleton />,
-    },
-  ];
+  const tabs = useMemo(
+    () => [
+      {
+        title: "Install Jibril sensor",
+        description:
+          "Add our lightweight eBPF sensor to your GitHub Actions or container runtime in under 5 minutes",
+        icon: FirstIcon,
+        id: "install",
+        skeleton: <DesignYourWorkflowSkeleton />,
+      },
+      {
+        title: "Detect abnormal behavior",
+        description:
+          "Monitor runtime execution for malicious patterns like reverse shells, data exfiltration, and cryptominers",
+        icon: SecondIcon,
+        id: "detect",
+        skeleton: <ConnectYourTooklsSkeleton />,
+      },
+      {
+        title: "Block threats in real-time",
+        description:
+          "Automatically terminate malicious processes and prevent supply chain attacks before damage occurs",
+        icon: ThirdIcon,
+        id: "block",
+        skeleton: <DeployAndScaleSkeleton />,
+      },
+    ],
+    []
+  );
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [showGrid, setShowGrid] = useState(false);
@@ -60,7 +63,7 @@ export const HowItWorks = () => {
     }, DURATION);
 
     return () => clearInterval(interval);
-  }, [activeTab]);
+  }, [activeTab, tabs]);
 
   // Toggle grid visibility after canvas animation completes for the active item
   useEffect(() => {
@@ -83,7 +86,7 @@ export const HowItWorks = () => {
           <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block z-50" />
           {/* Left Column - Feature Cards */}
           <div className="hidden divide-y divide-white/10 lg:block">
-            {tabs.map((tab, index) => (
+            {tabs.map((tab) => (
               <button
                 key={tab.title}
                 className={cn(
@@ -98,9 +101,11 @@ export const HowItWorks = () => {
                 {tab.id === activeTab.id && showGrid && (
                   <div
                     className="pointer-events-none absolute inset-0 z-0 opacity-30 bg-[image:repeating-linear-gradient(0deg,var(--grid-color)_0,var(--grid-color)_1px,transparent_1px,transparent_8px),repeating-linear-gradient(90deg,var(--grid-color)_0,var(--grid-color)_1px,transparent_1px,transparent_8px)]"
-                    style={{
-                      ["--grid-color" as any]: "rgba(255,255,255,0.18)",
-                    }}
+                    style={
+                      {
+                        ["--grid-color"]: "rgba(255,255,255,0.18)",
+                      } as React.CSSProperties
+                    }
                   />
                 )}
                 {tab.id === activeTab.id && (
@@ -146,7 +151,11 @@ export const HowItWorks = () => {
             {showGrid && (
               <div
                 className="pointer-events-none absolute inset-0 z-0 opacity-40 bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
-                style={{ ["--color-dots" as any]: "rgba(255,255,255,0.28)" }}
+                style={
+                  {
+                    ["--color-dots"]: "rgba(255,255,255,0.28)",
+                  } as React.CSSProperties
+                }
               />
             )}
             {/* Consistent vertical vignette */}

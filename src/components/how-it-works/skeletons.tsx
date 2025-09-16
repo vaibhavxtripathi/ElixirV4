@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DivideX } from "../divide";
 import { motion, useMotionValue, useTransform } from "motion/react";
+import type { MotionValue } from "motion/react";
 import { Card } from "../tech-card";
 import { Scale } from "../scale";
 import { LogoSVG } from "../logo";
@@ -76,7 +77,7 @@ const ScrollingDeployCard = ({
   card,
 }: {
   index: number;
-  y: ReturnType<typeof useMotionValue>;
+  y: MotionValue<number>;
   offset: number;
   itemHeight: number;
   card: DeployCardData;
@@ -481,7 +482,6 @@ const DeployCard = ({
 };
 
 const LeftSVG = (props: React.SVGProps<SVGSVGElement>) => {
-  const _path = `M127.457 0.0891113L127.576 95.9138L127.457 0.0891113ZM-0.0609919 96.0731L-0.160632 16.2484C-0.172351 6.85959 7.4293 -0.761068 16.8181 -0.772787L16.8206 1.22721C8.53637 1.23755 1.82903 7.96166 1.83937 16.2459L1.93901 96.0706L-0.0609919 96.0731ZM-0.160632 16.2484C-0.172351 6.85959 7.4293 -0.761068 16.8181 -0.772787L127.455 -0.910888L127.458 1.08911L16.8206 1.22721C8.53637 1.23755 1.82903 7.96166 1.83937 16.2459L-0.160632 16.2484ZM127.576 95.9138L0.939007 96.0718L127.576 95.9138Z`;
   return (
     <motion.svg
       width="128"
@@ -546,7 +546,6 @@ const LeftSVG = (props: React.SVGProps<SVGSVGElement>) => {
 };
 
 const RightSVG = (props: React.SVGProps<SVGSVGElement>) => {
-  const _PATH = `M0.619629 0L0.500018 95.8247L0.619629 0ZM128.137 95.984L128.237 16.1593C128.249 6.77047 120.647 -0.850179 111.258 -0.861898L111.256 1.1381C119.54 1.14844 126.247 7.87255 126.237 16.1568L126.137 95.9815L128.137 95.984ZM128.237 16.1593C128.249 6.77047 120.647 -0.850179 111.258 -0.861898L0.620877 -0.999999L0.618381 0.999999L111.256 1.1381C119.54 1.14844 126.247 7.87255 126.237 16.1568L128.237 16.1593ZM0.500018 95.8247L127.137 95.9827L0.500018 95.8247Z`;
   return (
     <motion.svg
       width="150"

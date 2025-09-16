@@ -3,12 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   eslint: {
-    // Allow production builds to successfully complete even if there are ESLint errors.
-    ignoreDuringBuilds: true,
+    // Enforce linting during builds
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    // Allow production builds to successfully complete even if there are TypeScript errors.
-    ignoreBuildErrors: true,
+    // Enforce typechecking during builds
+    ignoreBuildErrors: false,
   },
 };
 

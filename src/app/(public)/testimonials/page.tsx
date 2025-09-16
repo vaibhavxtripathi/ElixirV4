@@ -18,15 +18,22 @@ export default async function TestimonialsPage() {
     <main className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Testimonials</h1>
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {testimonials.map((testimonial: any) => (
-          <div key={testimonial.id} className="border rounded p-6">
-            <h3 className="text-lg font-semibold mb-2">{testimonial.name}</h3>
-            <p className="text-gray-600 mb-3">{testimonial.content}</p>
-            <div className="text-sm text-gray-500">
-              Batch Year: {testimonial.batchYear}
+        {testimonials.map(
+          (testimonial: {
+            id: string | number;
+            name: string;
+            content: string;
+            batchYear?: string | number;
+          }) => (
+            <div key={testimonial.id} className="border rounded p-6">
+              <h3 className="text-lg font-semibold mb-2">{testimonial.name}</h3>
+              <p className="text-gray-600 mb-3">{testimonial.content}</p>
+              <div className="text-sm text-gray-500">
+                Batch Year: {testimonial.batchYear}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
         {testimonials.length === 0 && (
           <p className="text-gray-600 col-span-full">No testimonials yet.</p>
         )}

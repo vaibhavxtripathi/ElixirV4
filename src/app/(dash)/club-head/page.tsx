@@ -57,8 +57,14 @@ export default function ClubHeadDashboard() {
       qc.invalidateQueries({ queryKey: ["events-list-own"] });
       toast.success("Event created");
     },
-    onError: (e: any) =>
-      toast.error(e?.response?.data?.message || "Failed to create event"),
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to create event"
+      );
+    },
   });
 
   return (
