@@ -11,7 +11,6 @@ import { validate } from "../middleware/validate";
 import {
   changeRoleSchema,
   assignClubSchema,
-  userListSchema,
 } from "../validators/users";
 import { idParamSchema } from "../validators/blogs";
 import { asyncHandler } from "../utils/asyncHandler";
