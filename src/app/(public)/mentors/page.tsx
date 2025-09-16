@@ -11,6 +11,7 @@ async function getMentors() {
 }
 
 import { CometCard } from "@/components/ui/comet-card";
+import Image from "next/image";
 
 export default async function MentorsPage() {
   const data = await getMentors();
@@ -34,10 +35,12 @@ export default async function MentorsPage() {
             <CometCard key={m.id} className="rounded-2xl">
               <div className="relative overflow-hidden rounded-2xl border border-blue-500/10 bg-blue-900/5 p-5 dark:bg-blue-900/5">
                 <div className="relative h-40 w-full overflow-hidden rounded-xl">
-                  <img
+                  <Image
                     src={m.imageUrl || m.avatar || "/avatar.png"}
                     alt={m.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
                 <div className="mt-4">
