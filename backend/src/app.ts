@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth";
@@ -13,9 +12,9 @@ import testimonialsRoutes from "./routes/testimonials";
 const cors = require("cors");
 const morgan = require("morgan");
 
-dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") || "*" }));
@@ -27,16 +26,16 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Server is working!" });
 });
 
-app.get("/api/test", (req, res) => {
+app.get("/test", (req, res) => {
   res.json({ message: "API is working!" });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/events", eventsRoutes);
-app.use("/api/clubs", clubsRoutes);
-app.use("/api/blogs", blogsRoutes);
-app.use("/api/mentors", mentorsRoutes);
-app.use("/api/users", usersRoutes);
-app.use("/api/testimonials", testimonialsRoutes);
+app.use("/auth", authRoutes);
+app.use("/events", eventsRoutes);
+app.use("/clubs", clubsRoutes);
+app.use("/blogs", blogsRoutes);
+app.use("/mentors", mentorsRoutes);
+app.use("/users", usersRoutes);
+app.use("/testimonials", testimonialsRoutes);
 
 export default app;
