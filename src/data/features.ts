@@ -1,36 +1,38 @@
 export const features = [
-    {
-      title: "Multi-Provider Marketplace",
-      description:
-        "No vendor lock‑in, choose the best tools and mentors anytime.",
-      accent: "from-indigo-400/30 to-transparent",
-    },
-    {
-      title: "Fine‑Tuning & Training",
-      description:
-        "Grow through projects, workshops, and custom learning tracks.",
-      accent: "from-fuchsia-400/30 to-transparent",
-    },
-    {
-      title: "High Reliability",
-      description:
-        "Consistent events and support powered by a thriving community.",
-      accent: "from-violet-400/30 to-transparent",
-    },
-    {
-      title: "Cloud‑Native Mindset",
-      description:
-        "Ship fast with modern tooling, automation, and best practices.",
-      accent: "from-amber-300/25 to-transparent",
-    },
-    {
-      title: "Pre‑Configured Templates",
-      description: "Starter kits for hackathons, research, and product sprints.",
-      accent: "from-purple-400/30 to-transparent",
-    },
-    {
-      title: "Ready to Use",
-      description: "Jump in with curated resources, OSS workflows, and guidance.",
-      accent: "from-cyan-300/25 to-transparent",
-    },
-  ];
+  {
+    title: "Three Specialized Clubs",
+    description:
+      "Join GFG, GDG, or CodeChef clubs based on your interests and career goals.",
+    accent: "from-indigo-400/30 to-transparent",
+  },
+  {
+    title: "5000+ Active Members",
+    description:
+      "Connect with a diverse community of developers, students, and tech professionals.",
+    accent: "from-fuchsia-400/30 to-transparent",
+  },
+  {
+    title: "Regular Events & Workshops",
+    description:
+      "Attend hackathons, coding competitions, and skill-building workshops regularly.",
+    accent: "from-violet-400/30 to-transparent",
+  },
+  {
+    title: "Mentorship Program",
+    description:
+      "Get guidance from experienced professionals and help others grow in their journey.",
+    accent: "from-amber-300/25 to-transparent",
+  },
+  {
+    title: "Project Collaboration",
+    description:
+      "Work on real-world projects with fellow community members and build your portfolio.",
+    accent: "from-purple-400/30 to-transparent",
+  },
+  {
+    title: "Career Opportunities",
+    description:
+      "Access job postings, internship opportunities, and networking events.",
+    accent: "from-cyan-300/25 to-transparent",
+  },
+];

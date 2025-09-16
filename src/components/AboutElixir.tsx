@@ -11,8 +11,8 @@ export function AboutElixir() {
     <section className="relative py-24 md:py-28">
       <Header
         badge="About Elixir"
-        title="All the community features you expect"
-        subtitle="On your own path, with the strength of many"
+        title="Everything you need to grow in tech"
+        subtitle="Connect, learn, and build with 5000+ passionate developers"
         variant="secondary"
       />
 

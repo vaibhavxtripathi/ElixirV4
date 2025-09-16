@@ -55,8 +55,8 @@ export default async function HomePage() {
     <main className="relative min-h-[88vh] text-white">
       <Header
         badge="Elixir Tech Community"
-        title="Think better with Elixir"
-        subtitle="We build the future of technology with you"
+        title="Connect, Learn, and Grow Together"
+        subtitle="Join 5000+ developers across GFG, GDG, and CodeChef clubs"
         variant="default"
       />
 

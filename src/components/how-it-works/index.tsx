@@ -22,27 +22,27 @@ export const HowItWorks = () => {
   const tabs = useMemo(
     () => [
       {
-        title: "Install Jibril sensor",
+        title: "Join our community",
         description:
-          "Add our lightweight eBPF sensor to your GitHub Actions or container runtime in under 5 minutes",
+          "Connect with 5000+ tech enthusiasts across our three specialized clubs: GFG, GDG, and CodeChef",
         icon: FirstIcon,
-        id: "install",
+        id: "join",
         skeleton: <DesignYourWorkflowSkeleton />,
       },
       {
-        title: "Detect abnormal behavior",
+        title: "Share ideas & collaborate",
         description:
-          "Monitor runtime execution for malicious patterns like reverse shells, data exfiltration, and cryptominers",
+          "Participate in discussions, share your projects, and collaborate with like-minded developers and tech professionals",
         icon: SecondIcon,
-        id: "detect",
+        id: "collaborate",
         skeleton: <ConnectYourTooklsSkeleton />,
       },
       {
-        title: "Block threats in real-time",
+        title: "Grow together",
         description:
-          "Automatically terminate malicious processes and prevent supply chain attacks before damage occurs",
+          "Attend workshops, hackathons, and events to learn new skills, build connections, and advance your tech career",
         icon: ThirdIcon,
-        id: "block",
+        id: "grow",
         skeleton: <DeployAndScaleSkeleton />,
       },
     ],
@@ -76,8 +76,8 @@ export const HowItWorks = () => {
       <Container>
         <Header
           badge="How it works?"
-          title="What is Elixir and how it works"
-          subtitle="What is Elixir and how it works"
+          title="Join the Elixir Tech Community"
+          subtitle="Three simple steps to connect with fellow developers and grow your skills"
           variant="secondary"
         />
 
