@@ -5,9 +5,13 @@ export const metadata = {
 
 async function getMentors() {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-  const res = await fetch(`${base}/mentors`, { next: { revalidate: 60 } });
-  if (!res.ok) throw new Error("Failed to fetch mentors");
-  return res.json();
+  try {
+    const res = await fetch(`${base}/mentors`, { next: { revalidate: 60 } });
+    if (!res.ok) return { mentors: [] };
+    return res.json();
+  } catch {
+    return { mentors: [] };
+  }
 }
 
 import { CometCard } from "@/components/ui/comet-card";

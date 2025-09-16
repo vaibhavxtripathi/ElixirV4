@@ -5,9 +5,15 @@ export const metadata = {
 
 async function getTestimonials() {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-  const res = await fetch(`${base}/testimonials`, { next: { revalidate: 60 } });
-  if (!res.ok) throw new Error("Failed to fetch testimonials");
-  return res.json();
+  try {
+    const res = await fetch(`${base}/testimonials`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return { testimonials: [] };
+    return res.json();
+  } catch {
+    return { testimonials: [] };
+  }
 }
 
 export default async function TestimonialsPage() {

@@ -5,9 +5,13 @@ export const metadata = {
 
 async function getBlogs() {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
-  const res = await fetch(`${base}/blogs`, { next: { revalidate: 60 } });
-  if (!res.ok) throw new Error("Failed to fetch blogs");
-  return res.json();
+  try {
+    const res = await fetch(`${base}/blogs`, { next: { revalidate: 60 } });
+    if (!res.ok) return { blogs: [] };
+    return res.json();
+  } catch {
+    return { blogs: [] };
+  }
 }
 
 type Blog = {
