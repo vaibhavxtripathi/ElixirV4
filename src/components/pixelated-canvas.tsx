@@ -43,7 +43,6 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
         const parent = canvasRef.current.parentElement;
         const width = parent.clientWidth;
         const height = parent.clientHeight;
-        console.log("PixelatedCanvas dimensions:", { width, height });
         setDimensions({ width, height });
       }
     };
