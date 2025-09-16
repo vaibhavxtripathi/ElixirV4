@@ -57,6 +57,7 @@ export default async function HomePage() {
         badge="Elixir Tech Community"
         title="Think better with Elixir"
         subtitle="We build the future of technology with you"
+        variant="default"
       />
 
       {/* Showcase layout replica (chrome only, no content) */}
@@ -68,13 +69,13 @@ export default async function HomePage() {
         <HowItWorks />
       </div>
 
-
       <section>
         <TestimonialsSection
           badge="Testimonials"
           headline="What our alumni say"
           subtext="Real voices from the Elixir community."
           testimonials={testimonials}
+          variant="secondary"
         />
       </section>
     </main>
