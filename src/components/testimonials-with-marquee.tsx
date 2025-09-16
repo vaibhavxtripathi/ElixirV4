@@ -19,6 +19,7 @@ interface TestimonialsSectionProps {
     href?: string;
   }>;
   className?: string;
+  variant?: "default" | "secondary";
 }
 
 export function TestimonialsSection({
@@ -27,6 +28,7 @@ export function TestimonialsSection({
   subtext,
   testimonials,
   className,
+  variant,
 }: TestimonialsSectionProps) {
   // Create infinite varied testimonials
   const createInfiniteTestimonials = (
@@ -63,7 +65,7 @@ export function TestimonialsSection({
       variants={containerStagger(0.1, 0)}
     >
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-[1.5rem] text-center">
-        <Header badge={badge} title={headline} subtitle={subtext} />
+        <Header badge={badge} title={headline} subtitle={subtext} variant={variant || "default"} />
 
         {/* Row 1 - Infinite scroll */}
         <motion.div
