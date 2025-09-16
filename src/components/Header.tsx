@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { containerStagger, fadeInUp } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export const Header = ({
   badge,
@@ -30,14 +31,20 @@ export const Header = ({
       </motion.div>
 
       <motion.h1
-        className="mt-6 text-center text-transparent text-5xl leading-tight tracking-tight md:text-7xl bg-clip-text bg-gradient-to-b from-white to-white/60"
+        className={cn(
+          "mt-6 text-center text-transparent text-5xl leading-tight tracking-tight md:text-7xl bg-clip-text bg-gradient-to-b from-white to-white/60",
+          variant === "secondary" && "text-3xl md:text-5xl"
+        )}
         variants={fadeInUp}
       >
         {title}
       </motion.h1>
 
       <motion.p
-        className="mt-4 text-center text-lg text-white/70 md:text-xl"
+        className={cn(
+          "mt-4 text-center text-xl text-white/70 md:text-2xl",
+          variant === "secondary" && "text-sm md:text-base"
+        )}
         variants={fadeInUp}
       >
         {subtitle}
