@@ -13,27 +13,39 @@ async function getEvents(page = 1, limit = 12) {
   return res.json();
 }
 
-import EventCard from "@/components/EventCards";
-import RegisterButton from "@/components/RegisterButton";
+import CardFlip from "@/components/kokonutui/card-flip";
 
 export default async function EventsPage({
   searchParams,
 }: {
   searchParams: { page?: string };
 }) {
-  const page = Number(searchParams?.page || 1);
+  const page = Number((await searchParams?.page) || 1);
   const data = await getEvents(page, 12);
   const events = data.events || [];
   const pagination = data.pagination || { page, pages: 1 };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
+    <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
       <h1 className="text-2xl font-bold mb-4">Events</h1>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {events.map((e: any) => (
-          <div key={e.id} className="rounded-lg border p-4">
-            <EventCard event={e} />
-            <RegisterButton eventId={e.id} />
+          <div key={e.id} className="flex items-center justify-center">
+            <CardFlip
+              title={e.title || e.name || "Event"}
+              subtitle={e.organizer || e.club?.name || e.location || ""}
+              description={e.description || ""}
+              features={
+                [
+                  e.date ? new Date(e.date).toLocaleString() : undefined,
+                  e.location,
+                  e.category,
+                  e.speakers?.[0]?.name,
+                ].filter(Boolean) as string[]
+              }
+              eventId={String(e.id)}
+              imageUrl={e.imageUrl || e.image || e.banner || e.cover}
+            />
           </div>
         ))}
       </div>
