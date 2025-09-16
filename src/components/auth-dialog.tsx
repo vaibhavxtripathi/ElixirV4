@@ -68,22 +68,35 @@ export default function AuthDialog({
   const onSubmit = async (data: LoginData | RegisterData) => {
     setErr(null);
     try {
+      console.log("Attempting auth with:", {
+        mode,
+        data,
+        baseURL: api.defaults.baseURL,
+      });
+
       if (mode === "login") {
         const res = await api.post("/auth/login", data as LoginData);
+        console.log("Login response:", res.data);
         setToken(res.data.token);
       } else {
         const res = await api.post("/auth/register", data as RegisterData);
+        console.log("Register response:", res.data);
         setToken(res.data.token);
       }
       const me = await api.get("/auth/me");
+      console.log("Me response:", me.data);
       setOpen(false);
       router.push(roleToDashboard(me.data.user?.role));
     } catch (e: unknown) {
+      console.error("Auth error:", e);
       const maybeAxiosError = e as {
         response?: { data?: { message?: string } };
+        message?: string;
+        code?: string;
       };
       setErr(
         maybeAxiosError.response?.data?.message ||
+          maybeAxiosError.message ||
           (mode === "login" ? "Login failed" : "Registration failed")
       );
     }
