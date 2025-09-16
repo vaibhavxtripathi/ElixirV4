@@ -16,19 +16,20 @@ const app = express();
 app.set("trust proxy", 1);
 
 app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || [
-      "https://elixir-v4.vercel.app",
-      "https://elixir-v4-git-main.vercel.app",
-      "https://elixir-v4-git-develop.vercel.app",
-      "http://localhost:3000",
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// CORS middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://elixir-v4.vercel.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 app.use(express.json());
