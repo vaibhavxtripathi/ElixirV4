@@ -194,10 +194,15 @@ export default function CardFlip({
                   await api.post(`/events/${eventId}/register`);
                   toast.success("Registered successfully");
                   router.push("/student");
-                } catch (e: any) {
-                  const status = e?.response?.status;
+                } catch (e) {
+                  // Narrow axios-like errors
+                  const maybeAxiosError = e as {
+                    response?: { status?: number; data?: { message?: string } };
+                  };
+                  const status = maybeAxiosError.response?.status;
                   const msg =
-                    e?.response?.data?.message || "Failed to register";
+                    maybeAxiosError.response?.data?.message ||
+                    "Failed to register";
                   if (status === 401) {
                     router.push("/login");
                     return;

@@ -109,7 +109,7 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
         cancelAnimationFrame(animationId);
       }
     };
-  }, [isActive, dimensions]);
+  }, [isActive, dimensions, duration, SQUARE_SIZE]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -151,7 +151,7 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       }
     }
     ctx.globalAlpha = 1;
-  }, [filledSquares, dimensions, fillColor, backgroundColor]);
+  }, [filledSquares, dimensions, fillColor, backgroundColor, SQUARE_SIZE]);
 
   return (
     <canvas
