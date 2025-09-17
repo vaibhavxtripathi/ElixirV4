@@ -30,10 +30,10 @@ export function TestimonialsSection({
   className,
   variant,
 }: TestimonialsSectionProps) {
-  // Create infinite varied testimonials
+  // Create infinite varied testimonials - reduced count for better performance
   const createInfiniteTestimonials = (
     baseTestimonials: typeof testimonials,
-    count: number = 20
+    count: number = 8 // Reduced from 20 to 8
   ) => {
     if (baseTestimonials.length === 0) return [];
 
@@ -49,8 +49,8 @@ export function TestimonialsSection({
     return result;
   };
 
-  const infiniteTestimonials1 = createInfiniteTestimonials(testimonials, 20);
-  const infiniteTestimonials2 = createInfiniteTestimonials(testimonials, 20);
+  const infiniteTestimonials1 = createInfiniteTestimonials(testimonials, 8);
+  const infiniteTestimonials2 = createInfiniteTestimonials(testimonials, 8);
 
   return (
     <motion.section
@@ -65,7 +65,12 @@ export function TestimonialsSection({
       variants={containerStagger(0.1, 0)}
     >
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-[1.5rem] text-center">
-        <Header badge={badge} title={headline} subtitle={subtext} variant={variant || "default"} />
+        <Header
+          badge={badge}
+          title={headline}
+          subtitle={subtext}
+          variant={variant || "default"}
+        />
 
         {/* Row 1 - Infinite scroll */}
         <motion.div
