@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/container";
 import { PixelatedCanvas } from "@/components/pixelated-canvas";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ConnectYourTooklsSkeleton,
   DeployAndScaleSkeleton,
@@ -52,7 +52,7 @@ export const HowItWorks = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [showGrid, setShowGrid] = useState(false);
 
-  const DURATION = 8000;
+  const DURATION = 12000; // Increased from 8000 to reduce frequency
   const GRID_DELAY = 2500; // wait for pixelated canvas animation
 
   useEffect(() => {
