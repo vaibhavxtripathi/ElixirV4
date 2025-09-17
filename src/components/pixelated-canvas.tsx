@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, memo } from "react";
 
 interface PixelatedCanvasProps {
   isActive: boolean;
@@ -11,7 +11,7 @@ interface PixelatedCanvasProps {
   backgroundColor?: string;
 }
 
-export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
+const PixelatedCanvasComponent: React.FC<PixelatedCanvasProps> = ({
   isActive,
   className = "",
   size = 4,
@@ -69,8 +69,11 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
 
     if (totalSquares === 0) return;
 
-    const allSquares = Array.from({ length: totalSquares }, (_, i) => i);
+    // Limit total squares for better performance
+    const maxSquares = 2000;
+    const limitedSquares = Math.min(totalSquares, maxSquares);
 
+    const allSquares = Array.from({ length: limitedSquares }, (_, i) => i);
     const shuffledSquares = [...allSquares].sort(() => Math.random() - 0.5);
 
     const fillDuration = duration;
@@ -94,9 +97,13 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       }
     };
 
-    animationId = requestAnimationFrame(animate);
+    // Use setTimeout instead of requestAnimationFrame for better performance
+    const timeoutId = setTimeout(() => {
+      animationId = requestAnimationFrame(animate);
+    }, 16);
 
     return () => {
+      clearTimeout(timeoutId);
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
@@ -153,3 +160,6 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
     />
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const PixelatedCanvas = memo(PixelatedCanvasComponent);
