@@ -9,8 +9,8 @@ import {
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DivideX } from "../divide";
-import { motion, useMotionValue, useTransform } from "motion/react";
-import type { MotionValue } from "motion/react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import type { MotionValue } from "framer-motion";
 import { Card } from "../tech-card";
 import { Scale } from "../scale";
 import { LogoSVG } from "../logo";
