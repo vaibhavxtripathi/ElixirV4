@@ -2,7 +2,15 @@ import { TestimonialsSection } from "@/components/testimonials-with-marquee";
 import { Header } from "@/components/Header";
 import { DemoSection } from "@/components/DemoSection";
 import { AboutElixir } from "@/components/AboutElixir";
-import { HowItWorks } from "@/components/how-it-works";
+import dynamic from "next/dynamic";
+
+// Lazy load heavy components
+const HowItWorks = dynamic(
+  () => import("@/components/how-it-works").then((mod) => mod.HowItWorks),
+  {
+    loading: () => <div className="h-96 animate-pulse bg-white/5 rounded-lg" />,
+  }
+);
 
 interface BackendTestimonial {
   id: string | number;
@@ -24,25 +32,81 @@ export const metadata = {
 
 async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+  // Static fallback data
+  const fallbackData = [
+    {
+      id: 1,
+      name: "John Doe",
+      content: "Elixir helped me land my dream job at Google!",
+      batchYear: "2023",
+      avatar: "/avatar.png",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      content: "The community support here is incredible.",
+      batchYear: "2022",
+      avatar: "/avatar.png",
+    },
+    {
+      id: 3,
+      name: "Mike Johnson",
+      content: "Best tech community I've ever been part of.",
+      batchYear: "2024",
+      avatar: "/avatar.png",
+    },
+    {
+      id: 4,
+      name: "Sarah Wilson",
+      content: "Amazing workshops and networking opportunities!",
+      batchYear: "2023",
+      avatar: "/avatar.png",
+    },
+    {
+      id: 5,
+      name: "Alex Chen",
+      content: "The mentorship program changed my career trajectory.",
+      batchYear: "2022",
+      avatar: "/avatar.png",
+    },
+  ];
+
   try {
+    // Very short timeout - 2 seconds max
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
     const res = await fetch(`${base}/testimonials`, {
       next: { revalidate: 60 },
+      signal: controller.signal,
     });
-    if (!res.ok) return [];
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      console.log("API returned error, using fallback data");
+      return fallbackData;
+    }
+
     const data = await res.json();
     const items: unknown = data.items ?? data.testimonials ?? [];
-    if (Array.isArray(items)) {
+    if (Array.isArray(items) && items.length > 0) {
+      console.log("Using real API data");
       return items as BackendTestimonial[];
     }
-    return [];
-  } catch {
-    return [];
+
+    console.log("API returned empty data, using fallback");
+    return fallbackData;
+  } catch (error) {
+    console.log("API call failed, using fallback data:", error.message);
+    return fallbackData;
   }
 }
 
 export default async function HomePage() {
   const testimonialsRaw = await getHomeTestimonials();
-  const testimonials = testimonialsRaw.map((t) => ({
+  const testimonials = (testimonialsRaw || []).map((t) => ({
     author: {
       name: t.name ?? "Anonymous",
       handle: t.batchYear ? `Batch ${t.batchYear}` : t.handle ?? "",
