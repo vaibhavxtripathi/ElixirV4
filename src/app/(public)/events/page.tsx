@@ -24,10 +24,18 @@ export default async function EventsPage({
 }: {
   searchParams: { page?: string };
 }) {
-  const page = Number((await searchParams?.page) || 1);
+  const page = Number(searchParams?.page ?? 1);
   const data = await getEvents(page, 12);
   const events = data.events || [];
   const pagination = data.pagination || { page, pages: 1 };
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+  const normalizeImageUrl = (input?: string) => {
+    if (!input) return "";
+    if (/^https?:\/\//i.test(input)) return input;
+    if (input.startsWith("/")) return `${apiBase}${input}`;
+    return "";
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
@@ -64,7 +72,9 @@ export default async function EventsPage({
                   ].filter(Boolean) as string[]
                 }
                 eventId={String(e.id)}
-                imageUrl={e.imageUrl ?? e.image ?? e.banner ?? e.cover ?? ""}
+                imageUrl={normalizeImageUrl(
+                  e.imageUrl ?? e.image ?? e.banner ?? e.cover ?? ""
+                )}
               />
             </div>
           )
