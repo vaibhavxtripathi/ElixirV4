@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { DivideX } from "./divide";
 import { cn } from "@/lib/utils";
 import { Scale } from "@/components/scale";
+import Image from "next/image";
 
 const springConfig = {
   stiffness: 300,
@@ -21,9 +22,9 @@ export const Card = ({
 }: {
   title: string;
   subtitle: string;
-  logo: React.ReactNode;
+  logo?: string;
   cta: React.ReactNode;
-  tone: "default" | "danger" | "success";
+  tone: "default" | "danger" | "success" | "green";
   className?: string;
   delay?: number;
 }) => {
@@ -88,8 +89,8 @@ export const Card = ({
       >
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2 font-medium">
-            {logo}
-            {title}
+            {logo && <Image src={logo} alt={title} width={16} height={20} />}
+            <span>{title}</span>
           </div>
           <p className="font-mono text-gray-600">{subtitle}</p>
         </div>
@@ -102,7 +103,9 @@ export const Card = ({
             tone === "danger" &&
               "border-orange-500 bg-red-50 text-orange-500 dark:bg-red-50/10 dark:text-red-500",
             tone === "success" &&
-              "border-neutral-500 bg-neutral-50 text-neutral-500 dark:bg-neutral-50/10 dark:text-neutral-500"
+              "border-neutral-500 bg-neutral-50 text-neutral-500 dark:bg-neutral-50/10 dark:text-neutral-500",
+            tone === "green" &&
+              "border-green-500 bg-green-50 text-green-500 dark:bg-green-50/10 dark:text-green-500"
           )}
         >
           {cta}
