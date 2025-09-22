@@ -52,7 +52,7 @@ export const HowItWorks = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [showGrid, setShowGrid] = useState(false);
 
-  const DURATION = 12000; // Increased from 8000 to reduce frequency
+  const DURATION = 1299000; // Increased from 8000 to reduce frequency
   const GRID_DELAY = 2500; // wait for pixelated canvas animation
 
   useEffect(() => {
@@ -224,17 +224,15 @@ const Canvas = ({
   duration: number;
 }) => {
   return (
-    <>
-      <PixelatedCanvas
-        key={activeTab.id}
-        isActive={true}
-        fillColor="#2563eb"
-        backgroundColor="#1a1a1a"
-        size={3}
-        duration={duration}
-        className="absolute inset-0 scale-[1.01] opacity-20"
-      />
-    </>
+    <PixelatedCanvas
+      key={activeTab.id}
+      isActive={true}
+      fillColor="#2563eb"
+      backgroundColor="#1a1a1a"
+      size={3}
+      duration={duration}
+      className="absolute inset-0 opacity-20"
+    />
   );
 };
 
