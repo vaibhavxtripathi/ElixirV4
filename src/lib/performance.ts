@@ -7,13 +7,7 @@ export const getAnimationDuration = (baseDuration: number) => {
 };
 
 // Disable heavy animations in development
-export const shouldAnimate = (component: string) => {
-  if (!isDevelopment) return true;
 
-  // Disable heavy animations in development
-  const disabledInDev = ["pixelated-canvas", "marquee", "complex-motion"];
-  return !disabledInDev.some((disabled) => component.includes(disabled));
-};
 
 // Reduce particle count in development
 export const getParticleCount = (baseCount: number) => {
