@@ -8,21 +8,20 @@ export const getAnimationDuration = (baseDuration: number) => {
 
 // Disable heavy animations in development
 
-
 // Reduce particle count in development
 export const getParticleCount = (baseCount: number) => {
   return isDevelopment ? Math.min(baseCount, 100) : baseCount;
 };
 
 // Throttle function for development
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
-): T => {
-  let timeoutId: NodeJS.Timeout | null = null;
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastExecTime = 0;
 
-  return ((...args: Parameters<T>) => {
+  return (...args: Parameters<T>) => {
     const currentTime = Date.now();
 
     if (currentTime - lastExecTime > delay) {
@@ -33,7 +32,7 @@ export const throttle = <T extends (...args: any[]) => any>(
       timeoutId = setTimeout(() => {
         func(...args);
         lastExecTime = Date.now();
-      }, delay - (currentTime - lastExecTime));
+      }, Math.max(0, delay - (currentTime - lastExecTime)));
     }
-  }) as T;
+  };
 };
