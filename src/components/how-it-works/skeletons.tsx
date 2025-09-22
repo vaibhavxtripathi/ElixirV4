@@ -15,6 +15,7 @@ import { Card } from "../tech-card";
 import { Scale } from "../scale";
 import { LogoSVG } from "../logo";
 import { IntegrationsLogo } from "@/icons/bento-icons";
+import Image from "next/image";
 
 export const DesignYourWorkflowSkeleton = () => {
   return (
@@ -23,8 +24,8 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="Elixir"
           subtitle="#elixir"
-          logo={<SlackLogo />}
-          cta="Connected"
+          logo="/elixir-logo.png"
+          cta="Community"
           tone="default"
         />
         <LeftSVG className="absolute top-14 -left-[128px]" />
@@ -36,24 +37,24 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="GDG"
           subtitle="Google"
-          logo={<AnthropicLogo />}
-          cta="UI Generator"
+          logo="/GDG_logo.png"
+          cta="Google Club"
           tone="danger"
           delay={0.2}
         />
         <Card
           title="GFG"
           subtitle="vibin'"
-          logo={<MetaLogo />}
-          cta="Text Generator"
-          tone="default"
+          logo="/GeeksForGeeks_logo.png"
+          cta="GeeksForGeeks"
+          tone="green"
           delay={0.4}
         />
         <Card
           title="CodeChef"
           subtitle="CodeChef"
-          logo={<OpenAILogo />}
-          cta="Code Generator"
+          logo="/CodeChef_logo.png"
+          cta="CodeChef Club"
           tone="success"
           delay={0.6}
         />
@@ -151,7 +152,7 @@ export const ConnectYourTooklsSkeleton = () => {
       >
         <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-inherit  shadow-xl">
           <Scale />
-          <OpenAILogo className="relative z-20 h-8 w-8" />
+          <Image src="/elixir-logo.png" height={8} width={8} alt="Elixir" className="relative z-20 h-8 w-8" />
         </div>
         <div className="mt-12 flex items-center gap-2">
           <IntegrationsLogo />
