@@ -74,12 +74,13 @@ model EventRegistration {
 }
 
 model Mentor {
-  id        String @id @default(cuid())
-  name      String
-  expertise String
-  imageUrl  String
-  clubId    String
-  club      Club   @relation(fields: [clubId], references: [id])
+  id          String @id @default(cuid())
+  name        String
+  expertise   String
+  imageUrl    String
+  linkedInUrl String @default("")
+  clubId      String
+  club        Club   @relation(fields: [clubId], references: [id])
 
   @@map("mentors")
 }
