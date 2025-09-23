@@ -92,7 +92,7 @@ export function DateTimePicker({
           {date ? (
             format(date, "MM/dd/yyyy hh:mm aa")
           ) : (
-            <span>MM/DD/YYYY hh:mm aa</span>
+            <span>Select Date and Time</span>
           )}
         </Button>
       </PopoverTrigger>
@@ -113,7 +113,7 @@ export function DateTimePicker({
                     size="icon"
                     variant={
                       date && date.getHours() % 12 === hour % 12
-                        ? "default"
+                        ? "gradient"
                         : "ghost"
                     }
                     className="sm:w-full shrink-0 aspect-square"
@@ -132,7 +132,7 @@ export function DateTimePicker({
                     key={minute}
                     size="icon"
                     variant={
-                      date && date.getMinutes() === minute ? "default" : "ghost"
+                      date && date.getMinutes() === minute ? "gradient" : "ghost"
                     }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() =>
@@ -155,7 +155,7 @@ export function DateTimePicker({
                       date &&
                       ((ampm === "AM" && date.getHours() < 12) ||
                         (ampm === "PM" && date.getHours() >= 12))
-                        ? "default"
+                        ? "gradient"
                         : "ghost"
                     }
                     className="sm:w-full shrink-0 aspect-square"
