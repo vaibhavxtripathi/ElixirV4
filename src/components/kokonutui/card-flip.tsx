@@ -11,7 +11,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { ArrowRight, Repeat2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -25,6 +25,8 @@ export interface CardFlipProps {
   features: string[];
   imageUrl: string;
   eventId?: string;
+  eventDate?: string | Date;
+  isRegistered?: boolean;
 }
 
 export default function CardFlip({
@@ -34,10 +36,29 @@ export default function CardFlip({
   features,
   imageUrl,
   eventId,
+  eventDate,
+  isRegistered,
 }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(Boolean(isRegistered));
   const router = useRouter();
+
+  const computeStatus = (): "Registered" | "Live" | "Past" => {
+    if (hasRegistered) return "Registered";
+    if (eventDate) {
+      const eventTime = new Date(eventDate).getTime();
+      if (!Number.isNaN(eventTime)) {
+        const now = Date.now();
+        if (eventTime >= now) return "Live";
+        return "Past";
+      }
+    }
+    return "Past";
+  };
+  const status = computeStatus();
+  const isPast = status === "Past";
+  const isAlreadyRegistered = status === "Registered";
 
   return (
     <div
@@ -69,6 +90,11 @@ export default function CardFlip({
             "group-hover:shadow-lg dark:group-hover:shadow-xl",
             isFlipped ? "opacity-0" : "opacity-100"
           )}
+          style={{
+            background: ` 
+                     linear-gradient(45deg, transparent 45%, #2B2B2B 45%, #2B2B2B 55%, transparent 55%)`,
+            backgroundSize: "10px 10px",
+          }}
         >
           {imageUrl && (
             <Image
@@ -104,6 +130,9 @@ export default function CardFlip({
             </div>
           )}
 
+          {/* Bottom shadow overlay for better text readability */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-32 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+
           <div className="absolute bottom-0 left-0 right-0 p-5">
             <div className="flex items-center justify-between gap-3">
               <div className="space-y-1.5">
@@ -115,13 +144,20 @@ export default function CardFlip({
                 </p>
               </div>
               <div className="relative group/icon">
-                <div
+                <span
                   className={cn(
-                    "pointer-events-none absolute inset-[-8px] rounded-lg transition-opacity duration-300",
-                    "bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-transparent"
+                    "relative z-10 px-2 py-0.5 rounded-md text-[10px] font-medium",
+                    "transition-transform duration-300 group-hover/icon:scale-105",
+                    status === "Live" &&
+                      "bg-red-500/15 text-red-400 border border-red-500/30",
+                    status === "Registered" &&
+                      "bg-blue-500/15 text-blue-400 border border-blue-500/30",
+                    status === "Past" &&
+                      "bg-zinc-500/10 text-zinc-300 border border-zinc-500/20"
                   )}
-                />
-                <Repeat2 className="relative z-10 w-4 h-4 text-blue-500 transition-transform duration-300 group-hover/icon:scale-110 group-hover/icon:-rotate-12" />
+                >
+                  {status}
+                </span>
               </div>
             </div>
           </div>
@@ -188,15 +224,16 @@ export default function CardFlip({
                 "hover:scale-[1.005] hover:cursor-pointer",
                 isRegistering && "opacity-60 cursor-wait"
               )}
-              disabled={isRegistering}
+              disabled={isRegistering || isPast || isAlreadyRegistered}
               aria-busy={isRegistering}
               onClick={async () => {
                 if (!eventId) return;
+                if (isPast || isAlreadyRegistered) return;
                 try {
                   setIsRegistering(true);
                   await api.post(`/events/${eventId}/register`);
                   toast.success("Registered successfully");
-                  router.push("/student");
+                  setHasRegistered(true);
                 } catch (e) {
                   // Narrow axios-like errors
                   const maybeAxiosError = e as {
@@ -222,7 +259,13 @@ export default function CardFlip({
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-zinc-900 dark:text-white transition-colors duration-300 group-hover/start:text-blue-600 dark:group-hover/start:text-blue-400">
-                  {isRegistering ? "Registering..." : "Register"}
+                  {isRegistering
+                    ? "Registering..."
+                    : isPast
+                    ? "Event has ended"
+                    : isAlreadyRegistered
+                    ? "Registered"
+                    : "Register"}
                 </span>
                 <div className="relative group/icon">
                   <div
