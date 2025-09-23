@@ -8,6 +8,9 @@ import {
   UserCircleIcon,
 } from "lucide-react";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { clearToken } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -35,6 +38,14 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    clearToken();
+    await queryClient.invalidateQueries({ queryKey: ["me"] });
+    router.refresh();
+  };
 
   return (
     <SidebarMenu>
@@ -98,7 +109,10 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuItem className="text-white hover:bg-white/10">
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-white hover:bg-white/10"
+            >
               <LogOutIcon />
               Log out
             </DropdownMenuItem>
