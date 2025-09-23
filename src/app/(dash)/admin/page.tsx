@@ -37,7 +37,6 @@ import {
   FileText,
   UserCheck,
   TrendingUp,
-  Activity,
   Plus,
   MoreHorizontal,
 } from "lucide-react";
@@ -50,8 +49,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -91,6 +88,8 @@ interface Mentor {
   id: string;
   name: string;
   expertise: string;
+  linkedInUrl: string;
+  imageUrl: string;
   club?: { name: string };
 }
 
@@ -148,6 +147,7 @@ export default function AdminDashboard() {
   const [mentorForm, setMentorForm] = useState({
     name: "",
     expertise: "",
+    linkedInUrl: "",
     imageUrl: "",
     clubId: "",
   });
@@ -155,7 +155,13 @@ export default function AdminDashboard() {
   const createMentor = useMutation({
     mutationFn: async () => (await api.post("/mentors", mentorForm)).data,
     onSuccess: () => {
-      setMentorForm({ name: "", expertise: "", imageUrl: "", clubId: "" });
+      setMentorForm({
+        name: "",
+        expertise: "",
+        linkedInUrl: "",
+        imageUrl: "",
+        clubId: "",
+      });
       toast.success("Mentor created");
     },
     onError: (e: unknown) => {
@@ -692,7 +698,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="blog-image" className="text-white">
-                      Image URL (optional)
+                      Image URL
                     </Label>
                     <Input
                       id="blog-image"
@@ -781,16 +787,33 @@ export default function AdminDashboard() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="mentor-image" className="text-white">
-                      Image URL (optional)
+                      Image URL
                     </Label>
                     <Input
                       id="mentor-image"
                       placeholder="https://example.com/image.jpg"
-                      value={mentorForm.imageUrl}
+                      value={mentorForm.imageUrl || ""}
                       onChange={(e) =>
                         setMentorForm({
                           ...mentorForm,
-                          imageUrl: e.target.value,
+                          imageUrl: e.target.value || "",
+                        })
+                      }
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mentor-linkedin" className="text-white">
+                      LinkedIn URL
+                    </Label>
+                    <Input
+                      id="mentor-linkedin"
+                      placeholder="https://linkedin.com/in/username"
+                      value={mentorForm.linkedInUrl || ""}
+                      onChange={(e) =>
+                        setMentorForm({
+                          ...mentorForm,
+                          linkedInUrl: e.target.value || "",
                         })
                       }
                       className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
