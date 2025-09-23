@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { clearToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
@@ -10,15 +10,17 @@ import { motion } from "framer-motion";
 
 export default function Navbar() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: me } = useQuery({
     queryKey: ["me"],
     queryFn: async () => (await api.get("/auth/me")).data,
     retry: false,
   });
 
-  const logout = () => {
+  const handleLogout = async () => {
     clearToken();
-    router.push("/");
+    await queryClient.invalidateQueries({ queryKey: ["me"] });
+    router.refresh();
   };
 
   return (
@@ -76,7 +78,7 @@ export default function Navbar() {
             {me?.user ? (
               <div className="flex items-center gap-3">
                 <span className="text-white">Hi, {me.user.firstName}</span>
-                <Button onClick={logout} variant="gradient">
+                <Button onClick={handleLogout} variant="gradient">
                   Logout
                 </Button>
               </div>
