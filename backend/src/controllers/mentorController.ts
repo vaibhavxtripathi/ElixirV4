@@ -21,13 +21,19 @@ export const getAllMentors = async (req: Request, res: Response) => {
 //create/add mentor => admin only
 export const createMentor = async (req: any, res: Response) => {
   try {
-    const { name, expertise, imageUrl, clubId } = req.body;
+    const { name, expertise, imageUrl, clubId, linkedInUrl } = req.body;
     if (!name || !expertise || !imageUrl || !clubId) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const mentor = await prisma.mentor.create({
-      data: { name, expertise, imageUrl, clubId },
+      data: {
+        name,
+        expertise,
+        imageUrl,
+        linkedInUrl: linkedInUrl ?? "",
+        clubId,
+      },
       include: {
         club: {
           select: { name: true },
@@ -42,21 +48,21 @@ export const createMentor = async (req: any, res: Response) => {
 
 //update mentor => admin only
 export const updateMentor = async (req: any, res: Response) => {
-    try {
-        const { id } = req.params;
-        const { name, expertise, imageUrl, clubId } = req.body;
+  try {
+    const { id } = req.params;
+    const { name, expertise, imageUrl, clubId, linkedInUrl } = req.body;
 
-        const mentor = await prisma.mentor.update({
-            where: { id },
-            data: { name, expertise, imageUrl, clubId },
-            include: {
-                club: {
-                    select: { name: true }
-                }
-            }
-        });
-        return res.json({ mentor });
-    } catch (error) {
+    const mentor = await prisma.mentor.update({
+      where: { id },
+      data: { name, expertise, imageUrl, clubId, linkedInUrl },
+      include: {
+        club: {
+          select: { name: true },
+        },
+      },
+    });
+    return res.json({ mentor });
+  } catch (error) {
     res.status(500).json({ message: "Error updating mentor" });
   }
 };
