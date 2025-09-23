@@ -13,7 +13,7 @@ export const getAllEvents = async (req: Request, res: Response) => {
           select: { id: true },
         },
       },
-      orderBy: { date: "asc" },
+      orderBy: { date: "desc" },
     });
     return res.json({ events });
   } catch (error) {
