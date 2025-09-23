@@ -52,7 +52,7 @@ export const HowItWorks = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [showGrid, setShowGrid] = useState(false);
 
-  const DURATION = 1299000; // Increased from 8000 to reduce frequency
+  const DURATION = 12000; // Increased from 8000 to reduce frequency
   const GRID_DELAY = 2500; // wait for pixelated canvas animation
 
   useEffect(() => {
