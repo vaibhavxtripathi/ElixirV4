@@ -4,6 +4,7 @@ import {
   createBlog,
   updateBlog,
   deleteBlog,
+  getBlogById,
 } from "../controllers/blogController";
 import { authenticateToken, requireRole } from "../middleware/auth";
 import { validate } from "../middleware/validate";
@@ -17,6 +18,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 const router = Router();
 
 router.get("/", getAllBlogs);
+router.get("/:id", asyncHandler(getBlogById));
 
 router.post(
   "/",
