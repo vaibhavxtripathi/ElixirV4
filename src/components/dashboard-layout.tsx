@@ -3,7 +3,11 @@
 // import { useQuery } from "@tanstack/react-query";
 // import { api } from "@/lib/api";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -61,7 +65,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="bg-[#0A0B1A]">
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-white/10">
+          <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-white/10">
             <div className="flex items-center gap-2 px-4">
               <Separator
                 orientation="vertical"
@@ -92,6 +96,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   ))}
                 </BreadcrumbList>
               </Breadcrumb>
+            </div>
+            <div className="px-4">
+              <SidebarTrigger className="text-white hover:bg-white/10" />
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-[#0A0B1A]">
