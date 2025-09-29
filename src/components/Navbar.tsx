@@ -1,12 +1,13 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { clearToken } from "@/lib/auth";
+import { clearToken, roleToDashboard } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import AuthDialog from "@/components/auth-dialog";
 import { motion } from "framer-motion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Navbar() {
   const router = useRouter();
@@ -19,8 +20,9 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     clearToken();
+    // Instant UI update without full refresh
+    queryClient.setQueryData(["me"], null);
     await queryClient.invalidateQueries({ queryKey: ["me"] });
-    router.refresh();
   };
 
   return (
@@ -77,7 +79,22 @@ export default function Navbar() {
           <div className="flex items-center justify-end gap-4">
             {me?.user ? (
               <div className="flex items-center gap-3">
-                <span className="text-white">Hi, {me.user.firstName}</span>
+                <Link
+                  href={roleToDashboard(me.user.role)}
+                  className="inline-flex items-center"
+                >
+                  <Avatar className="h-10 w-10 rounded-md">
+                    {/* Update when backend provides avatar URL */}
+                    <AvatarImage
+                      src={me.user.avatar || ""}
+                      alt={me.user.firstName}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {(me.user.firstName?.[0] || "").toUpperCase()}
+                      {(me.user.lastName?.[0] || "").toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
                 <Button onClick={handleLogout} variant="gradient">
                   Logout
                 </Button>
