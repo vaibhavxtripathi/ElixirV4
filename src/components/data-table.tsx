@@ -336,13 +336,19 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 
 export function DataTable({
   data: initialData,
+  actions,
+  views,
 }: {
-  data: z.infer<typeof schema>[];
+  data?: z.infer<typeof schema>[];
+  actions?: (row: z.infer<typeof schema>) => React.ReactNode;
+  views?: Array<{ label: string; rows: z.infer<typeof schema>[] }>;
 }) {
-  const [data, setData] = React.useState(() => initialData);
+  const [selectedView, setSelectedView] = React.useState(0);
+  const initial = views && views.length > 0 ? views[0].rows : initialData || [];
+  const [data, setData] = React.useState(() => initial);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({ status: false, type: false });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -363,9 +369,144 @@ export function DataTable({
     [data]
   );
 
+  // Build dynamic columns with dataset-specific headers and no status/type column
+  const activeLabel = views?.[selectedView]?.label || "";
+  const labelMap: {
+    header: string;
+    target: string;
+    limit: string;
+    reviewer: string;
+  } = (() => {
+    switch (activeLabel) {
+      case "Users":
+      case "Club Heads":
+        return {
+          header: "Name",
+          target: "Role",
+          limit: "Club",
+          reviewer: "Email",
+        };
+      case "Events":
+        return { header: "Title", target: "Date", limit: "Club", reviewer: "" };
+      case "Blogs":
+        return { header: "Title", target: "Status", limit: "", reviewer: "" };
+      case "Mentors":
+        return {
+          header: "Name",
+          target: "Expertise",
+          limit: "Club",
+          reviewer: "LinkedIn",
+        };
+      case "Testimonials":
+        return {
+          header: "Name",
+          target: "Snippet",
+          limit: "Club",
+          reviewer: "",
+        };
+      default:
+        return {
+          header: "Header",
+          target: "Target",
+          limit: "Limit",
+          reviewer: "Reviewer",
+        };
+    }
+  })();
+
+  const computedColumns: ColumnDef<z.infer<typeof schema>>[] = [
+    // drag
+    {
+      id: "drag",
+      header: () => null,
+      cell: ({ row }) => <DragHandle id={row.original.id} />,
+    },
+    // select
+    {
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    // header (name/title)
+    {
+      accessorKey: "header",
+      header: labelMap.header,
+      cell: ({ row }) => {
+        return <TableCellViewer item={row.original} />;
+      },
+      enableHiding: false,
+    },
+    // target (role/date/status/expertise)
+    {
+      accessorKey: "target",
+      header: () => <div className="w-full text-right">{labelMap.target}</div>,
+      cell: ({ row }) => (
+        <div className="text-right">{row.original.target}</div>
+      ),
+    },
+    // limit (club)
+    {
+      accessorKey: "limit",
+      header: () => <div className="w-full text-right">{labelMap.limit}</div>,
+      cell: ({ row }) => <div className="text-right">{row.original.limit}</div>,
+    },
+    // reviewer (email/link)
+    {
+      accessorKey: "reviewer",
+      header: labelMap.reviewer,
+      cell: ({ row }) => row.original.reviewer,
+    },
+    // actions
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              size="icon"
+            >
+              <MoreVerticalIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
   const table = useReactTable({
     data,
-    columns,
+    columns: computedColumns,
     state: {
       sorting,
       columnVisibility,
@@ -388,6 +529,14 @@ export function DataTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  React.useEffect(() => {
+    if (views && views[selectedView]) {
+      setData(views[selectedView].rows);
+    } else if (initialData) {
+      setData(initialData);
+    }
+  }, [selectedView, views, initialData]);
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
@@ -405,24 +554,31 @@ export function DataTable({
       className="flex w-full flex-col justify-start gap-6"
     >
       <div className="flex items-center justify-between px-4 lg:px-6">
-        <Label htmlFor="view-selector" className="sr-only">
-          View
+        <Label
+          htmlFor="view-selector"
+          className="text-sm text-muted-foreground"
+        >
+          Dataset
         </Label>
-        <Select defaultValue="outline">
-          <SelectTrigger
-            className="@4xl/main:hidden flex w-fit"
-            id="view-selector"
-          >
-            <SelectValue placeholder="Select a view" />
+        <Select
+          value={String(selectedView)}
+          onValueChange={(v) => setSelectedView(Number(v))}
+        >
+          <SelectTrigger className="flex w-fit" id="view-selector">
+            <SelectValue placeholder="Select dataset" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="outline">Outline</SelectItem>
-            <SelectItem value="past-performance">Past Performance</SelectItem>
-            <SelectItem value="key-personnel">Key Personnel</SelectItem>
-            <SelectItem value="focus-documents">Focus Documents</SelectItem>
+            {(views && views.length
+              ? views
+              : [{ label: "Outline", rows: initial }]
+            ).map((v, idx) => (
+              <SelectItem key={v.label} value={String(idx)}>
+                {v.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-        <TabsList className="@4xl/main:flex hidden">
+        <TabsList className="hidden">
           <TabsTrigger value="outline">Outline</TabsTrigger>
           <TabsTrigger value="past-performance" className="gap-1">
             Past Performance{" "}
@@ -496,7 +652,15 @@ export function DataTable({
             sensors={sensors}
             id={sortableId}
           >
-            <Table>
+            <Table className="table-fixed">
+              <colgroup>
+                <col className="w-10" />
+                <col className="w-12" />
+                <col className="w-[40%]" />
+                <col className="w-[16%]" />
+                <col className="w-[16%]" />
+                <col className="w-[16%]" />
+              </colgroup>
               <TableHeader className="sticky top-0 z-10 bg-muted">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -516,12 +680,12 @@ export function DataTable({
                 ))}
               </TableHeader>
               <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getRowModel().rows?.length ? (
+                {(table.getRowModel?.()?.rows ?? []).length ? (
                   <SortableContext
                     items={dataIds}
                     strategy={verticalListSortingStrategy}
                   >
-                    {table.getRowModel().rows.map((row) => (
+                    {(table.getRowModel?.()?.rows ?? []).map((row) => (
                       <DraggableRow key={row.id} row={row} />
                     ))}
                   </SortableContext>
