@@ -30,7 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Users,
   Calendar,
@@ -38,7 +39,6 @@ import {
   UserCheck,
   TrendingUp,
   Plus,
-  MoreHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -55,6 +55,21 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import { containerStagger, fadeInUp, fadeIn } from "@/lib/motion";
+import { SectionCards } from "@/components/section-cards";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import {
+  DataTable,
+  schema as settingsTableSchema,
+} from "@/components/data-table";
+import { z } from "zod";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 interface User {
   id: string;
@@ -94,6 +109,9 @@ interface Mentor {
 }
 
 export default function AdminDashboard() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const view = searchParams.get("view") || "overview";
   const [blogForm, setBlogForm] = useState({
     title: "",
     content: "",
@@ -141,6 +159,31 @@ export default function AdminDashboard() {
   const { data: mentorsData } = useQuery({
     queryKey: ["mentors"],
     queryFn: async () => (await api.get("/mentors")).data,
+  });
+
+  // Admin create-event form state and mutation (aligned with club-head)
+  const [eventForm, setEventForm] = useState({
+    title: "",
+    description: "",
+    data: "",
+    imageUrl: "",
+  });
+
+  const createEvent = useMutation({
+    mutationFn: async () => (await api.post("/events", eventForm)).data,
+    onSuccess: () => {
+      setEventForm({ title: "", description: "", data: "", imageUrl: "" });
+      qc.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Event created");
+    },
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to create event"
+      );
+    },
   });
 
   // Add these after existing state and mutations
@@ -246,6 +289,12 @@ export default function AdminDashboard() {
 
   const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
+  const showOverview = view === "overview";
+  const showCreateBlog = view === "create-blog";
+  const showCreateMentor = view === "create-mentor";
+  const showCreateEvent = view === "create-event";
+  const showManageUsers = view === "manage-users";
+
   return (
     <RequireAuth allow={["ADMIN"]}>
       <DashboardLayout>
@@ -281,581 +330,618 @@ export default function AdminDashboard() {
             </div>
           </motion.div>
 
-          {/* Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white/60">
-                        Total Users
-                      </p>
-                      <p className="text-2xl font-bold text-white">
-                        {totalUsers}
-                      </p>
-                      <p className="text-xs text-green-400 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +12.5% from last month
-                      </p>
-                    </div>
-                    <div className="p-3 bg-blue-500/20 rounded-lg">
-                      <Users className="w-6 h-6 text-blue-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+          {showOverview && (
+            <>
+              <SectionCards />
+              <div className="px-0 lg:px-0">
+                <ChartAreaInteractive />
+              </div>
+            </>
+          )}
 
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white/60">
-                        Active Events
-                      </p>
-                      <p className="text-2xl font-bold text-white">
-                        {totalEvents}
-                      </p>
-                      <p className="text-xs text-green-400 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +8.2% from last month
-                      </p>
-                    </div>
-                    <div className="p-3 bg-green-500/20 rounded-lg">
-                      <Calendar className="w-6 h-6 text-green-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+          {showOverview && null}
 
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white/60">
-                        Published Blogs
-                      </p>
-                      <p className="text-2xl font-bold text-white">
-                        {totalBlogs}
-                      </p>
-                      <p className="text-xs text-green-400 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +15.3% from last month
-                      </p>
-                    </div>
-                    <div className="p-3 bg-purple-500/20 rounded-lg">
-                      <FileText className="w-6 h-6 text-purple-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white/60">
-                        Mentors
-                      </p>
-                      <p className="text-2xl font-bold text-white">
-                        {totalMentors}
-                      </p>
-                      <p className="text-xs text-green-400 flex items-center mt-1">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        +5.7% from last month
-                      </p>
-                    </div>
-                    <div className="p-3 bg-orange-500/20 rounded-lg">
-                      <UserCheck className="w-6 h-6 text-orange-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* User Growth Chart */}
-            <motion.div variants={fadeIn}>
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">User Growth</CardTitle>
-                  <CardDescription className="text-white/60">
-                    Monthly user registration trends
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={userGrowthData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="month" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#1F2937",
-                            border: "1px solid #374151",
-                            borderRadius: "8px",
-                            color: "#F9FAFB",
-                          }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="users"
-                          stroke="#3B82F6"
-                          strokeWidth={2}
-                          dot={{ fill: "#3B82F6", strokeWidth: 2, r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Event Distribution Chart */}
-            <motion.div variants={fadeIn}>
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">
-                    Event Distribution
-                  </CardTitle>
-                  <CardDescription className="text-white/60">
-                    Breakdown by event type
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={eventData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) =>
-                            `${name} ${(percent * 100).toFixed(0)}%`
-                          }
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {eventData.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
-                            />
+          {showOverview && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recent Users Table */}
+              <motion.div variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">Recent Users</CardTitle>
+                    <CardDescription className="text-white/60">
+                      Latest user registrations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {isLoading ? (
+                        <div className="text-center py-4 text-white/60">
+                          Loading...
+                        </div>
+                      ) : error ? (
+                        <div className="text-center py-4 text-red-400">
+                          Failed to load users
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {(data?.users || []).slice(0, 5).map((user: User) => (
+                            <div
+                              key={user.id}
+                              className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                                  <Users className="w-4 h-4 text-blue-400" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-white">
+                                    {user.firstName} {user.lastName}
+                                  </p>
+                                  <p className="text-xs text-white/60">
+                                    {user.email}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {user.role}
+                              </Badge>
+                            </div>
                           ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#1F2937",
-                            border: "1px solid #374151",
-                            borderRadius: "8px",
-                            color: "#F9FAFB",
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-          {/* Management Tables */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Users Table */}
-            <motion.div variants={fadeIn}>
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">Recent Users</CardTitle>
-                  <CardDescription className="text-white/60">
-                    Latest user registrations
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {isLoading ? (
-                      <div className="text-center py-4 text-white/60">
-                        Loading...
-                      </div>
-                    ) : error ? (
-                      <div className="text-center py-4 text-red-400">
-                        Failed to load users
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {(data?.users || []).slice(0, 5).map((user: User) => (
-                          <div
-                            key={user.id}
-                            className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                                <Users className="w-4 h-4 text-blue-400" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-white">
-                                  {user.firstName} {user.lastName}
-                                </p>
-                                <p className="text-xs text-white/60">
-                                  {user.email}
-                                </p>
-                              </div>
+              {/* Recent Events Table */}
+              <motion.div variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">Recent Events</CardTitle>
+                    <CardDescription className="text-white/60">
+                      Latest events created
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {eventsData?.events?.slice(0, 5).map((event: Event) => (
+                        <div
+                          key={event.id}
+                          className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                              <Calendar className="w-4 h-4 text-green-400" />
                             </div>
-                            <Badge variant="outline" className="text-xs">
-                              {user.role}
-                            </Badge>
+                            <div>
+                              <p className="text-sm font-medium text-white">
+                                {event.title}
+                              </p>
+                              <p className="text-xs text-white/60">
+                                {event.club?.name || "No club"}
+                              </p>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Recent Events Table */}
-            <motion.div variants={fadeIn}>
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">Recent Events</CardTitle>
-                  <CardDescription className="text-white/60">
-                    Latest events created
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {eventsData?.events?.slice(0, 5).map((event: Event) => (
-                      <div
-                        key={event.id}
-                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                            <Calendar className="w-4 h-4 text-green-400" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-white">
-                              {event.title}
-                            </p>
+                          <div className="text-right">
                             <p className="text-xs text-white/60">
-                              {event.club?.name || "No club"}
+                              {new Date(event.date).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-white/60">
-                            {new Date(event.date).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* User Management Section */}
-          <motion.div variants={fadeIn}>
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">User Management</CardTitle>
-                <CardDescription className="text-white/60">
-                  Manage user roles and club assignments
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-white/10">
-                        <TableHead className="text-white/60">Name</TableHead>
-                        <TableHead className="text-white/60">Email</TableHead>
-                        <TableHead className="text-white/60">Role</TableHead>
-                        <TableHead className="text-white/60">Club</TableHead>
-                        <TableHead className="text-white/60">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(data?.users || []).map((user: User) => (
-                        <TableRow key={user.id} className="border-white/10">
-                          <TableCell className="text-white">
-                            {user.firstName} {user.lastName}
-                          </TableCell>
-                          <TableCell className="text-white/80">
-                            {user.email}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {user.role}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-white/80">
-                            {user.club?.name || "-"}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() =>
-                                  changeRole.mutate({
-                                    userId: user.id,
-                                    newRole: "STUDENT",
-                                  })
-                                }
-                                className="text-xs border-white/20 text-white hover:bg-white/10"
-                              >
-                                Student
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() =>
-                                  changeRole.mutate({
-                                    userId: user.id,
-                                    newRole: "CLUB_HEAD",
-                                  })
-                                }
-                                className="text-xs border-white/20 text-white hover:bg-white/10"
-                              >
-                                Club Head
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() =>
-                                  changeRole.mutate({
-                                    userId: user.id,
-                                    newRole: "ADMIN",
-                                  })
-                                }
-                                className="text-xs border-white/20 text-white hover:bg-white/10"
-                              >
-                                Admin
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
                       ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+          )}
 
-          {/* Content Creation Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Create Blog */}
-            <motion.div variants={fadeInUp}>
+          {showManageUsers && (
+            <motion.div variants={fadeIn} className="max-w-6xl mx-auto w-full">
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">Create Blog</CardTitle>
+                  <CardTitle className="text-white">Manage Data</CardTitle>
                   <CardDescription className="text-white/60">
-                    Add a new blog post to the platform
+                    Browse and manage Users, Club Heads, Events, Blogs, Mentors,
+                    Testimonials
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="blog-title" className="text-white">
-                      Title
-                    </Label>
-                    <Input
-                      id="blog-title"
-                      placeholder="Enter blog title"
-                      value={blogForm.title}
-                      onChange={(e) =>
-                        setBlogForm({ ...blogForm, title: e.target.value })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="blog-content" className="text-white">
-                      Content
-                    </Label>
-                    <Textarea
-                      id="blog-content"
-                      placeholder="Enter blog content"
-                      value={blogForm.content}
-                      onChange={(e) =>
-                        setBlogForm({ ...blogForm, content: e.target.value })
-                      }
-                      rows={4}
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="blog-image" className="text-white">
-                      Image URL
-                    </Label>
-                    <Input
-                      id="blog-image"
-                      placeholder="https://example.com/image.jpg"
-                      value={blogForm.imageUrl}
-                      onChange={(e) =>
-                        setBlogForm({ ...blogForm, imageUrl: e.target.value })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="blog-status" className="text-white">
-                      Status
-                    </Label>
-                    <Select
-                      value={blogForm.status}
-                      onValueChange={(value) =>
-                        setBlogForm({ ...blogForm, status: value })
-                      }
-                    >
-                      <SelectTrigger className="bg-white/5 border-white/20 text-white">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-white/20">
-                        <SelectItem value="DRAFT" className="text-white">
-                          Draft
-                        </SelectItem>
-                        <SelectItem value="PUBLISHED" className="text-white">
-                          Published
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    onClick={() => createBlog.mutate()}
-                    disabled={createBlog.isPending}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    {createBlog.isPending ? "Creating..." : "Create Blog"}
-                  </Button>
+                <CardContent>
+                  {(() => {
+                    const users = (data?.users || []).map(
+                      (u: User, idx: number) => ({
+                        id: idx + 1,
+                        header: `${u.firstName} ${u.lastName}`,
+                        target: u.role,
+                        limit: u.club?.name || "-",
+                        reviewer: u.email,
+                        backendId: u.id,
+                        entity: "user",
+                      })
+                    );
+                    const events = (eventsData?.events || []).map(
+                      (e: Event, idx: number) => ({
+                        id: 1000 + idx + 1,
+                        header: e.title,
+                        target: new Date(e.date).toLocaleDateString(),
+                        limit: e.club?.name || "-",
+                        reviewer: "",
+                        backendId: e.id,
+                        entity: "event",
+                      })
+                    );
+                    const blogs = (blogsData?.blogs || []).map(
+                      (b: Blog, idx: number) => ({
+                        id: 2000 + idx + 1,
+                        header: b.title,
+                        target: b.status,
+                        limit: "",
+                        reviewer: "",
+                        backendId: b.id,
+                        entity: "blog",
+                      })
+                    );
+                    const mentors = (mentorsData?.mentors || []).map(
+                      (m: Mentor, idx: number) => ({
+                        id: 3000 + idx + 1,
+                        header: m.name,
+                        target: m.expertise,
+                        limit: m.club?.name || "-",
+                        reviewer: m.linkedInUrl || "",
+                        backendId: m.id,
+                        entity: "mentor",
+                      })
+                    );
+
+                    const views = [
+                      { label: "Users", rows: users },
+                      { label: "Club Heads", rows: users.filter(() => true) },
+                      { label: "Events", rows: events },
+                      { label: "Blogs", rows: blogs },
+                      { label: "Mentors", rows: mentors },
+                      { label: "Testimonials", rows: [] },
+                    ];
+
+                    return (
+                      <DataTable
+                        views={
+                          views as unknown as {
+                            label: string;
+                            rows: z.infer<typeof settingsTableSchema>[];
+                          }[]
+                        }
+                        onUpdate={async (row, field, value) => {
+                          try {
+                            if (row.entity === "user") {
+                              if (field === "target") {
+                                await api.put(`/users/${row.backendId}/role`, {
+                                  newRole: value,
+                                });
+                              }
+                            } else if (row.entity === "event") {
+                              if (field === "header")
+                                await api.put(`/events/${row.backendId}`, {
+                                  title: value,
+                                });
+                            } else if (row.entity === "blog") {
+                              if (field === "target")
+                                await api.put(`/blogs/${row.backendId}`, {
+                                  status: value,
+                                });
+                              if (field === "header")
+                                await api.put(`/blogs/${row.backendId}`, {
+                                  title: value,
+                                });
+                            } else if (row.entity === "mentor") {
+                              if (field === "header")
+                                await api.put(`/mentors/${row.backendId}`, {
+                                  name: value,
+                                });
+                              if (field === "target")
+                                await api.put(`/mentors/${row.backendId}`, {
+                                  expertise: value,
+                                });
+                              if (field === "reviewer")
+                                await api.put(`/mentors/${row.backendId}`, {
+                                  linkedInUrl: value,
+                                });
+                            }
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }}
+                        onDelete={async (row) => {
+                          try {
+                            if (row.entity === "user") {
+                              await api.delete(`/users/${row.backendId}`);
+                            } else if (row.entity === "event") {
+                              await api.delete(`/events/${row.backendId}`);
+                            } else if (row.entity === "blog") {
+                              await api.delete(`/blogs/${row.backendId}`);
+                            } else if (row.entity === "mentor") {
+                              await api.delete(`/mentors/${row.backendId}`);
+                            }
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }}
+                        actions={(row) => (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="flex size-8 text-white data-[state=open]:bg-white/10"
+                                size="icon"
+                              >
+                                <MoreHorizontal />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-40 bg-[#0A0B1A] border-white/10 text-white"
+                            >
+                              <DropdownMenuItem className="text-white hover:bg-white/10">
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-white hover:bg-white/10">
+                                Duplicate
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator className="bg-white/10" />
+                              <DropdownMenuItem className="text-red-400 hover:bg-red-500/10">
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      />
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </motion.div>
+          )}
 
-            {/* Create Mentor */}
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">Create Mentor</CardTitle>
-                  <CardDescription className="text-white/60">
-                    Add a new mentor to the platform
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="mentor-name" className="text-white">
-                      Name
-                    </Label>
-                    <Input
-                      id="mentor-name"
-                      placeholder="Enter mentor name"
-                      value={mentorForm.name}
-                      onChange={(e) =>
-                        setMentorForm({ ...mentorForm, name: e.target.value })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="mentor-expertise" className="text-white">
-                      Expertise
-                    </Label>
-                    <Input
-                      id="mentor-expertise"
-                      placeholder="Enter expertise area"
-                      value={mentorForm.expertise}
-                      onChange={(e) =>
-                        setMentorForm({
-                          ...mentorForm,
-                          expertise: e.target.value,
-                        })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="mentor-image" className="text-white">
-                      Image URL
-                    </Label>
-                    <Input
-                      id="mentor-image"
-                      placeholder="https://example.com/image.jpg"
-                      value={mentorForm.imageUrl || ""}
-                      onChange={(e) =>
-                        setMentorForm({
-                          ...mentorForm,
-                          imageUrl: e.target.value || "",
-                        })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="mentor-linkedin" className="text-white">
-                      LinkedIn URL
-                    </Label>
-                    <Input
-                      id="mentor-linkedin"
-                      placeholder="https://linkedin.com/in/username"
-                      value={mentorForm.linkedInUrl || ""}
-                      onChange={(e) =>
-                        setMentorForm({
-                          ...mentorForm,
-                          linkedInUrl: e.target.value || "",
-                        })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="mentor-club" className="text-white">
-                      Club
-                    </Label>
-                    <Select
-                      value={mentorForm.clubId}
-                      onValueChange={(value) =>
-                        setMentorForm({ ...mentorForm, clubId: value })
-                      }
-                    >
-                      <SelectTrigger className="bg-white/5 border-white/20 text-white">
-                        <SelectValue placeholder="Select club" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-white/20">
-                        {(clubsData?.clubs || []).map((c: Club) => (
-                          <SelectItem
-                            key={c.id}
-                            value={c.id}
+          {(showCreateBlog || showCreateEvent || showCreateMentor) && (
+            <div className="max-w-3xl mx-auto w-full">
+              {showCreateBlog && (
+                <motion.div variants={fadeInUp}>
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white">Create Blog</CardTitle>
+                      <CardDescription className="text-white/60">
+                        Add a new blog post to the platform
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-title" className="text-white">
+                          Title
+                        </Label>
+                        <Input
+                          id="blog-title"
+                          placeholder="Enter blog title"
+                          value={blogForm.title}
+                          onChange={(e) =>
+                            setBlogForm({ ...blogForm, title: e.target.value })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-content" className="text-white">
+                          Content
+                        </Label>
+                        <Textarea
+                          id="blog-content"
+                          placeholder="Enter blog content"
+                          value={blogForm.content}
+                          onChange={(e) =>
+                            setBlogForm({
+                              ...blogForm,
+                              content: e.target.value,
+                            })
+                          }
+                          rows={4}
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-image" className="text-white">
+                          Image URL
+                        </Label>
+                        <Input
+                          id="blog-image"
+                          placeholder="https://example.com/image.jpg"
+                          value={blogForm.imageUrl}
+                          onChange={(e) =>
+                            setBlogForm({
+                              ...blogForm,
+                              imageUrl: e.target.value,
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-status" className="text-white">
+                          Status
+                        </Label>
+                        <Select
+                          value={blogForm.status}
+                          onValueChange={(value) =>
+                            setBlogForm({ ...blogForm, status: value })
+                          }
+                        >
+                          <SelectTrigger className="bg-white/5 border-white/20 text-white">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-white/20">
+                            <SelectItem value="DRAFT" className="text-white">
+                              Draft
+                            </SelectItem>
+                            <SelectItem
+                              value="PUBLISHED"
+                              className="text-white"
+                            >
+                              Published
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button
+                        onClick={() => createBlog.mutate()}
+                        disabled={createBlog.isPending}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {createBlog.isPending ? "Creating..." : "Create Blog"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {showCreateMentor && (
+                <motion.div variants={fadeInUp}>
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white">
+                        Create Mentor
+                      </CardTitle>
+                      <CardDescription className="text-white/60">
+                        Add a new mentor to the platform
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="mentor-name" className="text-white">
+                          Name
+                        </Label>
+                        <Input
+                          id="mentor-name"
+                          placeholder="Enter mentor name"
+                          value={mentorForm.name}
+                          onChange={(e) =>
+                            setMentorForm({
+                              ...mentorForm,
+                              name: e.target.value,
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="mentor-expertise"
+                          className="text-white"
+                        >
+                          Expertise
+                        </Label>
+                        <Input
+                          id="mentor-expertise"
+                          placeholder="Enter expertise area"
+                          value={mentorForm.expertise}
+                          onChange={(e) =>
+                            setMentorForm({
+                              ...mentorForm,
+                              expertise: e.target.value,
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="mentor-image" className="text-white">
+                          Image URL
+                        </Label>
+                        <Input
+                          id="mentor-image"
+                          placeholder="https://example.com/image.jpg"
+                          value={mentorForm.imageUrl || ""}
+                          onChange={(e) =>
+                            setMentorForm({
+                              ...mentorForm,
+                              imageUrl: e.target.value || "",
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="mentor-linkedin" className="text-white">
+                          LinkedIn URL
+                        </Label>
+                        <Input
+                          id="mentor-linkedin"
+                          placeholder="https://linkedin.com/in/username"
+                          value={mentorForm.linkedInUrl || ""}
+                          onChange={(e) =>
+                            setMentorForm({
+                              ...mentorForm,
+                              linkedInUrl: e.target.value || "",
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="mentor-club" className="text-white">
+                          Club
+                        </Label>
+                        <Select
+                          value={mentorForm.clubId}
+                          onValueChange={(value) =>
+                            setMentorForm({ ...mentorForm, clubId: value })
+                          }
+                        >
+                          <SelectTrigger className="bg-white/5 border-white/20 text-white">
+                            <SelectValue placeholder="Select club" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-white/20">
+                            {(clubsData?.clubs || []).map((c: Club) => (
+                              <SelectItem
+                                key={c.id}
+                                value={c.id}
+                                className="text-white"
+                              >
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button
+                        onClick={() => createMentor.mutate()}
+                        disabled={createMentor.isPending}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {createMentor.isPending
+                          ? "Creating..."
+                          : "Create Mentor"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {showCreateEvent && (
+                <motion.div variants={fadeInUp}>
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white">
+                        Create New Event
+                      </CardTitle>
+                      <CardDescription className="text-white/60">
+                        Add a new event to the platform
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="admin-event-title"
                             className="text-white"
                           >
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    onClick={() => createMentor.mutate()}
-                    disabled={createMentor.isPending}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    {createMentor.isPending ? "Creating..." : "Create Mentor"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+                            Event Title
+                          </Label>
+                          <Input
+                            id="admin-event-title"
+                            placeholder="Enter event title"
+                            value={eventForm.title}
+                            onChange={(e) =>
+                              setEventForm({
+                                ...eventForm,
+                                title: e.target.value,
+                              })
+                            }
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="admin-event-date"
+                            className="text-white"
+                          >
+                            Event Date & Time
+                          </Label>
+                          {/* Simple ISO datetime input for now */}
+                          <Input
+                            id="admin-event-date"
+                            type="datetime-local"
+                            value={
+                              eventForm.data
+                                ? new Date(eventForm.data)
+                                    .toISOString()
+                                    .slice(0, 16)
+                                : ""
+                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Convert local datetime to ISO
+                              const iso = value
+                                ? new Date(value).toISOString()
+                                : "";
+                              setEventForm({ ...eventForm, data: iso });
+                            }}
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="admin-event-description"
+                          className="text-white"
+                        >
+                          Description
+                        </Label>
+                        <Textarea
+                          id="admin-event-description"
+                          placeholder="Enter event description"
+                          value={eventForm.description}
+                          onChange={(e) =>
+                            setEventForm({
+                              ...eventForm,
+                              description: e.target.value,
+                            })
+                          }
+                          rows={4}
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="admin-event-image"
+                          className="text-white"
+                        >
+                          Image URL (optional)
+                        </Label>
+                        <Input
+                          id="admin-event-image"
+                          placeholder="https://example.com/image.jpg"
+                          value={eventForm.imageUrl}
+                          onChange={(e) =>
+                            setEventForm({
+                              ...eventForm,
+                              imageUrl: e.target.value,
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <Button
+                        onClick={() => createEvent.mutate()}
+                        disabled={createEvent.isPending}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {createEvent.isPending ? "Creating..." : "Create Event"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </div>
+          )}
         </motion.div>
       </DashboardLayout>
     </RequireAuth>
