@@ -4,11 +4,6 @@ import * as React from "react";
 import {
   ArrowUpCircleIcon,
   CalendarIcon,
-  CameraIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
-  FileCodeIcon,
-  FileIcon,
   FileTextIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
@@ -18,10 +13,14 @@ import {
   UsersIcon,
 } from "lucide-react";
 
-import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { roleToDashboard } from "@/lib/auth";
+import { usePathname } from "next/navigation";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Sidebar,
   SidebarContent,
@@ -34,15 +33,10 @@ import {
 import Link from "next/link";
 
 const data = {
-  user: {
-    name: "Elixir User",
-    email: "user@elixir.com",
-    avatar: "/avatar.png",
-  },
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
@@ -66,91 +60,84 @@ const data = {
       icon: MessageSquareIcon,
     },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard",
       icon: SettingsIcon,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Help",
+      url: "/",
       icon: HelpCircleIcon,
     },
     {
       title: "Search",
-      url: "#",
+      url: "/",
       icon: SearchIcon,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: FileIcon,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  const { data: me } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => (await api.get("/auth/me")).data,
+    retry: false,
+  });
+
+  const user = me?.user
+    ? {
+        name: `${me.user.firstName} ${me.user.lastName ?? ""}`.trim(),
+        email: me.user.email,
+        avatar: me.user.avatar ?? "/avatar.png",
+      }
+    : {
+        name: "Guest",
+        email: "",
+        avatar: "/avatar.png",
+      };
+
+  const isAdmin = me?.user?.role === "ADMIN";
+  const isAdminRoute = pathname === "/admin";
+
+  const navMain =
+    isAdmin && isAdminRoute
+      ? [
+          { title: "Overview", url: "/admin", icon: LayoutDashboardIcon },
+          {
+            title: "Create Event",
+            url: "/admin?view=create-event",
+            icon: CalendarIcon,
+          },
+          {
+            title: "Create Blog",
+            url: "/admin?view=create-blog",
+            icon: FileTextIcon,
+          },
+          {
+            title: "Create Mentor",
+            url: "/admin?view=create-mentor",
+            icon: UsersIcon,
+          },
+          {
+            title: "Manage Users",
+            url: "/admin?view=manage-users",
+            icon: UsersIcon,
+          },
+        ]
+      : me?.user
+      ? [
+          {
+            title: "Dashboard",
+            url: roleToDashboard(me.user.role),
+            icon: LayoutDashboardIcon,
+          },
+          ...data.navMain.slice(1),
+        ]
+      : data.navMain;
+
   return (
     <Sidebar
       collapsible="offcanvas"
@@ -164,23 +151,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5 text-white hover:bg-white/10"
             >
-              <Link href="/" className="flex items-center gap-2">
-                <ArrowUpCircleIcon className="h-5 w-5 text-white" />
-                <span className="text-base font-semibold text-white">
-                  Elixir
-                </span>
-              </Link>
+              <div className="flex items-center justify-between gap-2">
+                <Link href="/" className="flex items-center gap-2">
+                  <ArrowUpCircleIcon className="h-5 w-5 text-white" />
+                  <span className="text-base font-semibold text-white">
+                    Elixir
+                  </span>
+                </Link>
+                <SidebarTrigger className="ml-auto text-white hover:bg-white/10" />
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="bg-[#0A0B1A]">
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavMain items={navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter className="border-t border-white/10 bg-[#0A0B1A]">
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
