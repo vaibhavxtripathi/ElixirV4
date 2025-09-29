@@ -1,11 +1,8 @@
 "use client";
 
 import {
-  BellIcon,
-  CreditCardIcon,
   LogOutIcon,
   MoreVerticalIcon,
-  UserCircleIcon,
 } from "lucide-react";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -43,8 +39,9 @@ export function NavUser({
 
   const handleLogout = async () => {
     clearToken();
+    // Instant UI update without full refresh
+    queryClient.setQueryData(["me"], null);
     await queryClient.invalidateQueries({ queryKey: ["me"] });
-    router.refresh();
   };
 
   return (
@@ -56,9 +53,11 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-white/10 data-[state=open]:text-white text-white hover:bg-white/10"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="h-9 w-9 rounded-md">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-md">
+                  {(user.name?.[0] || "").toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium text-white">
@@ -79,9 +78,11 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-md">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-md">
+                    {(user.name?.[0] || "").toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium text-white">
@@ -94,21 +95,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="text-white hover:bg-white/10">
-                <UserCircleIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-white hover:bg-white/10">
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-white hover:bg-white/10">
-                <BellIcon />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="bg-white/10" />
+
             <DropdownMenuItem
               onClick={handleLogout}
               className="text-white hover:bg-white/10"
