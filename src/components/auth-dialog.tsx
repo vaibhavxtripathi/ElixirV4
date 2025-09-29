@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -53,6 +54,7 @@ export default function AuthDialog({
   const [err, setErr] = useState<string | null>(null);
   const id = useId();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
   const registerForm = useForm<RegisterData>({
@@ -85,6 +87,9 @@ export default function AuthDialog({
       }
       const me = await api.get("/auth/me");
       console.log("Me response:", me.data);
+      // Update cache so Navbar updates instantly without refresh
+      queryClient.setQueryData(["me"], me.data);
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
       setOpen(false);
       router.push(roleToDashboard(me.data.user?.role));
     } catch (e: unknown) {
