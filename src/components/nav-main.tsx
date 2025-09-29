@@ -3,6 +3,8 @@
 import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -20,6 +22,10 @@ export function NavMain({
     icon?: LucideIcon;
   }[];
 }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentUrl =
+    pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "");
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -47,13 +53,14 @@ export function NavMain({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}
-                className="text-white hover:bg-white/10 hover:text-white"
+                className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/10 data-[active=true]:text-white"
+                isActive={currentUrl === item.url}
                 asChild
               >
-                <a href={item.url}>
+                <Link href={item.url}>
                   {item.icon && <item.icon className="text-white" />}
                   <span className="text-white">{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
