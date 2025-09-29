@@ -16,14 +16,14 @@ async function getMentors() {
 
 import Image from "next/image";
 import { FaLinkedin } from "react-icons/fa6";
-import { CheckCircle2, Users, Heart } from "lucide-react";
+import { CheckCircle2, Heart } from "lucide-react";
 
 export default async function MentorsPage() {
   const data = await getMentors();
   const mentors = data.mentors || [];
 
   return (
-    <main className="self-center max-w-6xl px-4 pt-36 pb-18">
+    <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
       <h1 className="text-2xl font-bold mb-6">Mentors</h1>
       <div className="flex flex-wrap justify-center gap-8">
         {mentors.map(
@@ -40,7 +40,7 @@ export default async function MentorsPage() {
           }) => (
             <div
               key={m.id}
-              className="relative w-[320px] flex-[0_0_320px] overflow-hidden rounded-[28px] border border-white/10 bg-[#0B0C14] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.45)] transition-shadow duration-300"
+              className="relative w-[320px] flex-[0_0_320px] overflow-hidden rounded-[28px] border border-white/10 bg-[#0B0C14] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.45)] transition-shadow duration-300 group"
             >
               {/* Image */}
               <div className="relative h-[420px] w-full">
@@ -48,8 +48,9 @@ export default async function MentorsPage() {
                   src={m.imageUrl || m.avatar || "/avatar.png"}
                   alt={m.name}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority
                 />
                 {/* Curved corners effect */}
                 <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-white/10" />
@@ -70,8 +71,11 @@ export default async function MentorsPage() {
 
                   <div className="mt-4 flex items-center gap-2">
                     <div className="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">
-                      <Users className="h-4 w-4" />
-                      <span>312</span>
+                      {m.club?.name && (
+                        <>
+                          <span>{m.club.name}</span>
+                        </>
+                      )}
                     </div>
                     <div className="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">
                       <Heart className="h-4 w-4" />
@@ -94,11 +98,6 @@ export default async function MentorsPage() {
                       )}
                     </a>
                   </div>
-                  {m.club?.name && (
-                    <div className="mt-2 text-xs text-white/60">
-                      {m.club.name}
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
