@@ -72,8 +72,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -81,6 +79,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -103,19 +103,21 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const schema = z.object({
-  id: z.number(),
+  id: z.union([z.string(), z.number()]), // Support both string and number IDs
   header: z.string(),
   type: z.string(),
   status: z.string(),
   target: z.string(),
   limit: z.string(),
   reviewer: z.string(),
+  backendId: z.string().optional(),
+  entity: z.string().optional(),
 });
 
 // Create a separate component for the drag handle
-function DragHandle({ id }: { id: number }) {
+function DragHandle({ id }: { id: string | number }) {
   const { attributes, listeners } = useSortable({
-    id,
+    id: id.toString(),
   });
 
   return (
@@ -338,10 +340,20 @@ export function DataTable({
   data: initialData,
   actions,
   views,
+  onUpdate,
+  onDelete,
+  clubsData,
 }: {
   data?: z.infer<typeof schema>[];
   actions?: (row: z.infer<typeof schema>) => React.ReactNode;
   views?: Array<{ label: string; rows: z.infer<typeof schema>[] }>;
+  onUpdate?: (
+    row: z.infer<typeof schema>,
+    field: "header" | "target" | "limit" | "reviewer",
+    value: string
+  ) => Promise<void> | void;
+  onDelete?: (row: z.infer<typeof schema>) => Promise<void> | void;
+  clubsData?: { clubs: Array<{ id: string; name: string }> };
 }) {
   const [selectedView, setSelectedView] = React.useState(0);
   const initial = views && views.length > 0 ? views[0].rows : initialData || [];
@@ -357,6 +369,9 @@ export function DataTable({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [updatingCells, setUpdatingCells] = React.useState<Set<string>>(
+    new Set()
+  );
   const sortableId = React.useId();
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -365,7 +380,7 @@ export function DataTable({
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id) || [],
+    () => data?.map(({ id }) => id.toString()) || [],
     [data]
   );
 
@@ -379,7 +394,6 @@ export function DataTable({
   } = (() => {
     switch (activeLabel) {
       case "Users":
-      case "Club Heads":
         return {
           header: "Name",
           target: "Role",
@@ -387,7 +401,12 @@ export function DataTable({
           reviewer: "Email",
         };
       case "Events":
-        return { header: "Title", target: "Date", limit: "Club", reviewer: "" };
+        return {
+          header: "Title",
+          target: "Date",
+          limit: "Club",
+          reviewer: "Image URL",
+        };
       case "Blogs":
         return { header: "Title", target: "Status", limit: "", reviewer: "" };
       case "Mentors":
@@ -400,9 +419,9 @@ export function DataTable({
       case "Testimonials":
         return {
           header: "Name",
-          target: "Snippet",
-          limit: "Club",
-          reviewer: "",
+          target: "Batch Year",
+          limit: "Image URL",
+          reviewer: "Content",
         };
       default:
         return {
@@ -454,30 +473,349 @@ export function DataTable({
     {
       accessorKey: "header",
       header: labelMap.header,
-      cell: ({ row }) => {
-        return <TableCellViewer item={row.original} />;
-      },
+      cell: ({ row }) => (
+        <Input
+          defaultValue={row.original.header}
+          className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+            updatingCells.has(`${row.original.id}-header`) ? "opacity-50" : ""
+          }`}
+          disabled={updatingCells.has(`${row.original.id}-header`)}
+          onBlur={async (e) => {
+            const value = e.currentTarget.value;
+            if (onUpdate && value !== row.original.header) {
+              const cellKey = `${row.original.id}-header`;
+              setUpdatingCells((prev) => new Set(prev).add(cellKey));
+              try {
+                await onUpdate(row.original, "header", value);
+                // Update local state after successful backend update
+                setData((prevData) =>
+                  prevData.map((item) =>
+                    item.id === row.original.id
+                      ? { ...item, header: value }
+                      : item
+                  )
+                );
+              } catch (error) {
+                console.error("Update failed:", error);
+                // Reset input to original value on error
+                e.currentTarget.value = row.original.header;
+              } finally {
+                setUpdatingCells((prev) => {
+                  const newSet = new Set(prev);
+                  newSet.delete(cellKey);
+                  return newSet;
+                });
+              }
+            }
+          }}
+        />
+      ),
       enableHiding: false,
     },
     // target (role/date/status/expertise)
     {
       accessorKey: "target",
       header: () => <div className="w-full text-right">{labelMap.target}</div>,
-      cell: ({ row }) => (
-        <div className="text-right">{row.original.target}</div>
-      ),
+      cell: ({ row }) => {
+        const currentView = views?.[selectedView]?.label || "";
+
+        // Use dropdown for Users role and club selection
+        if (currentView === "Users") {
+          const isRoleField = labelMap.target === "Role";
+          const isClubField = labelMap.target === "Club";
+
+          if (isRoleField) {
+            return (
+              <Select
+                value={row.original.target}
+                onValueChange={async (value) => {
+                  if (onUpdate && value !== row.original.target) {
+                    const cellKey = `${row.original.id}-target`;
+                    setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                    try {
+                      await onUpdate(row.original, "target", value);
+                      setData((prevData) =>
+                        prevData.map((item) =>
+                          item.id === row.original.id
+                            ? { ...item, target: value }
+                            : item
+                        )
+                      );
+                    } catch (error) {
+                      console.error("Update failed:", error);
+                    } finally {
+                      setUpdatingCells((prev) => {
+                        const newSet = new Set(prev);
+                        newSet.delete(cellKey);
+                        return newSet;
+                      });
+                    }
+                  }
+                }}
+                disabled={updatingCells.has(`${row.original.id}-target`)}
+              >
+                <SelectTrigger
+                  className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-right ${
+                    updatingCells.has(`${row.original.id}-target`)
+                      ? "opacity-50"
+                      : ""
+                  }`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="STUDENT">Student</SelectItem>
+                  <SelectItem value="CLUB_HEAD">Club Head</SelectItem>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            );
+          }
+
+          if (isClubField) {
+            return (
+              <Select
+                value={row.original.target}
+                onValueChange={async (value) => {
+                  if (onUpdate && value !== row.original.target) {
+                    const cellKey = `${row.original.id}-target`;
+                    setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                    try {
+                      await onUpdate(row.original, "target", value);
+                      setData((prevData) =>
+                        prevData.map((item) =>
+                          item.id === row.original.id
+                            ? { ...item, target: value }
+                            : item
+                        )
+                      );
+                    } catch (error) {
+                      console.error("Update failed:", error);
+                    } finally {
+                      setUpdatingCells((prev) => {
+                        const newSet = new Set(prev);
+                        newSet.delete(cellKey);
+                        return newSet;
+                      });
+                    }
+                  }
+                }}
+                disabled={updatingCells.has(`${row.original.id}-target`)}
+              >
+                <SelectTrigger
+                  className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-right ${
+                    updatingCells.has(`${row.original.id}-target`)
+                      ? "opacity-50"
+                      : ""
+                  }`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {clubsData?.clubs?.map((club) => (
+                    <SelectItem key={club.id} value={club.id}>
+                      {club.name}
+                    </SelectItem>
+                  )) || (
+                    <>
+                      <SelectItem value="TECH">Tech</SelectItem>
+                      <SelectItem value="DESIGN">Design</SelectItem>
+                      <SelectItem value="BUSINESS">Business</SelectItem>
+                      <SelectItem value="MARKETING">Marketing</SelectItem>
+                      <SelectItem value="NONE">None</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            );
+          }
+        }
+
+        // Default input for other fields
+        return (
+          <Input
+            defaultValue={row.original.target}
+            className={`h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background ${
+              updatingCells.has(`${row.original.id}-target`) ? "opacity-50" : ""
+            }`}
+            disabled={updatingCells.has(`${row.original.id}-target`)}
+            onBlur={async (e) => {
+              const value = e.currentTarget.value;
+              if (onUpdate && value !== row.original.target) {
+                const cellKey = `${row.original.id}-target`;
+                setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                try {
+                  await onUpdate(row.original, "target", value);
+                  setData((prevData) =>
+                    prevData.map((item) =>
+                      item.id === row.original.id
+                        ? { ...item, target: value }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Update failed:", error);
+                  e.currentTarget.value = row.original.target;
+                } finally {
+                  setUpdatingCells((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(cellKey);
+                    return newSet;
+                  });
+                }
+              }
+            }}
+          />
+        );
+      },
     },
     // limit (club)
     {
       accessorKey: "limit",
       header: () => <div className="w-full text-right">{labelMap.limit}</div>,
-      cell: ({ row }) => <div className="text-right">{row.original.limit}</div>,
+      cell: ({ row }) => {
+        const currentView = views?.[selectedView]?.label || "";
+
+        // Use dropdown for Users club selection
+        if (currentView === "Users" && labelMap.limit === "Club") {
+          return (
+            <Select
+              value={row.original.limit}
+              onValueChange={async (value) => {
+                if (onUpdate && value !== row.original.limit) {
+                  const cellKey = `${row.original.id}-limit`;
+                  setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                  try {
+                    await onUpdate(row.original, "limit", value);
+                    setData((prevData) =>
+                      prevData.map((item) =>
+                        item.id === row.original.id
+                          ? { ...item, limit: value }
+                          : item
+                      )
+                    );
+                  } catch (error) {
+                    console.error("Update failed:", error);
+                  } finally {
+                    setUpdatingCells((prev) => {
+                      const newSet = new Set(prev);
+                      newSet.delete(cellKey);
+                      return newSet;
+                    });
+                  }
+                }
+              }}
+              disabled={updatingCells.has(`${row.original.id}-limit`)}
+            >
+              <SelectTrigger
+                className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-right ${
+                  updatingCells.has(`${row.original.id}-limit`)
+                    ? "opacity-50"
+                    : ""
+                }`}
+              >
+                <SelectValue
+                  placeholder={(row.original as any).clubName || "Select club"}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {clubsData?.clubs?.map((club) => (
+                  <SelectItem key={club.id} value={club.id}>
+                    {club.name}
+                  </SelectItem>
+                )) || (
+                  <>
+                    <SelectItem value="TECH">Tech</SelectItem>
+                    <SelectItem value="DESIGN">Design</SelectItem>
+                    <SelectItem value="BUSINESS">Business</SelectItem>
+                    <SelectItem value="MARKETING">Marketing</SelectItem>
+                    <SelectItem value="NONE">None</SelectItem>
+                  </>
+                )}
+              </SelectContent>
+            </Select>
+          );
+        }
+
+        // Default input for other fields
+        return (
+          <Input
+            defaultValue={row.original.limit}
+            className={`h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background ${
+              updatingCells.has(`${row.original.id}-limit`) ? "opacity-50" : ""
+            }`}
+            disabled={updatingCells.has(`${row.original.id}-limit`)}
+            onBlur={async (e) => {
+              const value = e.currentTarget.value;
+              if (onUpdate && value !== row.original.limit) {
+                const cellKey = `${row.original.id}-limit`;
+                setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                try {
+                  await onUpdate(row.original, "limit", value);
+                  setData((prevData) =>
+                    prevData.map((item) =>
+                      item.id === row.original.id
+                        ? { ...item, limit: value }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Update failed:", error);
+                  e.currentTarget.value = row.original.limit;
+                } finally {
+                  setUpdatingCells((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(cellKey);
+                    return newSet;
+                  });
+                }
+              }
+            }}
+          />
+        );
+      },
     },
     // reviewer (email/link)
     {
       accessorKey: "reviewer",
       header: labelMap.reviewer,
-      cell: ({ row }) => row.original.reviewer,
+      cell: ({ row }) => (
+        <Input
+          defaultValue={row.original.reviewer}
+          className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+            updatingCells.has(`${row.original.id}-reviewer`) ? "opacity-50" : ""
+          }`}
+          disabled={updatingCells.has(`${row.original.id}-reviewer`)}
+          onBlur={async (e) => {
+            const value = e.currentTarget.value;
+            if (onUpdate && value !== row.original.reviewer) {
+              const cellKey = `${row.original.id}-reviewer`;
+              setUpdatingCells((prev) => new Set(prev).add(cellKey));
+              try {
+                await onUpdate(row.original, "reviewer", value);
+                // Update local state after successful backend update
+                setData((prevData) =>
+                  prevData.map((item) =>
+                    item.id === row.original.id
+                      ? { ...item, reviewer: value }
+                      : item
+                  )
+                );
+              } catch (error) {
+                console.error("Update failed:", error);
+                // Reset input to original value on error
+                e.currentTarget.value = row.original.reviewer;
+              } finally {
+                setUpdatingCells((prev) => {
+                  const newSet = new Set(prev);
+                  newSet.delete(cellKey);
+                  return newSet;
+                });
+              }
+            }
+          }}
+        />
+      ),
     },
     // actions
     {
@@ -497,7 +835,38 @@ export function DataTable({
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            {/* Only show delete button for entities that support deletion */}
+            {row.original.entity === "blog" ||
+            row.original.entity === "mentor" ||
+            row.original.entity === "testimonial" ||
+            row.original.entity === "user" ||
+            row.original.entity === "event" ? (
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (onDelete) {
+                    try {
+                      await onDelete(row.original);
+                      // Remove item from local state after successful deletion
+                      setData((prevData) =>
+                        prevData.filter((item) => item.id !== row.original.id)
+                      );
+                    } catch (error) {
+                      console.error("Delete failed:", error);
+                    }
+                  }
+                }}
+                className="text-red-500 hover:text-red-700"
+              >
+                Delete
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                disabled
+                className="text-gray-400 cursor-not-allowed"
+              >
+                Delete (Not Supported)
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -536,6 +905,14 @@ export function DataTable({
       setData(initialData);
     }
   }, [selectedView, views, initialData]);
+
+  // Force re-render when views data changes (for new items)
+  React.useEffect(() => {
+    if (views && views[selectedView]) {
+      const newData = views[selectedView].rows;
+      setData(newData);
+    }
+  }, [views, selectedView]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -642,7 +1019,7 @@ export function DataTable({
       </div>
       <TabsContent
         value="outline"
-        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+        className="relative flex flex-col gap-4 overflow-hidden px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
           <DndContext
@@ -837,7 +1214,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             Showing total visitors for the last 6 months
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-1 flex-col gap-4 overflow-y-auto py-4 text-sm">
+        <div className="flex flex-1 flex-col gap-4 overflow-y-hidden py-4 text-sm">
           {!isMobile && (
             <>
               <ChartContainer config={chartConfig}>
