@@ -1,11 +1,5 @@
 "use client";
-import {
-  AnthropicLogo,
-  ForkIcon,
-  MetaLogo,
-  OpenAILogo,
-  SlackLogo,
-} from "@/icons/general";
+import { AnthropicLogo, ForkIcon, OpenAILogo } from "@/icons/general";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DivideX } from "../divide";
@@ -152,7 +146,13 @@ export const ConnectYourTooklsSkeleton = () => {
       >
         <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-inherit  shadow-xl">
           <Scale />
-          <Image src="/elixir-logo.png" height={8} width={8} alt="Elixir" className="relative z-20 h-8 w-8" />
+          <Image
+            src="/elixir-logo.png"
+            height={8}
+            width={8}
+            alt="Elixir"
+            className="relative z-20 h-8 w-8"
+          />
         </div>
         <div className="mt-12 flex items-center gap-2">
           <IntegrationsLogo />
