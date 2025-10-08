@@ -46,15 +46,14 @@ model Club {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  imageUrl    String?
-  date        DateTime
-  clubId      String
-  club        Club     @relation(fields: [clubId], references: [id])
-  createdAt   DateTime @default(now())
-
+  id            String              @id @default(cuid())
+  title         String
+  description   String
+  imageUrl      String?
+  date          DateTime
+  clubId        String
+  club          Club                @relation(fields: [clubId], references: [id])
+  createdAt     DateTime            @default(now())
   registrations EventRegistration[]
 
   @@map("events")
