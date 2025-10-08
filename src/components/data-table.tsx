@@ -338,14 +338,12 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 
 export function DataTable({
   data: initialData,
-  actions,
   views,
   onUpdate,
   onDelete,
   clubsData,
 }: {
   data?: z.infer<typeof schema>[];
-  actions?: (row: z.infer<typeof schema>) => React.ReactNode;
   views?: Array<{ label: string; rows: z.infer<typeof schema>[] }>;
   onUpdate?: (
     row: z.infer<typeof schema>,
@@ -715,7 +713,10 @@ export function DataTable({
                 }`}
               >
                 <SelectValue
-                  placeholder={(row.original as any).clubName || "Select club"}
+                  placeholder={
+                    (row.original as { clubName?: string }).clubName ||
+                    "Select club"
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
