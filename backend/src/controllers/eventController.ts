@@ -118,3 +118,76 @@ export const getRegisteredEvents = async (req: any, res: Response) => {
     res.status(500).json({ message: "Error fetching registered events" });
   }
 };
+
+// Update event => admin only
+export const updateEvent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { title, description, data, imageUrl, clubId } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Event ID is required" });
+    }
+
+    // Check if event exists
+    const event = await prisma.event.findUnique({
+      where: { id },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Update event
+    const updatedEvent = await prisma.event.update({
+      where: { id },
+      data: {
+        ...(title && { title }),
+        ...(description && { description }),
+        ...(data && { date: new Date(data) }),
+        ...(imageUrl && { imageUrl }),
+        ...(clubId && { clubId }),
+      },
+      include: {
+        club: {
+          select: { name: true, imageUrl: true },
+        },
+      },
+    });
+
+    res.json({ event: updatedEvent, message: "Event updated successfully" });
+  } catch (error) {
+    console.error("Error updating event:", error);
+    res.status(500).json({ message: "Error updating event" });
+  }
+};
+
+// Delete event => admin only
+export const deleteEvent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Event ID is required" });
+    }
+
+    // Check if event exists
+    const event = await prisma.event.findUnique({
+      where: { id },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Delete event (this will cascade delete related records due to Prisma relations)
+    await prisma.event.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ message: "Error deleting event" });
+  }
+};
