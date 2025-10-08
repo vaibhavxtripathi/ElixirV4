@@ -21,38 +21,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Users,
-  Calendar,
-  FileText,
-  UserCheck,
-  TrendingUp,
-  Plus,
-} from "lucide-react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Users, Calendar, Plus } from "lucide-react";
 import { toast } from "sonner";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
 import { motion } from "framer-motion";
 import { containerStagger, fadeInUp, fadeIn } from "@/lib/motion";
 import { SectionCards } from "@/components/section-cards";
@@ -62,13 +35,6 @@ import {
   schema as settingsTableSchema,
 } from "@/components/data-table";
 import { z } from "zod";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
 interface User {
@@ -109,9 +75,8 @@ interface Mentor {
   club?: { name: string };
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const view = searchParams.get("view") || "overview";
   const [blogForm, setBlogForm] = useState({
     title: "",
@@ -229,77 +194,77 @@ export default function AdminDashboard() {
     },
   });
 
-  const changeRole = useMutation({
-    mutationFn: async ({
-      userId,
-      newRole,
-    }: {
-      userId: string;
-      newRole: string;
-    }) => (await api.put(`/users/${userId}/role`, { newRole })).data,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["users-list"] });
-      toast.success("Role updated");
-    },
-    onError: (e: unknown) => {
-      const maybeAxiosError = e as {
-        response?: { data?: { message?: string } };
-      };
-      toast.error(
-        maybeAxiosError.response?.data?.message || "Failed to change role"
-      );
-    },
-  });
+  // const changeRole = useMutation({
+  //   mutationFn: async ({
+  //     userId,
+  //     newRole,
+  //   }: {
+  //     userId: string;
+  //     newRole: string;
+  //   }) => (await api.put(`/users/${userId}/role`, { newRole })).data,
+  //   onSuccess: () => {
+  //     qc.invalidateQueries({ queryKey: ["users-list"] });
+  //     toast.success("Role updated");
+  //   },
+  //   onError: (e: unknown) => {
+  //     const maybeAxiosError = e as {
+  //       response?: { data?: { message?: string } };
+  //     };
+  //     toast.error(
+  //       maybeAxiosError.response?.data?.message || "Failed to change role"
+  //     );
+  //   },
+  // });
 
-  const assignClub = useMutation({
-    mutationFn: async ({
-      userId,
-      clubId,
-    }: {
-      userId: string;
-      clubId: string;
-    }) => (await api.put(`/users/${userId}/club`, { clubId })).data,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["users-list"] });
-      toast.success("Assigned to club");
-    },
-    onError: (e: unknown) => {
-      const maybeAxiosError = e as {
-        response?: { data?: { message?: string } };
-      };
-      toast.error(
-        maybeAxiosError.response?.data?.message || "Failed to assign"
-      );
-    },
-  });
+  // const assignClub = useMutation({
+  //   mutationFn: async ({
+  //     userId,
+  //     clubId,
+  //   }: {
+  //     userId: string;
+  //     clubId: string;
+  //   }) => (await api.put(`/users/${userId}/club`, { clubId })).data,
+  //   onSuccess: () => {
+  //     qc.invalidateQueries({ queryKey: ["users-list"] });
+  //     toast.success("Assigned to club");
+  //   },
+  //   onError: (e: unknown) => {
+  //     const maybeAxiosError = e as {
+  //       response?: { data?: { message?: string } };
+  //     };
+  //     toast.error(
+  //       maybeAxiosError.response?.data?.message || "Failed to assign"
+  //     );
+  //   },
+  // });
 
-  const [clubSel, setClubSel] = useState<Record<string, string>>({});
+  // const [clubSel, setClubSel] = useState<Record<string, string>>({});
 
   // Calculate metrics
-  const totalUsers = data?.users?.length || 0;
-  const totalEvents = eventsData?.events?.length || 0;
-  const totalBlogs = blogsData?.blogs?.length || 0;
-  const totalMentors = mentorsData?.mentors?.length || 0;
-  const totalClubs = clubsData?.clubs?.length || 0;
+  // const totalUsers = data?.users?.length || 0;
+  // const totalEvents = eventsData?.events?.length || 0;
+  // const totalBlogs = blogsData?.blogs?.length || 0;
+  // const totalMentors = mentorsData?.mentors?.length || 0;
+  // const totalClubs = clubsData?.clubs?.length || 0;
 
   // Sample data for charts (you can replace with real data)
-  const userGrowthData = [
-    { month: "Jan", users: 65 },
-    { month: "Feb", users: 78 },
-    { month: "Mar", users: 90 },
-    { month: "Apr", users: 105 },
-    { month: "May", users: 120 },
-    { month: "Jun", users: 135 },
-  ];
+  // const userGrowthData = [
+  //   { month: "Jan", users: 65 },
+  //   { month: "Feb", users: 78 },
+  //   { month: "Mar", users: 90 },
+  //   { month: "Apr", users: 105 },
+  //   { month: "May", users: 120 },
+  //   { month: "Jun", users: 135 },
+  // ];
 
-  const eventData = [
-    { name: "Tech Talks", value: 35 },
-    { name: "Workshops", value: 25 },
-    { name: "Hackathons", value: 20 },
-    { name: "Other", value: 20 },
-  ];
+  // const eventData = [
+  //   { name: "Tech Talks", value: 35 },
+  //   { name: "Workshops", value: 25 },
+  //   { name: "Hackathons", value: 20 },
+  //   { name: "Other", value: 20 },
+  // ];
 
-  const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
+  // const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
   const showOverview = view === "overview";
   const showCreateBlog = view === "create-blog";
@@ -466,7 +431,7 @@ export default function AdminDashboard() {
                         id: `user-${u.id}-${idx}`, // Stable ID based on backend ID
                         header: `${u.firstName} ${u.lastName}`,
                         target: u.role,
-                        limit: (u.club as any)?.id || "", // Store club ID for dropdown
+                        limit: (u.club as { id: string } | undefined)?.id || "", // Store club ID for dropdown
                         reviewer: u.email,
                         backendId: u.id,
                         entity: "user",
@@ -508,7 +473,16 @@ export default function AdminDashboard() {
                     );
 
                     const testimonials = (testimonialsData?.items || []).map(
-                      (t: any, idx: number) => ({
+                      (
+                        t: {
+                          id: string;
+                          name?: string;
+                          batchYear?: number;
+                          imageUrl?: string;
+                          content?: string;
+                        },
+                        idx: number
+                      ) => ({
                         id: `testimonial-${t.id}-${idx}`,
                         header: t.name || "",
                         target: t.batchYear?.toString() || "",
@@ -650,11 +624,21 @@ export default function AdminDashboard() {
                               }
                               qc.invalidateQueries({ queryKey: ["mentors"] });
                             }
-                          } catch (e: any) {
+                          } catch (e: unknown) {
                             console.error("Update error:", e);
                             const errorMessage =
-                              e?.response?.data?.message ||
-                              e?.message ||
+                              (
+                                e as {
+                                  response?: { data?: { message?: string } };
+                                  message?: string;
+                                }
+                              )?.response?.data?.message ||
+                              (
+                                e as {
+                                  response?: { data?: { message?: string } };
+                                  message?: string;
+                                }
+                              )?.message ||
                               "Failed to update item. Please try again.";
                             toast.error(errorMessage);
                           }
@@ -695,44 +679,25 @@ export default function AdminDashboard() {
                               toast.success("Event deleted successfully");
                               qc.invalidateQueries({ queryKey: ["events"] });
                             }
-                          } catch (e: any) {
+                          } catch (e: unknown) {
                             console.error("Delete error:", e);
                             const errorMessage =
-                              e?.response?.data?.message ||
-                              e?.message ||
+                              (
+                                e as {
+                                  response?: { data?: { message?: string } };
+                                  message?: string;
+                                }
+                              )?.response?.data?.message ||
+                              (
+                                e as {
+                                  response?: { data?: { message?: string } };
+                                  message?: string;
+                                }
+                              )?.message ||
                               "Failed to delete item. Please try again.";
                             toast.error(errorMessage);
                           }
                         }}
-                        actions={(row) => (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                className="flex size-8 text-white data-[state=open]:bg-white/10"
-                                size="icon"
-                              >
-                                <MoreHorizontal />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                              align="end"
-                              className="w-40 bg-[#0A0B1A] border-white/10 text-white"
-                            >
-                              <DropdownMenuItem className="text-white hover:bg-white/10">
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-white hover:bg-white/10">
-                                Duplicate
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator className="bg-white/10" />
-                              <DropdownMenuItem className="text-red-400 hover:bg-red-500/10">
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
                       />
                     );
                   })()}
@@ -1083,5 +1048,13 @@ export default function AdminDashboard() {
         </motion.div>
       </DashboardLayout>
     </RequireAuth>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminDashboardContent />
+    </Suspense>
   );
 }
