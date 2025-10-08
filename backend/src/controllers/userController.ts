@@ -165,3 +165,75 @@ export const getPlatformAnalytics = async (req: any, res: Response) => {
     res.status(500).json({ message: "Error fetching platform analytics" });
   }
 };
+
+// Update user => admin only
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, clubId } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update user
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
+        ...(email && { email }),
+        ...(clubId !== undefined && { clubId }),
+      },
+      include: {
+        club: {
+          select: { name: true },
+        },
+      },
+    });
+
+    res.json({ user: updatedUser, message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Error updating user" });
+  }
+};
+
+// Delete user => admin only
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete user (this will cascade delete related records due to Prisma relations)
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Error deleting user" });
+  }
+};
