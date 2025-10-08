@@ -15,14 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  Users,
-  Plus,
-  TrendingUp,
-  Activity,
-  Clock,
-} from "lucide-react";
+import { Calendar, Plus, TrendingUp, Activity, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { DateTimePicker } from "@/components/date-time-picker";
