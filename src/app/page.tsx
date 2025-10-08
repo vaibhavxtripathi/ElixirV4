@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { DemoSection } from "@/components/DemoSection";
 import { AboutElixir } from "@/components/AboutElixir";
 import dynamic from "next/dynamic";
+import { FAQSection } from "@/components/FAQ";
 
 // Lazy load heavy components
 const HowItWorks = dynamic(
@@ -40,35 +41,40 @@ async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
       name: "John Doe",
       content: "Elixir helped me land my dream job at Google!",
       batchYear: "2023",
-      avatar: "/avatar.png",
+      avatar:
+        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
     },
     {
       id: 2,
       name: "Jane Smith",
       content: "The community support here is incredible.",
       batchYear: "2022",
-      avatar: "/avatar.png",
+      avatar:
+        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
     },
     {
       id: 3,
       name: "Mike Johnson",
       content: "Best tech community I've ever been part of.",
       batchYear: "2024",
-      avatar: "/avatar.png",
+      avatar:
+        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
     },
     {
       id: 4,
       name: "Sarah Wilson",
       content: "Amazing workshops and networking opportunities!",
       batchYear: "2023",
-      avatar: "/avatar.png",
+      avatar:
+        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
     },
     {
       id: 5,
       name: "Alex Chen",
       content: "The mentorship program changed my career trajectory.",
       batchYear: "2022",
-      avatar: "/avatar.png",
+      avatar:
+        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
     },
   ];
 
@@ -109,7 +115,11 @@ export default async function HomePage() {
     author: {
       name: t.name ?? "Anonymous",
       handle: t.batchYear ? `Batch ${t.batchYear}` : t.handle ?? "",
-      avatar: t.imageUrl ?? t.image ?? t.avatar ?? "/avatar.png",
+      avatar:
+        t.imageUrl ??
+        t.image ??
+        t.avatar ??
+        "https://ui-avatars.com/api/?name=Testimonial&background=random&color=fff",
     },
     text: t.content ?? t.text ?? "",
     href: t.href,
@@ -141,6 +151,8 @@ export default async function HomePage() {
           variant="secondary"
         />
       </section>
+
+      <FAQSection />
     </main>
   );
 }
