@@ -104,7 +104,7 @@ async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
 
     console.log("API returned empty data, using fallback");
     return fallbackData;
-  } catch (error) {
+  } catch {
     return fallbackData;
   }
 }
