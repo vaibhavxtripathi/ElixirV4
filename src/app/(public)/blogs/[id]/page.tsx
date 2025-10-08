@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 async function getBlog(id: string) {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const encoded = encodeURIComponent(id);
@@ -14,7 +12,7 @@ async function getBlog(id: string) {
     if (!res.ok) return null;
     const all = await res.json();
     const found = (all?.blogs || []).find(
-      (b: any) => String(b.id) === String(id)
+      (b: { id: string | number }) => String(b.id) === String(id)
     );
     if (!found) return null;
     return { blog: found };
