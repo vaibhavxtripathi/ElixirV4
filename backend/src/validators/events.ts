@@ -16,3 +16,14 @@ export const listEventsSchema = z.object({
     sort: z.enum(["asc", "desc"]).optional(),
   }),
 });
+
+export const updateEventSchema = z.object({
+  params: z.object({ id: z.string().min(1) }),
+  body: z.object({
+    title: z.string().min(3).optional(),
+    description: z.string().min(10).optional(),
+    data: z.string().min(1).optional(),
+    imageUrl: z.string().url().optional(),
+    clubId: z.string().optional(),
+  }),
+});
