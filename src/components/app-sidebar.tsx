@@ -91,12 +91,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ? {
         name: `${me.user.firstName} ${me.user.lastName ?? ""}`.trim(),
         email: me.user.email,
-        avatar: me.user.avatar ?? "/avatar.png",
+        avatar:
+          me.user.avatar ??
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            me.user.firstName
+          )}&background=random&color=fff`,
       }
     : {
         name: "Guest",
         email: "",
-        avatar: "/avatar.png",
+        avatar:
+          "https://ui-avatars.com/api/?name=Guest&background=random&color=fff",
       };
 
   const isAdmin = me?.user?.role === "ADMIN";
