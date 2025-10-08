@@ -89,6 +89,7 @@ interface Event {
   id: string;
   title: string;
   date: string;
+  imageUrl?: string;
   club?: { name: string };
 }
 
@@ -124,6 +125,9 @@ export default function AdminDashboard() {
     onSuccess: () => {
       setBlogForm({ title: "", content: "", imageUrl: "", status: "DRAFT" });
       toast.success("Blog created");
+      // Invalidate all relevant queries to refresh data
+      qc.invalidateQueries({ queryKey: ["blogs"] });
+      qc.invalidateQueries({ queryKey: ["users-list"] }); // For admin dashboard
     },
     onError: (e: unknown) => {
       const maybeAxiosError = e as {
@@ -135,6 +139,7 @@ export default function AdminDashboard() {
     },
   });
   const qc = useQueryClient();
+  // Simple queries without complex staggering
   const { data, isLoading, error } = useQuery({
     queryKey: ["users-list"],
     queryFn: async () => (await api.get("/users")).data,
@@ -145,7 +150,6 @@ export default function AdminDashboard() {
     queryFn: async () => (await api.get("/clubs")).data,
   });
 
-  // Additional queries for dashboard metrics
   const { data: eventsData } = useQuery({
     queryKey: ["events"],
     queryFn: async () => (await api.get("/events")).data,
@@ -159,6 +163,11 @@ export default function AdminDashboard() {
   const { data: mentorsData } = useQuery({
     queryKey: ["mentors"],
     queryFn: async () => (await api.get("/mentors")).data,
+  });
+
+  const { data: testimonialsData } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: async () => (await api.get("/testimonials")).data,
   });
 
   // Admin create-event form state and mutation (aligned with club-head)
@@ -206,6 +215,9 @@ export default function AdminDashboard() {
         clubId: "",
       });
       toast.success("Mentor created");
+      // Invalidate all relevant queries to refresh data
+      qc.invalidateQueries({ queryKey: ["mentors"] });
+      qc.invalidateQueries({ queryKey: ["users-list"] }); // For admin dashboard
     },
     onError: (e: unknown) => {
       const maybeAxiosError = e as {
@@ -451,29 +463,30 @@ export default function AdminDashboard() {
                   {(() => {
                     const users = (data?.users || []).map(
                       (u: User, idx: number) => ({
-                        id: idx + 1,
+                        id: `user-${u.id}-${idx}`, // Stable ID based on backend ID
                         header: `${u.firstName} ${u.lastName}`,
                         target: u.role,
-                        limit: u.club?.name || "-",
+                        limit: (u.club as any)?.id || "", // Store club ID for dropdown
                         reviewer: u.email,
                         backendId: u.id,
                         entity: "user",
+                        clubName: u.club?.name || "-", // Store club name for display
                       })
                     );
                     const events = (eventsData?.events || []).map(
                       (e: Event, idx: number) => ({
-                        id: 1000 + idx + 1,
+                        id: `event-${e.id}-${idx}`, // Stable ID based on backend ID
                         header: e.title,
                         target: new Date(e.date).toLocaleDateString(),
                         limit: e.club?.name || "-",
-                        reviewer: "",
+                        reviewer: e.imageUrl || "",
                         backendId: e.id,
                         entity: "event",
                       })
                     );
                     const blogs = (blogsData?.blogs || []).map(
                       (b: Blog, idx: number) => ({
-                        id: 2000 + idx + 1,
+                        id: `blog-${b.id}-${idx}`, // Stable ID based on backend ID
                         header: b.title,
                         target: b.status,
                         limit: "",
@@ -484,7 +497,7 @@ export default function AdminDashboard() {
                     );
                     const mentors = (mentorsData?.mentors || []).map(
                       (m: Mentor, idx: number) => ({
-                        id: 3000 + idx + 1,
+                        id: `mentor-${m.id}-${idx}`, // Stable ID based on backend ID
                         header: m.name,
                         target: m.expertise,
                         limit: m.club?.name || "-",
@@ -494,23 +507,40 @@ export default function AdminDashboard() {
                       })
                     );
 
+                    const testimonials = (testimonialsData?.items || []).map(
+                      (t: any, idx: number) => ({
+                        id: `testimonial-${t.id}-${idx}`,
+                        header: t.name || "",
+                        target: t.batchYear?.toString() || "",
+                        limit: t.imageUrl || "",
+                        reviewer: t.content || "",
+                        backendId: t.id,
+                        entity: "testimonial",
+                      })
+                    );
+
                     const views = [
                       { label: "Users", rows: users },
-                      { label: "Club Heads", rows: users.filter(() => true) },
                       { label: "Events", rows: events },
                       { label: "Blogs", rows: blogs },
                       { label: "Mentors", rows: mentors },
-                      { label: "Testimonials", rows: [] },
+                      { label: "Testimonials", rows: testimonials },
                     ];
 
                     return (
                       <DataTable
+                        key={`${data?.users?.length || 0}-${
+                          eventsData?.events?.length || 0
+                        }-${blogsData?.blogs?.length || 0}-${
+                          mentorsData?.mentors?.length || 0
+                        }`}
                         views={
                           views as unknown as {
                             label: string;
                             rows: z.infer<typeof settingsTableSchema>[];
                           }[]
                         }
+                        clubsData={clubsData}
                         onUpdate={async (row, field, value) => {
                           try {
                             if (row.entity === "user") {
@@ -518,52 +548,160 @@ export default function AdminDashboard() {
                                 await api.put(`/users/${row.backendId}/role`, {
                                   newRole: value,
                                 });
+                                toast.success("User role updated successfully");
+                              } else if (field === "header") {
+                                await api.put(`/users/${row.backendId}`, {
+                                  firstName: value,
+                                });
+                                toast.success("User name updated successfully");
+                              } else if (field === "reviewer") {
+                                await api.put(`/users/${row.backendId}`, {
+                                  email: value,
+                                });
+                                toast.success(
+                                  "User email updated successfully"
+                                );
+                              } else if (field === "limit") {
+                                await api.put(`/users/${row.backendId}`, {
+                                  clubId: value,
+                                });
+                                toast.success("User club updated successfully");
                               }
+                              qc.invalidateQueries({
+                                queryKey: ["users-list"],
+                              });
                             } else if (row.entity === "event") {
-                              if (field === "header")
+                              if (field === "header") {
                                 await api.put(`/events/${row.backendId}`, {
                                   title: value,
                                 });
-                            } else if (row.entity === "blog") {
-                              if (field === "target")
-                                await api.put(`/blogs/${row.backendId}`, {
-                                  status: value,
+                                toast.success(
+                                  "Event title updated successfully"
+                                );
+                              } else if (field === "target") {
+                                await api.put(`/events/${row.backendId}`, {
+                                  data: value,
                                 });
-                              if (field === "header")
+                                toast.success(
+                                  "Event date updated successfully"
+                                );
+                              } else if (field === "limit") {
+                                await api.put(`/events/${row.backendId}`, {
+                                  clubId: value,
+                                });
+                                toast.success(
+                                  "Event club updated successfully"
+                                );
+                              } else if (field === "reviewer") {
+                                await api.put(`/events/${row.backendId}`, {
+                                  imageUrl: value,
+                                });
+                                toast.success(
+                                  "Event image URL updated successfully"
+                                );
+                              }
+                              qc.invalidateQueries({ queryKey: ["events"] });
+                            } else if (row.entity === "blog") {
+                              if (field === "header") {
                                 await api.put(`/blogs/${row.backendId}`, {
                                   title: value,
                                 });
+                                toast.success(
+                                  "Blog title updated successfully"
+                                );
+                              } else if (field === "target") {
+                                await api.put(`/blogs/${row.backendId}`, {
+                                  status: value,
+                                });
+                                toast.success(
+                                  "Blog status updated successfully"
+                                );
+                              }
+                              qc.invalidateQueries({ queryKey: ["blogs"] });
                             } else if (row.entity === "mentor") {
-                              if (field === "header")
+                              if (field === "header") {
                                 await api.put(`/mentors/${row.backendId}`, {
                                   name: value,
                                 });
-                              if (field === "target")
+                                toast.success(
+                                  "Mentor name updated successfully"
+                                );
+                              } else if (field === "target") {
                                 await api.put(`/mentors/${row.backendId}`, {
                                   expertise: value,
                                 });
-                              if (field === "reviewer")
+                                toast.success(
+                                  "Mentor expertise updated successfully"
+                                );
+                              } else if (field === "reviewer") {
                                 await api.put(`/mentors/${row.backendId}`, {
                                   linkedInUrl: value,
                                 });
+                                toast.success(
+                                  "Mentor LinkedIn updated successfully"
+                                );
+                              } else if (field === "limit") {
+                                await api.put(`/mentors/${row.backendId}`, {
+                                  clubId: value,
+                                });
+                                toast.success(
+                                  "Mentor club updated successfully"
+                                );
+                              }
+                              qc.invalidateQueries({ queryKey: ["mentors"] });
                             }
-                          } catch (e) {
-                            console.error(e);
+                          } catch (e: any) {
+                            console.error("Update error:", e);
+                            const errorMessage =
+                              e?.response?.data?.message ||
+                              e?.message ||
+                              "Failed to update item. Please try again.";
+                            toast.error(errorMessage);
                           }
                         }}
                         onDelete={async (row) => {
                           try {
-                            if (row.entity === "user") {
-                              await api.delete(`/users/${row.backendId}`);
-                            } else if (row.entity === "event") {
-                              await api.delete(`/events/${row.backendId}`);
-                            } else if (row.entity === "blog") {
+                            console.log(
+                              "Attempting to delete:",
+                              row.entity,
+                              row.backendId
+                            );
+
+                            // Use DELETE endpoints for all entities
+                            if (row.entity === "blog") {
                               await api.delete(`/blogs/${row.backendId}`);
+                              toast.success("Blog deleted successfully");
+                              qc.invalidateQueries({ queryKey: ["blogs"] });
                             } else if (row.entity === "mentor") {
                               await api.delete(`/mentors/${row.backendId}`);
+                              toast.success("Mentor deleted successfully");
+                              qc.invalidateQueries({ queryKey: ["mentors"] });
+                            } else if (row.entity === "testimonial") {
+                              await api.delete(
+                                `/testimonials/${row.backendId}`
+                              );
+                              toast.success("Testimonial deleted successfully");
+                              qc.invalidateQueries({
+                                queryKey: ["testimonials"],
+                              });
+                            } else if (row.entity === "user") {
+                              await api.delete(`/users/${row.backendId}`);
+                              toast.success("User deleted successfully");
+                              qc.invalidateQueries({
+                                queryKey: ["users-list"],
+                              });
+                            } else if (row.entity === "event") {
+                              await api.delete(`/events/${row.backendId}`);
+                              toast.success("Event deleted successfully");
+                              qc.invalidateQueries({ queryKey: ["events"] });
                             }
-                          } catch (e) {
-                            console.error(e);
+                          } catch (e: any) {
+                            console.error("Delete error:", e);
+                            const errorMessage =
+                              e?.response?.data?.message ||
+                              e?.message ||
+                              "Failed to delete item. Please try again.";
+                            toast.error(errorMessage);
                           }
                         }}
                         actions={(row) => (
