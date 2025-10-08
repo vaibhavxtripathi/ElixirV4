@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  LogOutIcon,
-  MoreVerticalIcon,
-} from "lucide-react";
+import { LogOutIcon, MoreVerticalIcon } from "lucide-react";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { clearToken } from "@/lib/auth";
-import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -35,7 +31,6 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   const handleLogout = async () => {
     clearToken();
