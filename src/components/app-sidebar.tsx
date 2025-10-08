@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import {
   ArrowUpCircleIcon,
   CalendarIcon,
@@ -170,7 +171,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="bg-[#0A0B1A]">
-        <NavMain items={navMain} />
+        <Suspense fallback={<div>Loading navigation...</div>}>
+          <NavMain items={navMain} />
+        </Suspense>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter className="border-t border-white/10 bg-[#0A0B1A]">
