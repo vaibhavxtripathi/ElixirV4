@@ -2,7 +2,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { clearToken, roleToDashboard } from "@/lib/auth";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import AuthDialog from "@/components/auth-dialog";
@@ -10,7 +9,6 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Navbar() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: me } = useQuery({
     queryKey: ["me"],
