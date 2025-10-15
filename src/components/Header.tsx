@@ -25,8 +25,7 @@ export const Header = ({
     >
       <motion.div className="flex justify-center" variants={fadeInUp}>
         <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/90 backdrop-blur">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/70" />
-          {badge}
+        ✦ {badge}
         </div>
       </motion.div>
 
