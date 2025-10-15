@@ -71,6 +71,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 orientation="vertical"
                 className="mr-2 h-4 bg-white/20"
               />
+              <div className="-ml-4">
+                <SidebarTrigger className="text-white hover:bg-white/10" />
+              </div>
               <Breadcrumb>
                 <BreadcrumbList>
                   {breadcrumbs.map((crumb, index) => (
@@ -96,9 +99,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   ))}
                 </BreadcrumbList>
               </Breadcrumb>
-            </div>
-            <div className="px-4">
-              <SidebarTrigger className="text-white hover:bg-white/10" />
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-[#0A0B1A]">
