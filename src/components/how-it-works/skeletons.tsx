@@ -1,5 +1,6 @@
 "use client";
-import { AnthropicLogo, ForkIcon, OpenAILogo } from "@/icons/general";
+import { AnthropicLogo, ElixirLogo, ForkIcon, GDGLogo, GFGLogo, OpenAILogo } from "@/icons/general";
+import { CCLogo } from "@/icons/general";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DivideX } from "../divide";
@@ -18,7 +19,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="Elixir"
           subtitle="#elixir"
-          logo="/elixir-logo.png"
+          logo={<ElixirLogo className="w-5 h-5"/>}
           cta="Community"
           tone="default"
         />
@@ -31,7 +32,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="GDG"
           subtitle="Google"
-          logo="/GDG_logo.png"
+          logo={<GDGLogo className="w-5 h-5" />}
           cta="Google Club"
           tone="danger"
           delay={0.2}
@@ -39,7 +40,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="GFG"
           subtitle="vibin'"
-          logo="/GeeksForGeeks_logo.png"
+          logo={<GFGLogo className="w-5 h-5" />}
           cta="GeeksForGeeks"
           tone="green"
           delay={0.4}
@@ -47,7 +48,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="CodeChef"
           subtitle="CodeChef"
-          logo="/CodeChef_logo.png"
+          logo={<CCLogo className="w-5 h-5" />}
           cta="CodeChef Club"
           tone="success"
           delay={0.6}
