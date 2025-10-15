@@ -51,7 +51,16 @@ export function NavUser({
               <Avatar className="h-9 w-9 rounded-md">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-md">
-                  {(user.name?.[0] || "").toUpperCase()}
+                  {(() => {
+                    const parts = (user.name || "")
+                      .split(/\s+/)
+                      .filter(Boolean);
+                    const f = (parts[0]?.[0] || "").toUpperCase();
+                    const l = (
+                      parts.length > 1 ? parts[parts.length - 1][0] : ""
+                    ).toUpperCase();
+                    return l ? `${f}${l}` : f;
+                  })()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -76,7 +85,16 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-md">
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="rounded-md">
-                    {(user.name?.[0] || "").toUpperCase()}
+                    {(() => {
+                      const parts = (user.name || "")
+                        .split(/\s+/)
+                        .filter(Boolean);
+                      const f = (parts[0]?.[0] || "").toUpperCase();
+                      const l = (
+                        parts.length > 1 ? parts[parts.length - 1][0] : ""
+                      ).toUpperCase();
+                      return l ? `${f}${l}` : f;
+                    })()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
