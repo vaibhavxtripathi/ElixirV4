@@ -3,7 +3,13 @@ import { ReactNode, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
-export default function RequireAuth({ children, allow }: { children: ReactNode; allow?: string[] }) {
+export default function RequireAuth({
+  children,
+  allow,
+}: {
+  children: ReactNode;
+  allow?: string[];
+}) {
   const [ok, setOk] = useState(false);
   const router = useRouter();
 
@@ -11,10 +17,33 @@ export default function RequireAuth({ children, allow }: { children: ReactNode; 
     (async () => {
       try {
         const me = await api.get("/auth/me");
-        if (allow && !allow.includes(me.data.user?.role)) return router.replace("/login");
+        if (allow && !allow.includes(me.data.user?.role))
+          return router.replace("/login");
         setOk(true);
-      } catch {
-        router.replace("/login");
+      } catch (err: any) {
+        // If rate limited, don't log the user out; retry once after a short delay
+        const status = err?.response?.status;
+        if (status === 429) {
+          setTimeout(async () => {
+            try {
+              const me = await api.get("/auth/me");
+              if (allow && !allow.includes(me.data.user?.role))
+                return router.replace("/login");
+              setOk(true);
+            } catch (err2: any) {
+              const status2 = err2?.response?.status;
+              if (status2 === 401) {
+                router.replace("/login");
+              }
+              // else keep user on page; maybe transient
+            }
+          }, 1000);
+          return;
+        }
+        if (status === 401) {
+          router.replace("/login");
+        }
+        // For other errors, do not force logout; keep current page to avoid flakiness
       }
     })();
   }, [allow, router]);
