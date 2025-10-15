@@ -96,7 +96,7 @@ export function DateTimePicker({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-0 bg-[#0A0B1A]/95 backdrop-blur border border-white/10">
         <div className="sm:flex">
           <Calendar
             mode="single"
@@ -113,10 +113,15 @@ export function DateTimePicker({
                     size="icon"
                     variant={
                       date && date.getHours() % 12 === hour % 12
-                        ? "gradient"
+                        ? "default"
                         : "ghost"
                     }
-                    className="sm:w-full shrink-0 aspect-square"
+                    className={cn(
+                      "sm:w-full shrink-0 aspect-square",
+                      date && date.getHours() % 12 === hour % 12
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : undefined
+                    )}
                     onClick={() => handleTimeChange("hour", hour.toString())}
                   >
                     {hour}
@@ -132,9 +137,14 @@ export function DateTimePicker({
                     key={minute}
                     size="icon"
                     variant={
-                      date && date.getMinutes() === minute ? "gradient" : "ghost"
+                      date && date.getMinutes() === minute ? "default" : "ghost"
                     }
-                    className="sm:w-full shrink-0 aspect-square"
+                    className={cn(
+                      "sm:w-full shrink-0 aspect-square",
+                      date && date.getMinutes() === minute
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : undefined
+                    )}
                     onClick={() =>
                       handleTimeChange("minute", minute.toString())
                     }
@@ -155,10 +165,17 @@ export function DateTimePicker({
                       date &&
                       ((ampm === "AM" && date.getHours() < 12) ||
                         (ampm === "PM" && date.getHours() >= 12))
-                        ? "gradient"
+                        ? "default"
                         : "ghost"
                     }
-                    className="sm:w-full shrink-0 aspect-square"
+                    className={cn(
+                      "sm:w-full shrink-0 aspect-square",
+                      date &&
+                        ((ampm === "AM" && date.getHours() < 12) ||
+                          (ampm === "PM" && date.getHours() >= 12))
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : undefined
+                    )}
                     onClick={() => handleTimeChange("ampm", ampm)}
                   >
                     {ampm}
