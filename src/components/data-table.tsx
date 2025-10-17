@@ -122,9 +122,9 @@ function DragHandle({ id }: { id: string | number }) {
       {...listeners}
       variant="ghost"
       size="icon"
-      className="size-7 text-muted-foreground hover:bg-transparent"
+      className="size-5 sm:size-6 lg:size-7 text-muted-foreground hover:bg-transparent"
     >
-      <GripVerticalIcon className="size-3 text-muted-foreground" />
+      <GripVerticalIcon className="size-2 sm:size-3 text-muted-foreground" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
   );
@@ -324,7 +324,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
       }}
     >
       {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
+        <TableCell key={cell.id} className="px-1 sm:px-2 lg:px-4">
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
@@ -442,7 +442,7 @@ export function DataTable({
       cell: ({ row }) => (
         <Input
           defaultValue={row.original.header}
-          className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+          className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
             updatingCells.has(`${row.original.id}-header`) ? "opacity-50" : ""
           }`}
           disabled={updatingCells.has(`${row.original.id}-header`)}
@@ -519,7 +519,7 @@ export function DataTable({
                 disabled={updatingCells.has(`${row.original.id}-target`)}
               >
                 <SelectTrigger
-                  className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-right ${
+                  className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-right text-xs sm:text-sm ${
                     updatingCells.has(`${row.original.id}-target`)
                       ? "opacity-50"
                       : ""
@@ -599,7 +599,7 @@ export function DataTable({
         return (
           <Input
             defaultValue={row.original.target}
-            className={`h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background ${
+            className={`h-7 sm:h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
               updatingCells.has(`${row.original.id}-target`) ? "opacity-50" : ""
             }`}
             disabled={updatingCells.has(`${row.original.id}-target`)}
@@ -708,7 +708,7 @@ export function DataTable({
         return (
           <Input
             defaultValue={row.original.limit}
-            className={`h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background ${
+            className={`h-7 sm:h-8 bg-transparent text-right border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
               updatingCells.has(`${row.original.id}-limit`) ? "opacity-50" : ""
             }`}
             disabled={updatingCells.has(`${row.original.id}-limit`)}
@@ -749,7 +749,7 @@ export function DataTable({
       cell: ({ row }) => (
         <Input
           defaultValue={row.original.reviewer}
-          className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+          className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
             updatingCells.has(`${row.original.id}-reviewer`) ? "opacity-50" : ""
           }`}
           disabled={updatingCells.has(`${row.original.id}-reviewer`)}
@@ -798,7 +798,7 @@ export function DataTable({
         return (
           <Input
             defaultValue={current}
-            className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+            className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
               updatingCells.has(`${row.original.id}-imageUrl`)
                 ? "opacity-50"
                 : ""
@@ -846,7 +846,7 @@ export function DataTable({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              className="flex size-6 sm:size-7 lg:size-8 text-muted-foreground data-[state=open]:bg-muted"
               size="icon"
             >
               <MoreVerticalIcon />
@@ -951,10 +951,10 @@ export function DataTable({
       defaultValue="outline"
       className="flex w-full flex-col justify-start gap-4"
     >
-      <div className="flex items-center justify-between px-3 lg:px-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 px-2 sm:px-3 lg:px-5">
         <Label
           htmlFor="view-selector"
-          className="text-sm text-muted-foreground"
+          className="text-xs sm:text-sm text-muted-foreground"
         >
           Dataset
         </Label>
@@ -962,7 +962,10 @@ export function DataTable({
           value={String(selectedView)}
           onValueChange={(v) => setSelectedView(Number(v))}
         >
-          <SelectTrigger className="flex w-fit" id="view-selector">
+          <SelectTrigger
+            className="flex w-full sm:w-fit text-xs sm:text-sm"
+            id="view-selector"
+          >
             <SelectValue placeholder="Select dataset" />
           </SelectTrigger>
           <SelectContent>
@@ -1001,7 +1004,7 @@ export function DataTable({
       </div>
       <TabsContent
         value="outline"
-        className="relative flex flex-col gap-3 overflow-hidden px-3 lg:px-5"
+        className="relative flex flex-col gap-2 sm:gap-3 overflow-hidden px-1 sm:px-2 lg:px-5"
       >
         <div className="overflow-hidden rounded-lg border">
           <DndContext
@@ -1013,19 +1016,23 @@ export function DataTable({
           >
             <Table className="table-fixed">
               <colgroup>
-                <col className="w-10" />
-                <col className="w-[36%]" />
-                <col className="w-[16%]" />
-                <col className="w-[16%]" />
-                <col className="w-[16%]" />
-                <col className="w-[16%]" />
+                <col className="w-6 sm:w-8 lg:w-10" />
+                <col className="w-[35%] sm:w-[38%] lg:w-[36%]" />
+                <col className="w-[25%] sm:w-[18%] lg:w-[16%]" />
+                <col className="w-[25%] sm:w-[18%] lg:w-[16%]" />
+                <col className="w-[15%] sm:w-[18%] lg:w-[16%]" />
+                <col className="w-[15%] sm:w-[18%] lg:w-[16%]" />
               </colgroup>
               <TableHeader className="sticky top-0 z-10 bg-muted">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
+                        <TableHead
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="text-xs sm:text-sm px-1 sm:px-2 lg:px-4"
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -1062,12 +1069,12 @@ export function DataTable({
             </Table>
           </DndContext>
         </div>
-        <div className="flex items-center justify-between px-4">
-          <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 px-2 sm:px-4">
+          <div className="hidden flex-1 text-xs sm:text-sm text-muted-foreground lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
-          <div className="flex w-full items-center gap-8 lg:w-fit">
+          <div className="flex w-full items-center justify-between sm:justify-end gap-2 sm:gap-4 lg:gap-8">
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
                 Rows per page
@@ -1092,50 +1099,52 @@ export function DataTable({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
-            </div>
-            <div className="ml-auto flex items-center gap-2 lg:ml-0">
-              <Button
-                variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <span className="sr-only">Go to first page</span>
-                <ChevronsLeftIcon />
-              </Button>
-              <Button
-                variant="outline"
-                className="size-8"
-                size="icon"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <span className="sr-only">Go to previous page</span>
-                <ChevronLeftIcon />
-              </Button>
-              <Button
-                variant="outline"
-                className="size-8"
-                size="icon"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                <span className="sr-only">Go to next page</span>
-                <ChevronRightIcon />
-              </Button>
-              <Button
-                variant="outline"
-                className="hidden size-8 lg:flex"
-                size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <span className="sr-only">Go to last page</span>
-                <ChevronsRightIcon />
-              </Button>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center justify-center text-xs sm:text-sm font-medium">
+                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+              </div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Button
+                  variant="outline"
+                  className="hidden h-6 w-6 p-0 lg:flex"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to first page</span>
+                  <ChevronsLeftIcon className="w-3 h-3" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-6 sm:size-7 lg:size-8"
+                  size="icon"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to previous page</span>
+                  <ChevronLeftIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="size-6 sm:size-7 lg:size-8"
+                  size="icon"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to next page</span>
+                  <ChevronRightIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="hidden size-8 lg:flex"
+                  size="icon"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to last page</span>
+                  <ChevronsRightIcon />
+                </Button>
+              </div>
             </div>
           </div>
         </div>

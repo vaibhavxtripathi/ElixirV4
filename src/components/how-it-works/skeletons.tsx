@@ -317,7 +317,11 @@ export const DeployAndScaleSkeleton = () => {
       branch: "main",
       variant: "success" as const,
     },
-    { title: "reg-elxr-EE23-653", subtitle: "45m ago", branch: "events/elixir" },
+    {
+      title: "reg-elxr-EE23-653",
+      subtitle: "45m ago",
+      branch: "events/elixir",
+    },
     {
       title: "reg-elxr-CS22-234",
       subtitle: "1h ago",

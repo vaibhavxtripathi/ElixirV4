@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavMain({
@@ -22,30 +23,18 @@ export function NavMain({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { setOpenMobile } = useSidebar();
   const currentUrl =
     pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "");
+
+  const handleLinkClick = () => {
+    // Close sidebar on mobile after clicking a link
+    setOpenMobile(false);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
-        {/* <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="min-w-8 bg-white/10 text-white duration-200 ease-linear hover:bg-white/20 hover:text-white active:bg-white/20 active:text-white"
-            >
-              <PlusCircleIcon />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0 border-white/20 text-white hover:bg-white/10"
-              variant="outline"
-            >
-              <MailIcon />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu> */}
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
@@ -55,7 +44,7 @@ export function NavMain({
                 isActive={currentUrl === item.url}
                 asChild
               >
-                <Link href={item.url}>
+                <Link href={item.url} onClick={handleLinkClick}>
                   {item.icon && <item.icon className="text-white" />}
                   <span className="text-white">{item.title}</span>
                 </Link>
