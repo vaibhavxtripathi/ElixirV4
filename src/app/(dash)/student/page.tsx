@@ -86,14 +86,14 @@ function StudentDashboardContent() {
         >
           {/* Header */}
           <motion.div
-            className="flex items-center justify-between"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
             variants={fadeInUp}
           >
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
                 {view === "my-blogs" ? "My Blogs" : "My Dashboard"}
               </h1>
-              <p className="text-white/60">
+              <p className="text-white/60 text-sm sm:text-base">
                 {view === "my-blogs"
                   ? "Create and track your blog submissions"
                   : "Track your event registrations and activities"}
@@ -105,32 +105,33 @@ function StudentDashboardContent() {
                 onClick={() => {
                   router.push("/events");
                 }}
+                className="text-xs sm:text-sm px-3 sm:px-4 py-2"
               >
-                <Calendar className="w-4 h-4 mr-2" />
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Browse Events
               </Button>
             )}
           </motion.div>
 
           {view !== "my-blogs" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/5 border-white/10">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-white/60">
+                        <p className="text-xs sm:text-sm font-medium text-white/60">
                           Registered Events
                         </p>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-xl sm:text-2xl font-bold text-white">
                           {data?.registrations?.length || 0}
                         </p>
                         <p className="text-xs text-green-400 mt-1">
                           Active registrations
                         </p>
                       </div>
-                      <div className="p-3 bg-blue-500/20 rounded-lg">
-                        <Calendar className="w-6 h-6 text-blue-400" />
+                      <div className="p-2 sm:p-3 bg-blue-500/20 rounded-lg">
+                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                       </div>
                     </div>
                   </CardContent>
@@ -139,13 +140,13 @@ function StudentDashboardContent() {
 
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/5 border-white/10">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-white/60">
+                        <p className="text-xs sm:text-sm font-medium text-white/60">
                           Upcoming Events
                         </p>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-xl sm:text-2xl font-bold text-white">
                           {
                             (data?.registrations || []).filter(
                               (r: Registration) =>
@@ -157,8 +158,8 @@ function StudentDashboardContent() {
                           This month
                         </p>
                       </div>
-                      <div className="p-3 bg-green-500/20 rounded-lg">
-                        <Clock className="w-6 h-6 text-green-400" />
+                      <div className="p-2 sm:p-3 bg-green-500/20 rounded-lg">
+                        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
                       </div>
                     </div>
                   </CardContent>
@@ -167,13 +168,13 @@ function StudentDashboardContent() {
 
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/5 border-white/10">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-white/60">
+                        <p className="text-xs sm:text-sm font-medium text-white/60">
                           Clubs Joined
                         </p>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-xl sm:text-2xl font-bold text-white">
                           {
                             new Set(
                               (data?.registrations || [])
@@ -186,8 +187,8 @@ function StudentDashboardContent() {
                           Different clubs
                         </p>
                       </div>
-                      <div className="p-3 bg-purple-500/20 rounded-lg">
-                        <Users className="w-6 h-6 text-purple-400" />
+                      <div className="p-2 sm:p-3 bg-purple-500/20 rounded-lg">
+                        <Users className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
                       </div>
                     </div>
                   </CardContent>
@@ -208,7 +209,10 @@ function StudentDashboardContent() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="stu-blog-title" className="text-white">
+                      <Label
+                        htmlFor="stu-blog-title"
+                        className="text-white text-sm"
+                      >
                         Title
                       </Label>
                       <Input
@@ -217,12 +221,15 @@ function StudentDashboardContent() {
                         onChange={(e) =>
                           setBlogForm({ ...blogForm, title: e.target.value })
                         }
-                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50 text-sm"
                         placeholder="Enter blog title"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="stu-blog-image" className="text-white">
+                      <Label
+                        htmlFor="stu-blog-image"
+                        className="text-white text-sm"
+                      >
                         Image URL
                       </Label>
                       <Input
@@ -231,13 +238,16 @@ function StudentDashboardContent() {
                         onChange={(e) =>
                           setBlogForm({ ...blogForm, imageUrl: e.target.value })
                         }
-                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50 text-sm"
                         placeholder="https://example.com/cover.jpg"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="stu-blog-content" className="text-white">
+                    <Label
+                      htmlFor="stu-blog-content"
+                      className="text-white text-sm"
+                    >
                       Content
                     </Label>
                     <RichTextEditor
@@ -253,7 +263,7 @@ function StudentDashboardContent() {
                       onClick={() => submitBlog.mutate()}
                       disabled={submitBlog.isPending}
                       variant="gradientOutline"
-                      className="w-full mt-2 bg-blue-500 text-white"
+                      className="w-full mt-2 bg-blue-500 text-white text-sm sm:text-base"
                     >
                       {submitBlog.isPending
                         ? "Submitting..."
@@ -277,7 +287,7 @@ function StudentDashboardContent() {
                 <CardContent>
                   <div className="space-y-3">
                     {(myBlogs?.blogs || []).length === 0 ? (
-                      <div className="text-white/60">
+                      <div className="text-white/60 text-center py-8">
                         No blogs yet. Submit one above.
                       </div>
                     ) : (
@@ -290,19 +300,19 @@ function StudentDashboardContent() {
                         }) => (
                           <div
                             key={b.id}
-                            className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg border border-white/10 gap-3 sm:gap-0"
                           >
-                            <div>
-                              <p className="text-white font-medium">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-medium text-sm sm:text-base truncate">
                                 {b.title}
                               </p>
-                              <p className="text-white/60 text-xs">
+                              <p className="text-white/60 text-xs sm:text-sm">
                                 {new Date(b.createdAt).toLocaleString()}
                               </p>
                             </div>
                             <Badge
                               variant="outline"
-                              className="text-xs border-white/20 text-white/80"
+                              className="text-xs border-white/20 text-white/80 shrink-0 self-start sm:self-center"
                             >
                               {b.status}
                             </Badge>
@@ -320,10 +330,10 @@ function StudentDashboardContent() {
             <motion.div variants={fadeIn}>
               <Card className="bg-white/5 border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-white text-base sm:text-lg">
                     My Registered Events
                   </CardTitle>
-                  <CardDescription className="text-white/60">
+                  <CardDescription className="text-white/60 text-sm">
                     All your event registrations in one place
                   </CardDescription>
                 </CardHeader>
@@ -337,12 +347,12 @@ function StudentDashboardContent() {
                       Failed to load events
                     </div>
                   ) : (data?.registrations || []).length === 0 ? (
-                    <div className="text-center py-12">
-                      <Calendar className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-white mb-2">
+                    <div className="text-center py-8 sm:py-12">
+                      <Calendar className="w-12 h-12 sm:w-16 sm:h-16 text-white/20 mx-auto mb-4" />
+                      <h3 className="text-base sm:text-lg font-medium text-white mb-2">
                         No events registered yet
                       </h3>
-                      <p className="text-white/60 mb-4">
+                      <p className="text-white/60 mb-4 text-sm sm:text-base px-4">
                         Start exploring and register for events to see them
                         here.
                       </p>
@@ -351,20 +361,138 @@ function StudentDashboardContent() {
                         onClick={() => {
                           router.push("/events");
                         }}
+                        className="text-xs sm:text-sm px-3 sm:px-4 py-2"
                       >
-                        <ExternalLink className="w-4 h-4 mr-2" />
+                        <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Browse Events
                       </Button>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {(data?.registrations || []).map(
                         (registration: Registration) => (
                           <div
                             key={registration.id}
-                            className="p-4 bg-white/5 rounded-lg border border-white/10"
+                            className="p-3 sm:p-4 bg-white/5 rounded-lg border border-white/10"
                           >
-                            <div className="flex items-center gap-4">
+                            {/* Mobile Layout */}
+                            <div className="flex flex-col sm:hidden space-y-3">
+                              {/* Event image */}
+                              <div className="w-full h-32 rounded-md overflow-hidden bg-white/10 border border-white/10">
+                                {registration.event.imageUrl ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={registration.event.imageUrl}
+                                    alt={registration.event.title}
+                                    className="w-full h-full object-cover object-center"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
+                                    No Image
+                                  </div>
+                                )}
+                              </div>
+                              {/* Details */}
+                              <div className="space-y-2">
+                                <div className="flex items-start justify-between gap-2">
+                                  <h3 className="text-base font-semibold text-white flex-1">
+                                    {registration.event.title}
+                                  </h3>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "text-xs shrink-0",
+                                      new Date(registration.event.date) >
+                                        new Date()
+                                        ? "bg-green-500/5 text-green-400 border border-green-500/20"
+                                        : "bg-red-500/5 text-red-400 border border-red-500/20"
+                                    )}
+                                  >
+                                    {new Date(registration.event.date) >
+                                    new Date()
+                                      ? "Upcoming"
+                                      : "Past"}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-white/60 line-clamp-2">
+                                  {registration.event.description}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    {(() => {
+                                      const d = new Date(
+                                        registration.event.date
+                                      );
+                                      return isNaN(d.getTime())
+                                        ? "—"
+                                        : d.toLocaleDateString(undefined, {
+                                            month: "short",
+                                            day: "2-digit",
+                                          });
+                                    })()}
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {(() => {
+                                      const d = new Date(
+                                        registration.event.date
+                                      );
+                                      return isNaN(d.getTime())
+                                        ? "—"
+                                        : d.toLocaleTimeString(undefined, {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          });
+                                    })()}
+                                  </div>
+                                  {registration.event.club?.name && (
+                                    <div className="flex items-center gap-1">
+                                      {(() => {
+                                        const logo =
+                                          registration.event.club?.name.toUpperCase() +
+                                          "Logo";
+                                        const Comp = logo
+                                          ? (
+                                              Logos as Record<
+                                                string,
+                                                React.ComponentType<{
+                                                  className?: string;
+                                                }>
+                                              >
+                                            )[logo]
+                                          : undefined;
+                                        return Comp ? (
+                                          <Comp className="w-3 h-3" />
+                                        ) : (
+                                          <Building2 className="w-3 h-3 text-white/60" />
+                                        );
+                                      })()}
+                                      <span className="truncate">
+                                        {registration.event.club?.name}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              {/* Actions */}
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-white/20 text-white hover:bg-white/10 rounded-md text-xs px-3 py-1.5 w-full"
+                                  onClick={() => {
+                                    setActiveEvent(registration.event);
+                                    setDetailsOpen(true);
+                                  }}
+                                >
+                                  View Details
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Desktop Layout */}
+                            <div className="hidden sm:flex items-center gap-4">
                               {/* Event image */}
                               <div className="w-32 h-24 rounded-md overflow-hidden bg-white/10 border border-white/10 shrink-0">
                                 {registration.event.imageUrl ? (
