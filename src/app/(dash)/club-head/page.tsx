@@ -19,24 +19,39 @@ import { Calendar, Plus, TrendingUp, Activity, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { DateTimePicker } from "@/components/date-time-picker";
-import { motion } from "framer-motion";
-import { containerStagger, fadeInUp, fadeIn } from "@/lib/motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { containerStagger, fadeInUp } from "@/lib/motion";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { EditEventDialog } from "@/components/EditEventDialog";
+import { EventRegistrationsDialog } from "@/components/EventRegistrationsDialog";
+import { cn } from "@/lib/utils";
 
 interface Event {
   id: string;
   title: string;
   description: string;
   imageUrl?: string;
-  data: string;
+  date: string; // backend returns `date`
+  data?: string; // used only when sending updates/creates
+  club?: { name: string; imageUrl?: string };
 }
 
 export default function ClubHeadDashboard() {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["events-list-own"],
-    queryFn: async () => (await api.get("/events?page=1&limit=50")).data,
+    queryFn: async () => (await api.get("/events/mine")).data,
+  });
+  const { data: meData } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => (await api.get("/auth/me")).data,
+    retry: false,
   });
 
+  const clubName: string | undefined = meData?.user?.club?.name;
+  const myEvents: Event[] = data?.events || [];
+
+  const [show, setShow] = useState(false);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -47,6 +62,7 @@ export default function ClubHeadDashboard() {
     mutationFn: async () => (await api.post("/events", form)).data,
     onSuccess: () => {
       setForm({ title: "", description: "", data: "", imageUrl: "" });
+      setShow(false);
       qc.invalidateQueries({ queryKey: ["events-list-own"] });
       toast.success("Event created");
     },
@@ -56,6 +72,55 @@ export default function ClubHeadDashboard() {
       };
       toast.error(
         maybeAxiosError.response?.data?.message || "Failed to create event"
+      );
+    },
+  });
+
+  // UI state for dialogs
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
+  const [registrationsOpen, setRegistrationsOpen] = useState(false);
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/events/${id}`)).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["events-list-own"] });
+      toast.success("Event deleted");
+    },
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to delete event"
+      );
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (payload: { id: string } & Partial<Event>) => {
+      const { id, title, description, data, imageUrl } = payload;
+      const body: Record<string, unknown> = {};
+      if (typeof title === "string" && title.trim().length > 0)
+        body.title = title.trim();
+      if (typeof description === "string" && description.trim().length >= 10)
+        body.description = description.trim();
+      if (typeof data === "string" && data) body.data = data;
+      if (typeof imageUrl === "string" && imageUrl.trim().length > 0)
+        body.imageUrl = imageUrl.trim();
+      return (await api.put(`/events/${id}`, body)).data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["events-list-own"] });
+      toast.success("Event updated");
+    },
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message || "Failed to update event"
       );
     },
   });
@@ -76,15 +141,23 @@ export default function ClubHeadDashboard() {
           >
             <div>
               <h1 className="text-3xl font-bold text-white">
-                Club Head Dashboard
+                {clubName
+                  ? `${clubName} Club Dashboard`
+                  : "Club Head Dashboard"}
               </h1>
               <p className="text-white/60">
                 Manage your club events and activities
               </p>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button
+              // className="bg-blue-600 hover:bg-blue-700 text-white"
+              variant="gradient"
+              onClick={() => {
+                setShow(!show);
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
-              Create Event
+              {show ? "Hide Form" : "Create Event"}
             </Button>
           </motion.div>
 
@@ -99,7 +172,7 @@ export default function ClubHeadDashboard() {
                         Total Events
                       </p>
                       <p className="text-2xl font-bold text-white">
-                        {data?.events?.length || 0}
+                        {myEvents.length}
                       </p>
                       <p className="text-xs text-green-400 flex items-center mt-1">
                         <TrendingUp className="w-3 h-3 mr-1" />
@@ -124,8 +197,8 @@ export default function ClubHeadDashboard() {
                       </p>
                       <p className="text-2xl font-bold text-white">
                         {
-                          (data?.events || []).filter(
-                            (e: Event) => new Date(e.data) > new Date()
+                          myEvents.filter(
+                            (e: Event) => new Date(e.date) > new Date()
                           ).length
                         }
                       </p>
@@ -162,83 +235,98 @@ export default function ClubHeadDashboard() {
           </div>
 
           {/* Create Event Form */}
-          <motion.div variants={fadeIn}>
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">Create New Event</CardTitle>
-                <CardDescription className="text-white/60">
-                  Add a new event to your club
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="event-title" className="text-white">
-                      Event Title
-                    </Label>
-                    <Input
-                      id="event-title"
-                      placeholder="Enter event title"
-                      value={form.title}
-                      onChange={(e) =>
-                        setForm({ ...form, title: e.target.value })
-                      }
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="event-date" className="text-white">
-                      Event Date & Time
-                    </Label>
-                    <DateTimePicker
-                      value={form.data}
-                      onChange={(iso) => setForm({ ...form, data: iso })}
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="event-description" className="text-white">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="event-description"
-                    placeholder="Enter event description"
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm({ ...form, description: e.target.value })
-                    }
-                    rows={4}
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="event-image" className="text-white">
-                    Image URL (optional)
-                  </Label>
-                  <Input
-                    id="event-image"
-                    placeholder="https://example.com/image.jpg"
-                    value={form.imageUrl}
-                    onChange={(e) =>
-                      setForm({ ...form, imageUrl: e.target.value })
-                    }
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
-                  />
-                </div>
-                <Button
-                  onClick={() => createMutation.mutate()}
-                  disabled={createMutation.isPending}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {createMutation.isPending ? "Creating..." : "Create Event"}
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <AnimatePresence initial={false} mode="wait">
+            {show && (
+              <motion.div
+                key="create-event-form"
+                variants={fadeInUp}
+                initial="hidden"
+                animate="show"
+                exit="hidden"
+                transition={{ duration: 0.2 }}
+              >
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">
+                      Create New Event
+                    </CardTitle>
+                    <CardDescription className="text-white/60">
+                      Add a new event to your club
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="event-title" className="text-white">
+                          Event Title
+                        </Label>
+                        <Input
+                          id="event-title"
+                          placeholder="Enter event title"
+                          value={form.title}
+                          onChange={(e) =>
+                            setForm({ ...form, title: e.target.value })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="event-date" className="text-white">
+                          Event Date & Time
+                        </Label>
+                        <DateTimePicker
+                          value={form.data}
+                          onChange={(iso) => setForm({ ...form, data: iso })}
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="event-description" className="text-white">
+                        Description
+                      </Label>
+                      <Textarea
+                        id="event-description"
+                        placeholder="Enter event description"
+                        value={form.description}
+                        onChange={(e) =>
+                          setForm({ ...form, description: e.target.value })
+                        }
+                        rows={4}
+                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="event-image" className="text-white">
+                        Image URL
+                      </Label>
+                      <Input
+                        id="event-image"
+                        placeholder="https://example.com/image.jpg"
+                        value={form.imageUrl}
+                        onChange={(e) =>
+                          setForm({ ...form, imageUrl: e.target.value })
+                        }
+                        className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                      />
+                    </div>
+                    <Button
+                      onClick={() => createMutation.mutate()}
+                      disabled={createMutation.isPending}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      {createMutation.isPending
+                        ? "Creating..."
+                        : "Create Event"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Events List */}
-          <motion.div variants={fadeIn}>
+          <motion.div variants={fadeInUp}>
             <Card className="bg-white/5 border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">Your Events</CardTitle>
@@ -251,7 +339,7 @@ export default function ClubHeadDashboard() {
                   <div className="text-center py-8 text-white/60">
                     Loading events...
                   </div>
-                ) : (data?.events || []).length === 0 ? (
+                ) : myEvents.length === 0 ? (
                   <div className="text-center py-12">
                     <Calendar className="w-16 h-16 text-white/20 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-white mb-2">
@@ -263,19 +351,43 @@ export default function ClubHeadDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {(data?.events || []).map((event: Event) => (
+                    {myEvents.map((event: Event) => (
                       <div
                         key={event.id}
                         className="p-4 bg-white/5 rounded-lg border border-white/10"
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
+                        <div className="flex items-center gap-4">
+                          {/* Event image */}
+                          <div className="w-32 h-24 rounded-md overflow-hidden bg-white/10 border border-white/10 shrink-0">
+                            {event.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={event.imageUrl}
+                                alt={event.title}
+                                className="w-full h-full object-cover object-center"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
+                                No Image
+                              </div>
+                            )}
+                          </div>
+                          {/* Details */}
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="text-lg font-semibold text-white">
                                 {event.title}
                               </h3>
-                              <Badge variant="outline" className="text-xs">
-                                {new Date(event.data) > new Date()
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "text-xs",
+                                  new Date(event.date) > new Date()
+                                    ? "bg-green-500/5 text-green-400 border border-green-500/20"
+                                    : "bg-red-500/5 text-red-400 border border-red-500/20"
+                                )}
+                              >
+                                {new Date(event.date) > new Date()
                                   ? "Upcoming"
                                   : "Past"}
                               </Badge>
@@ -286,26 +398,63 @@ export default function ClubHeadDashboard() {
                             <div className="flex items-center gap-4 text-sm text-white/60">
                               <div className="flex items-center gap-1">
                                 <Calendar className="w-4 h-4" />
-                                {new Date(event.data).toLocaleDateString()}
+                                {(() => {
+                                  const d = new Date(event.date);
+                                  return isNaN(d.getTime())
+                                    ? "—"
+                                    : d.toLocaleDateString(undefined, {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "2-digit",
+                                      });
+                                })()}
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="w-4 h-4" />
-                                {new Date(event.data).toLocaleTimeString()}
+                                {(() => {
+                                  const d = new Date(event.date);
+                                  return isNaN(d.getTime())
+                                    ? "—"
+                                    : d.toLocaleTimeString(undefined, {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      });
+                                })()}
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 self-center">
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-white/20 text-white hover:bg-white/10"
+                              className="border-white/20 text-white/95 hover:bg-white/10 rounded-md"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setRegistrationsOpen(true);
+                              }}
+                            >
+                              View Registrations
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-white/20 text-white/95 hover:bg-white/10 rounded-md"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setEditOpen(true);
+                              }}
                             >
                               Edit
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-red-500/20 text-red-400 hover:bg-red-500/10"
+                              className="border-red-500/20 text-red-400 hover:bg-red-500/10 rounded-md"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setConfirmOpen(true);
+                              }}
                             >
                               Delete
                             </Button>
@@ -318,6 +467,56 @@ export default function ClubHeadDashboard() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Dialogs */}
+          <ConfirmDialog
+            open={confirmOpen}
+            title="Delete event?"
+            description={
+              <span>
+                This action cannot be undone. Event: <b>{activeEvent?.title}</b>
+              </span>
+            }
+            confirmText="Delete"
+            onCancel={() => setConfirmOpen(false)}
+            onConfirm={async () => {
+              if (!activeEvent) return;
+              await deleteMutation.mutateAsync(activeEvent.id);
+              setConfirmOpen(false);
+              setActiveEvent(null);
+            }}
+            loading={deleteMutation.isPending}
+          />
+          <EditEventDialog
+            open={editOpen}
+            event={
+              activeEvent
+                ? {
+                    id: activeEvent.id,
+                    title: activeEvent.title,
+                    description: activeEvent.description,
+                    data: activeEvent.date,
+                    imageUrl: activeEvent.imageUrl,
+                  }
+                : undefined
+            }
+            onClose={() => setEditOpen(false)}
+            onSave={async (payload) => {
+              if (!activeEvent) return;
+              await updateMutation.mutateAsync({
+                id: activeEvent.id,
+                ...payload,
+              });
+              setEditOpen(false);
+              setActiveEvent(null);
+            }}
+            loading={updateMutation.isPending}
+          />
+          <EventRegistrationsDialog
+            open={registrationsOpen}
+            eventId={activeEvent?.id}
+            onClose={() => setRegistrationsOpen(false)}
+          />
         </motion.div>
       </DashboardLayout>
     </RequireAuth>
