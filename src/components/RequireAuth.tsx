@@ -20,9 +20,10 @@ export default function RequireAuth({
         if (allow && !allow.includes(me.data.user?.role))
           return router.replace("/login");
         setOk(true);
-      } catch (err: any) {
+      } catch (err: unknown) {
         // If rate limited, don't log the user out; retry once after a short delay
-        const status = err?.response?.status;
+        const error = err as { response?: { status?: number } };
+        const status = error?.response?.status;
         if (status === 429) {
           setTimeout(async () => {
             try {
@@ -30,8 +31,9 @@ export default function RequireAuth({
               if (allow && !allow.includes(me.data.user?.role))
                 return router.replace("/login");
               setOk(true);
-            } catch (err2: any) {
-              const status2 = err2?.response?.status;
+            } catch (err2: unknown) {
+              const error2 = err2 as { response?: { status?: number } };
+              const status2 = error2?.response?.status;
               if (status2 === 401) {
                 router.replace("/login");
               }

@@ -81,7 +81,7 @@ export default function Navbar() {
                   href={roleToDashboard(me.user.role)}
                   className="inline-flex items-center"
                 >
-                  <Avatar className="h-10 w-10 rounded-md">
+                  <Avatar className="h-9 w-9 rounded-md">
                     {/* Update when backend provides avatar URL */}
                     <AvatarImage
                       src={me.user.avatar || ""}
