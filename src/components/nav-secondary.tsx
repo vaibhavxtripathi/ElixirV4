@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function NavSecondary({
@@ -21,6 +22,13 @@ export function NavSecondary({
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const { setOpenMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    // Close sidebar on mobile after clicking a link
+    setOpenMobile(false);
+  };
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -31,7 +39,7 @@ export function NavSecondary({
                 asChild
                 className="text-white hover:bg-white/10 hover:text-white"
               >
-                <a href={item.url}>
+                <a href={item.url} onClick={handleLinkClick}>
                   <item.icon className="text-white" />
                   <span className="text-white">{item.title}</span>
                 </a>

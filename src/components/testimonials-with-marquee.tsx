@@ -77,10 +77,10 @@ export function TestimonialsSection({
 
         {/* Row 1 - Infinite scroll */}
         <motion.div
-          className="relative w-full overflow-hidden mt-10"
+          className="relative w-full overflow-hidden mt-6 sm:mt-10"
           variants={fadeIn}
         >
-          <div className="flex overflow-hidden py-0 px-5 [--gap:1.5rem] [gap:var(--gap)]">
+          <div className="flex overflow-hidden py-0 px-3 sm:px-5 [--gap:1rem] sm:[--gap:1.5rem] [gap:var(--gap)]">
             <div className="flex shrink-0 justify-start [gap:var(--gap)] animate-marquee-infinite">
               {infiniteTestimonials1.map((testimonial, i) => (
                 <TestimonialCard
@@ -110,7 +110,7 @@ export function TestimonialsSection({
           className="relative w-full overflow-hidden"
           variants={fadeIn}
         >
-          <div className="flex overflow-hidden -py-9 px-5 [--gap:1.5rem] [gap:var(--gap)]">
+          <div className="flex overflow-hidden -py-6 sm:-py-9 px-3 sm:px-5 [--gap:1rem] sm:[--gap:1.5rem] [gap:var(--gap)]">
             <div className="flex shrink-0 justify-start [gap:var(--gap)] animate-marquee-infinite-reverse">
               {infiniteTestimonials2.map((testimonial, i) => (
                 <TestimonialCard

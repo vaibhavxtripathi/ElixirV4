@@ -2,6 +2,7 @@
 
 import React, {
   ComponentPropsWithoutRef,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -21,13 +22,25 @@ function MousePosition(): MousePosition {
   });
 
   useEffect(() => {
+    let animationFrameId: number;
+
     const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
+      // Use requestAnimationFrame to throttle updates
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      animationFrameId = requestAnimationFrame(() => {
+        setMousePosition({ x: event.clientX, y: event.clientY });
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
@@ -116,7 +129,7 @@ export const Particles: React.FC<ParticlesProps> = ({
       }, 200);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
       if (rafID.current != null) {
@@ -127,22 +140,14 @@ export const Particles: React.FC<ParticlesProps> = ({
       }
       window.removeEventListener("resize", handleResize);
     };
-  }, [color]);
+  }, [color, quantity, staticity, ease, size, vx, vy]);
 
   useEffect(() => {
     onMouseMove();
   }, [mousePosition.x, mousePosition.y]);
 
-  useEffect(() => {
-    initCanvas();
-  }, [refresh]);
-
-  const initCanvas = () => {
-    resizeCanvas();
-    drawParticles();
-  };
-
-  const onMouseMove = () => {
+  // Memoize the onMouseMove function to prevent unnecessary re-renders
+  const onMouseMove = useCallback(() => {
     if (canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
       const { w, h } = canvasSize.current;
@@ -154,6 +159,15 @@ export const Particles: React.FC<ParticlesProps> = ({
         mouse.current.y = y;
       }
     }
+  }, [mousePosition.x, mousePosition.y]);
+
+  useEffect(() => {
+    initCanvas();
+  }, [refresh]);
+
+  const initCanvas = () => {
+    resizeCanvas();
+    drawParticles();
   };
 
   const resizeCanvas = () => {
