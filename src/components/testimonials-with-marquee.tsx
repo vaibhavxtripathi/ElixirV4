@@ -33,13 +33,15 @@ export function TestimonialsSection({
   // Create infinite varied testimonials - reduced count for better performance
   const createInfiniteTestimonials = (
     baseTestimonials: typeof testimonials,
-    count: number = 8 // Reduced from 20 to 8
+    count: number = 8, // Reduced from 20 to 8
+    startOffset: number = 0 // Starting offset to create different patterns
   ) => {
     if (baseTestimonials.length === 0) return [];
 
     const result = [];
     for (let i = 0; i < count; i++) {
-      const testimonial = baseTestimonials[i % baseTestimonials.length];
+      const index = (i + startOffset) % baseTestimonials.length;
+      const testimonial = baseTestimonials[index];
       result.push({
         ...testimonial,
         // Add unique key to prevent React warnings
@@ -50,7 +52,8 @@ export function TestimonialsSection({
   };
 
   const infiniteTestimonials1 = createInfiniteTestimonials(testimonials, 8);
-  const infiniteTestimonials2 = createInfiniteTestimonials(testimonials, 8);
+  // Create second row with different starting position to avoid synchronization
+  const infiniteTestimonials2 = createInfiniteTestimonials(testimonials, 8, 3); // Start from index 3
 
   return (
     <motion.section
@@ -83,6 +86,7 @@ export function TestimonialsSection({
                 <TestimonialCard
                   key={`r1-${i}-${testimonial.uniqueId}`}
                   {...testimonial}
+                  truncate={true}
                 />
               ))}
             </div>
@@ -92,6 +96,7 @@ export function TestimonialsSection({
                 <TestimonialCard
                   key={`r1-dup-${i}-${testimonial.uniqueId}`}
                   {...testimonial}
+                  truncate={true}
                 />
               ))}
             </div>
@@ -111,6 +116,7 @@ export function TestimonialsSection({
                 <TestimonialCard
                   key={`r2-${i}-${testimonial.uniqueId}`}
                   {...testimonial}
+                  truncate={true}
                 />
               ))}
             </div>
@@ -120,6 +126,7 @@ export function TestimonialsSection({
                 <TestimonialCard
                   key={`r2-dup-${i}-${testimonial.uniqueId}`}
                   {...testimonial}
+                  truncate={true}
                 />
               ))}
             </div>

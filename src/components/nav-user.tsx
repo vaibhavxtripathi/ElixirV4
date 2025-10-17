@@ -19,6 +19,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -31,12 +32,14 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const handleLogout = async () => {
     clearToken();
     // Instant UI update without full refresh
     queryClient.setQueryData(["me"], null);
     await queryClient.invalidateQueries({ queryKey: ["me"] });
+    router.push("/login");
   };
 
   return (
