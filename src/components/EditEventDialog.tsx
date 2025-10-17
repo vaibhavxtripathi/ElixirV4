@@ -57,14 +57,14 @@ export function EditEventDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => (!v ? onClose() : undefined)}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto backdrop-blur border border-white/10">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto backdrop-blur border border-white/10">
         <DialogHeader>
-          <DialogTitle className="text-white">Edit Event</DialogTitle>
-          <DialogDescription className="text-white/60">
+          <DialogTitle className="text-white text-lg">Edit Event</DialogTitle>
+          <DialogDescription className="text-white/60 text-sm">
             Update your event details and save changes
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-2">
+        <div className="space-y-3 sm:space-y-4 py-2">
           <div className="space-y-2">
             <Label htmlFor="edit-title" className="text-white">
               Title
@@ -110,7 +110,7 @@ export function EditEventDialog({
             />
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:gap-2">
+        <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
           <Button
             variant="outline"
             className="border-white/20 text-white hover:bg-white/10"

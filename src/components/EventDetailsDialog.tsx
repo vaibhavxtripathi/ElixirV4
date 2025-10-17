@@ -36,12 +36,12 @@ export function EventDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => (!v ? onClose() : undefined)}>
-      <DialogContent className="sm:max-w-2xl bg-[#0A0B1A]/95 backdrop-blur border border-white/10">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0A0B1A]/95 backdrop-blur border border-white/10">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl">
+          <DialogTitle className="text-white text-lg sm:text-xl">
             {event.title}
           </DialogTitle>
-          <DialogDescription className="text-white/60">
+          <DialogDescription className="text-white/60 text-sm">
             Event Details
           </DialogDescription>
         </DialogHeader>
@@ -49,7 +49,7 @@ export function EventDetailsDialog({
         <div className="space-y-6">
           {/* Event Image */}
           {event.imageUrl && (
-            <div className="w-full h-48 rounded-lg overflow-hidden bg-white/10 border border-white/10">
+            <div className="w-full h-32 sm:h-48 rounded-lg overflow-hidden bg-white/10 border border-white/10">
               <img
                 src={event.imageUrl}
                 alt={event.title}
@@ -84,7 +84,7 @@ export function EventDetailsDialog({
             </div>
 
             {/* Event Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10">
                 <Calendar className="w-5 h-5 text-white/60" />
                 <div>
