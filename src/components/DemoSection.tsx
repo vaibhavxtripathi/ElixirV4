@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-
 export const DemoSection = () => {
   return (
     <motion.section
-      className="relative mt-20"
+      className="relative mt-16"
       initial={{ opacity: 0, y: 100 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -23,37 +22,50 @@ export const DemoSection = () => {
         </div>
 
         {/* 3-column app frame */}
-        <div className="grid grid-cols-12 gap-0">
+        <div className="relative grid grid-cols-12 gap-0 min-h-[500px]">
           {/* left sidebar */}
-          <div className="col-span-3 hidden border-r border-white/10 p-4 md:block">
-            <div className="h-6 w-28 rounded-md bg-white/10" />
+          <div className="col-span-3 hidden border-r border-white/10 p-6 md:block">
+            <div className="h-6 w-28 rounded-md bg-white/10 " />
             <div className="mt-6 space-y-3">
-              <div className="h-4 w-32 rounded bg-white/5" />
-              <div className="h-4 w-24 rounded bg-white/5" />
-              <div className="h-4 w-28 rounded bg-white/5" />
-              <div className="h-4 w-20 rounded bg-white/5" />
+              {[32, 24, 28, 20, 36, 16].map((width, i) => (
+                <div key={i} className={`h-4 w-${width} rounded bg-white/5 `} />
+              ))}
+            </div>
+            <div className="mt-6">
+              <div className="h-24 w-full rounded-lg border border-white/10 bg-black/20 " />
             </div>
           </div>
 
           {/* main content placeholder */}
-          <div className="col-span-12 md:col-span-6 border-r border-white/10 p-4">
-            <div className="h-6 w-56 rounded-md bg-white/10" />
+          <div className="col-span-12 md:col-span-6 border-r border-white/10 p-6">
+            <div className="h-6 w-56 rounded-md bg-white/10 " />
             <div className="mt-6 space-y-3">
-              <div className="h-3 w-full rounded bg-white/5" />
-              <div className="h-3 w-5/6 rounded bg-white/5" />
-              <div className="h-3 w-2/3 rounded bg-white/5" />
-              <div className="h-40 w-full rounded-lg border border-white/10 bg-black/20" />
+              {[100, 83, 67].map((width, i) => (
+                <div key={i} className={`h-3 w-${width} rounded bg-white/5 `} />
+              ))}
             </div>
+            <div className="mt-6 h-40 w-full rounded-lg border border-white/10 bg-black/20 " />
+            <div className="mt-6 space-y-3">
+              {[80, 75, 83].map((width, i) => (
+                <div
+                  key={i}
+                  className={`h-3 w-${width} rounded bg-white/5   `}
+                />
+              ))}
+            </div>
+            <div className="mt-6 h-28 w-full rounded-lg border border-white/10 bg-black/20 " />
           </div>
 
           {/* right panel */}
-          <div className="col-span-12 md:col-span-3 p-4">
-            <div className="h-6 w-40 rounded-md bg-white/10" />
-            <div className="mt-4 h-56 rounded-lg border border-white/10 bg-black/20" />
-            <div className="mt-4 space-y-3">
-              <div className="h-3 w-40 rounded bg-white/5" />
-              <div className="h-3 w-24 rounded bg-white/5" />
+          <div className="col-span-12 md:col-span-3 p-6">
+            <div className="h-6 w-40 rounded-md bg-white/10 " />
+            <div className="mt-6 h-48 w-full rounded-lg border border-white/10 bg-black/20 " />
+            <div className="mt-6 space-y-3">
+              {[40, 24, 32].map((width, i) => (
+                <div key={i} className={`h-3 w-${width} rounded bg-white/5`} />
+              ))}
             </div>
+            <div className="mt-6 h-20 w-full rounded-lg border border-white/10 bg-black/20 " />
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Particles } from "@/components/ui/particles";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,10 @@ export default function ConditionalLayout({
   // For all other routes, render with navbar and footer
   return (
     <>
+      <Particles
+        className="fixed inset-0 -z-10 size-full pointer-events-none"
+        color="#ffffff"
+      />
       <Navbar />
       {children}
       <Footer />

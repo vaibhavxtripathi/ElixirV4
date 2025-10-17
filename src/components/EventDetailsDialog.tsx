@@ -126,7 +126,12 @@ export function EventDetailsDialog({
                 <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 md:col-span-2">
                   {(() => {
                     const Comp = logo
-                      ? (Logos as Record<string, any>)[logo]
+                      ? (
+                          Logos as Record<
+                            string,
+                            React.ComponentType<{ className?: string }>
+                          >
+                        )[logo]
                       : undefined;
                     return Comp ? (
                       <Comp className="w-6 h-6" />
