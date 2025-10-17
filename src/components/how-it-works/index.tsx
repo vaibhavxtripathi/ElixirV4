@@ -16,6 +16,7 @@ type Tab = {
   description: string;
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
   id: string;
+  skeleton: React.ReactNode;
 };
 
 export const HowItWorks = () => {
@@ -56,6 +57,13 @@ export const HowItWorks = () => {
   const GRID_DELAY = 2500; // wait for pixelated canvas animation
 
   useEffect(() => {
+    // Only auto-switch on desktop (lg and above)
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    if (!mediaQuery.matches) {
+      return; // Don't auto-switch on mobile
+    }
+
     const interval = setInterval(() => {
       const currentIndex = tabs.findIndex((tab) => tab.id === activeTab.id);
       const nextIndex = (currentIndex + 1) % tabs.length;
@@ -180,25 +188,28 @@ export const HowItWorks = () => {
             </AnimatePresence>
           </div>
         </div>
-        {/* Mobile Tabs */}
-        <div className="mt-8 w-full lg:hidden">
-          <div
-            className={cn(
-              "relative flex w-full flex-col items-start overflow-hidden rounded-md border border-white/10 bg-white/5 px-6 py-8",
-              "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
-            )}
-          >
-            <div className="relative z-20 flex items-center gap-3 font-medium text-white/90">
-              <activeTab.icon className="shrink-0 h-4 w-4" />
-              <span className="text-base">{activeTab.title}</span>
+        {/* Mobile Tabs - Show all sections */}
+        <div className="mt-8 w-full lg:hidden space-y-6 sm:space-y-8">
+          {tabs.map((tab, index) => (
+            <div
+              key={tab.id}
+              className={cn(
+                "relative flex w-full flex-col items-start rounded-md border border-white/10 bg-white/5 px-4 py-6 sm:px-6 sm:py-8",
+                "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
+              )}
+            >
+              <div className="relative z-20 flex items-center gap-3 font-medium text-white/90 w-full">
+                <tab.icon className="shrink-0 h-4 w-4" />
+                <span className="text-base">{tab.title}</span>
+              </div>
+              <p className="relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed w-full">
+                {tab.description}
+              </p>
+              <div className="relative mx-auto mt-6 h-60 w-full overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]">
+                {tab.skeleton}
+              </div>
             </div>
-            <p className="relative z-20 mt-3 text-left text-sm text-white/70 leading-relaxed">
-              {activeTab.description}
-            </p>
-            <div className="relative mx-auto mt-6 h-80 w-full overflow-hidden bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]">
-              {activeTab.skeleton}
-            </div>
-          </div>
+          ))}
         </div>
       </Container>
     </section>
