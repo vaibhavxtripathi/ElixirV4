@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Particles } from "@/components/ui/particles";
@@ -15,11 +16,14 @@ export default function ConditionalLayout({
   const pathname = usePathname();
 
   // Check if current path is a dashboard route
-  const isDashboardRoute =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/student") ||
-    pathname.startsWith("/club-head") ||
-    pathname.startsWith("/dash");
+  const isDashboardRoute = useMemo(
+    () =>
+      pathname.startsWith("/admin") ||
+      pathname.startsWith("/student") ||
+      pathname.startsWith("/club-head") ||
+      pathname.startsWith("/dash"),
+    [pathname]
+  );
 
   if (isDashboardRoute) {
     // For dashboard routes, only render children (no navbar/footer)
@@ -32,6 +36,10 @@ export default function ConditionalLayout({
       <Particles
         className="fixed inset-0 -z-10 size-full pointer-events-none"
         color="#ffffff"
+        quantity={50}
+        staticity={50}
+        ease={50}
+        size={0.4}
       />
       <Navbar />
       {children}

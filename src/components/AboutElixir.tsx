@@ -8,7 +8,7 @@ import { Scale } from "@/components/scale";
 
 export function AboutElixir() {
   return (
-    <section className="relative py-24 md:py-28">
+    <section className="relative py-16 sm:py-20 md:py-24 lg:py-28">
       <Header
         badge="About Elixir"
         title="Everything you need to grow in tech"
@@ -16,7 +16,7 @@ export function AboutElixir() {
         variant="secondary"
       />
 
-      <div className="mx-auto mt-12 grid w-[min(1200px,95%)] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto mt-8 sm:mt-10 md:mt-12 grid w-[min(1200px,95%)] grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map(
           (
             f: { title: string; description: string; accent: string },
@@ -29,7 +29,8 @@ export function AboutElixir() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: idx * 0.05, ease: "easeOut" }}
               className={cn(
-                "group relative overflow-hidden rounded-2xl border border-white/10 p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]"
+                "group relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]",
+                "hover:border-white/20 transition-all duration-300"
               )}
             >
               {/* Background layers */}
@@ -39,10 +40,10 @@ export function AboutElixir() {
               />
               {/* Content above backgrounds */}
               <div className="relative z-10">
-                <h3 className="text-lg font-semibold text-white/90">
+                <h3 className="text-base sm:text-lg font-semibold text-white/90 leading-tight">
                   {f.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/70">
+                <p className="mt-2 sm:mt-3 text-xs sm:text-sm leading-relaxed text-white/70">
                   {f.description}
                 </p>
               </div>
