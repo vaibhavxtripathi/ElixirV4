@@ -53,9 +53,11 @@ NEXT_PUBLIC_API_URL="https://your-backend-domain.com"
    - Fill in the required information
    - Add your domain to authorized domains
 
-6. **Set Authorized Redirect URIs**
+6. **Set Authorized Redirect URIs** ⚠️ **CRITICAL**
    - In your OAuth 2.0 Client ID settings
-   - Add your callback URL: `https://your-backend-domain.com/auth/google/callback`
+   - **Remove any localhost URLs** like `http://localhost:3001/auth/google/callback`
+   - **Add your production callback URL**: `https://your-backend-domain.com/auth/google/callback`
+   - **This must match your `GOOGLE_REDIRECT_URI` environment variable exactly**
 
 ## Production Deployment
 
@@ -98,9 +100,11 @@ After setting up the environment variables:
    - Should be: `FRONTEND_BASE_URL=https://your-frontend-domain.com`
    - Without this, OAuth will redirect to localhost instead of your production frontend
 
-3. **"Invalid redirect URI"**
-   - Ensure the redirect URI in Google Console matches your `GOOGLE_REDIRECT_URI`
-   - Must be exactly: `https://your-backend-domain.com/auth/google/callback`
+3. **"Invalid redirect URI" or "Redirecting to localhost"**
+   - **CRITICAL**: Check your Google Cloud Console OAuth configuration
+   - Remove `http://localhost:3001/auth/google/callback` from authorized redirect URIs
+   - Add `https://your-backend-domain.com/auth/google/callback` to authorized redirect URIs
+   - Ensure the redirect URI in Google Console matches your `GOOGLE_REDIRECT_URI` environment variable exactly
 
 4. **"Invalid client"**
    - Verify your `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correct

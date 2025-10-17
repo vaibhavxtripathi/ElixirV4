@@ -29,7 +29,10 @@ console.log(
   "[OAuth] GOOGLE_REDIRECT_URI:",
   googleRedirectUri ? `✓ Set (${googleRedirectUri})` : "✗ Missing"
 );
-console.log("[OAuth] FRONTEND_BASE_URL:", frontendBaseUrl ? `✓ Set (${frontendBaseUrl})` : "✗ Missing");
+console.log(
+  "[OAuth] FRONTEND_BASE_URL:",
+  frontendBaseUrl ? `✓ Set (${frontendBaseUrl})` : "✗ Missing"
+);
 
 const googleClient = new OAuth2Client({
   clientId: googleClientId,
@@ -250,6 +253,7 @@ export const googleOAuthStart = async (req: Request, res: Response) => {
     });
     console.log("[OAuth] Using redirect URI:", googleRedirectUri);
     console.log("[OAuth] Generated Google auth URL:", url);
+    console.log("[OAuth] WARNING: If you see localhost in the redirect, check your Google Cloud Console OAuth configuration!");
     return res.redirect(url);
   } catch (e) {
     return res.status(500).json({ message: "Failed to start Google OAuth" });
@@ -342,13 +346,13 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       email: user.email,
       role: user.role,
     });
-    
+
     // Validate frontend URL in production
     if (!frontendBaseUrl) {
       console.error("[OAuth] FRONTEND_BASE_URL is not set in production");
       return res.status(500).send("Frontend URL not configured");
     }
-    
+
     const dest = `${frontendBaseUrl}/auth/callback?token=${encodeURIComponent(
       token
     )}&to=${encodeURIComponent(redirect || "/")}`;
