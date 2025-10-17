@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
   getAllEvents,
+  getMyClubEvents,
   createEvent,
   registerEvent,
   getRegisteredEvents,
+  getEventRegistrations,
   updateEvent,
   deleteEvent,
 } from "../controllers/eventController";
@@ -20,6 +22,12 @@ import { asyncHandler } from "../utils/asyncHandler";
 const router = Router();
 
 router.get("/", validate(listEventsSchema), asyncHandler(getAllEvents));
+router.get(
+  "/mine",
+  authenticateToken,
+  requireRole(["CLUB_HEAD", "ADMIN"]),
+  asyncHandler(getMyClubEvents)
+);
 router.post(
   "/",
   authenticateToken,
@@ -33,17 +41,23 @@ router.post(
   asyncHandler(registerEvent)
 );
 router.get("/registered", authenticateToken, asyncHandler(getRegisteredEvents));
+router.get(
+  "/:id/registrations",
+  authenticateToken,
+  requireRole(["CLUB_HEAD", "ADMIN"]),
+  asyncHandler(getEventRegistrations)
+);
 router.put(
   "/:id",
   authenticateToken,
-  requireRole(["ADMIN"]),
+  requireRole(["ADMIN", "CLUB_HEAD"]),
   validate(updateEventSchema),
   asyncHandler(updateEvent)
 );
 router.delete(
   "/:id",
   authenticateToken,
-  requireRole(["ADMIN"]),
+  requireRole(["ADMIN", "CLUB_HEAD"]),
   validate(idParamSchema),
   asyncHandler(deleteEvent)
 );
