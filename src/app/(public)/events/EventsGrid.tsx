@@ -3,6 +3,7 @@
 import CardFlip from "@/components/kokonutui/card-flip";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import ContentSkeleton from "@/components/ContentSkeleton";
 
 type EventItem = {
   id: string | number;
@@ -67,33 +68,7 @@ export default function EventsGrid({ page }: { page: number }) {
   };
 
   if (eventsLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="flex items-center justify-center">
-            <div className="relative w-[280px] h-[320px] rounded-2xl border border-zinc-200 dark:border-zinc-800/50 bg-zinc-50 dark:bg-zinc-900 shadow-xs dark:shadow-lg overflow-hidden">
-              {/* Event image shimmer - matches CardFlip front face */}
-              <div className="absolute inset-0 w-full h-full">
-                <div className="h-full w-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-              </div>
-              {/* Overlay content shimmer */}
-              <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                {/* Event title shimmer */}
-                <div className="h-6 w-full bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-2" />
-                <div className="h-6 w-3/4 bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-3" />
-                {/* Event details shimmer */}
-                <div className="space-y-2 mb-4">
-                  <div className="h-4 w-full bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-                  <div className="h-4 w-2/3 bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-                </div>
-                {/* Button shimmer */}
-                <div className="h-10 w-full bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+    return <ContentSkeleton variant="event" count={6} />;
   }
 
   return (
