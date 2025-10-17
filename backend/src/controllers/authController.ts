@@ -14,6 +14,14 @@ const frontendBaseUrl =
   process.env.FRONTEND_BASE_URL ||
   process.env.FRONTEND_URL ||
   "http://localhost:3000";
+
+// Log OAuth configuration status on startup
+console.log("[OAuth] Configuration status:");
+console.log("[OAuth] GOOGLE_CLIENT_ID:", googleClientId ? "✓ Set" : "✗ Missing");
+console.log("[OAuth] GOOGLE_CLIENT_SECRET:", googleClientSecret ? "✓ Set" : "✗ Missing");
+console.log("[OAuth] GOOGLE_REDIRECT_URI:", googleRedirectUri ? `✓ Set (${googleRedirectUri})` : "✗ Missing");
+console.log("[OAuth] FRONTEND_BASE_URL:", frontendBaseUrl);
+
 const googleClient = new OAuth2Client({
   clientId: googleClientId,
   clientSecret: googleClientSecret,
@@ -134,8 +142,14 @@ export const googleLogin = async (req: Request, res: Response) => {
     const { idToken } = req.body as { idToken?: string };
     if (!idToken)
       return res.status(400).json({ message: "idToken is required" });
-    if (!googleClientId)
-      return res.status(500).json({ message: "Google client not configured" });
+    if (!googleClientId) {
+      console.error("[OAuth] GOOGLE_CLIENT_ID environment variable is not set");
+      return res.status(500).json({ 
+        message: "Google client not configured",
+        missingVariable: "GOOGLE_CLIENT_ID",
+        details: "Please set the GOOGLE_CLIENT_ID environment variable in your production environment"
+      });
+    }
 
     const ticket = await googleClient.verifyIdToken({
       idToken,
@@ -194,8 +208,19 @@ export const googleLogin = async (req: Request, res: Response) => {
 
 export const googleOAuthStart = async (req: Request, res: Response) => {
   try {
-    if (!googleClientId || !googleClientSecret || !googleRedirectUri) {
-      return res.status(500).json({ message: "Google OAuth not configured" });
+    // Check which environment variables are missing
+    const missingVars = [];
+    if (!googleClientId) missingVars.push("GOOGLE_CLIENT_ID");
+    if (!googleClientSecret) missingVars.push("GOOGLE_CLIENT_SECRET");
+    if (!googleRedirectUri) missingVars.push("GOOGLE_REDIRECT_URI or GOOGLE_REDIRECT_URL");
+    
+    if (missingVars.length > 0) {
+      console.error("[OAuth] Missing environment variables:", missingVars);
+      return res.status(500).json({ 
+        message: "Google OAuth not configured",
+        missingVariables: missingVars,
+        details: "Please set the required Google OAuth environment variables in your production environment"
+      });
     }
     const nonce = crypto.randomBytes(16).toString("hex");
     const redirect =
