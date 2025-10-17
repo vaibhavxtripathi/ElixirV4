@@ -25,13 +25,13 @@ export const Header = ({
     >
       <motion.div className="flex justify-center" variants={fadeInUp}>
         <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/90 backdrop-blur">
-        ✦ {badge}
+          ✦ {badge}
         </div>
       </motion.div>
 
       <motion.h1
         className={cn(
-          "mt-6 text-center text-transparent text-5xl leading-tight tracking-tight md:text-7xl bg-clip-text bg-gradient-to-b from-white to-white/60",
+          "mt-6 text-center text-transparent text-5xl leading-tight tracking-tight md:text-7xl bg-clip-text bg-gradient-to-b from-white to-white/50",
           variant === "secondary" && "text-3xl md:text-5xl"
         )}
         variants={fadeInUp}
@@ -41,7 +41,7 @@ export const Header = ({
 
       <motion.p
         className={cn(
-          "mt-4 text-center text-xl text-white/70 md:text-2xl",
+          "mt-5 text-center text-md text-white/70 md:text-lg",
           variant === "secondary" && "text-sm md:text-base"
         )}
         variants={fadeInUp}

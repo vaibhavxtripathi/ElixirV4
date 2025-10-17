@@ -18,14 +18,14 @@ const faqs: FAQItem[] = [
       "Elixir is the student-led tech community that helps you learn, build, and launch through events, mentorship, and blogs.",
   },
   {
+    question: "What kind of events do you host?",
+    answer:
+      "We host technical workshops, hackathons, speaker sessions, and networking events. Our events focus on emerging technologies, career development, and building real-world projects.",
+  },
+  {
     question: "How do I join events?",
     answer:
       "Browse the Events page and register. You’ll receive details via email and on your dashboard once you log in.",
-  },
-  {
-    question: "How can I become a mentor?",
-    answer:
-      "Apply through the Mentors page. Our admins will review your profile and get back to you with next steps.",
   },
   {
     question: "Do you post blogs from students?",
@@ -41,11 +41,7 @@ const faqs: FAQItem[] = [
 
 export function FAQSection() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-64 w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_60%)] blur-2xl" />
-      </div>
-
+    <section className="relative overflow-hidden -mt-8">
       <Header
         badge="Need help?"
         title="Frequently asked questions"
@@ -54,7 +50,7 @@ export function FAQSection() {
       />
 
       <motion.div
-        className="mx-auto mt-8 w-full max-w-5xl px-4 pb-20 lg:px-6"
+        className="mx-auto mt-16 w-full max-w-5xl px-4 pb-10 lg:px-6"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
@@ -65,7 +61,7 @@ export function FAQSection() {
           variants={fadeInUp}
         >
           {faqs.map((item, idx) => (
-            <FAQRow key={idx} item={item} defaultOpen={idx === 0} />
+            <FAQRow key={idx} item={item} />
           ))}
         </motion.div>
       </motion.div>
@@ -73,14 +69,8 @@ export function FAQSection() {
   );
 }
 
-function FAQRow({
-  item,
-  defaultOpen = false,
-}: {
-  item: FAQItem;
-  defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
+function FAQRow({ item }: { item: FAQItem }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="group border-b border-white/10 last:border-b-0">
       <button
