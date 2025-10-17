@@ -38,16 +38,13 @@ import {
 import {
   CheckCircle2Icon,
   // CheckCircleIcon,
-  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  ColumnsIcon,
   GripVerticalIcon,
   LoaderIcon,
   MoreVerticalIcon,
-  PlusIcon,
   TrendingUpIcon,
 } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -66,7 +63,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -347,7 +343,7 @@ export function DataTable({
   views?: Array<{ label: string; rows: z.infer<typeof schema>[] }>;
   onUpdate?: (
     row: z.infer<typeof schema>,
-    field: "header" | "target" | "limit" | "reviewer",
+    field: "header" | "target" | "limit" | "reviewer" | "imageUrl",
     value: string
   ) => Promise<void> | void;
   onDelete?: (row: z.infer<typeof schema>) => Promise<void> | void;
@@ -438,35 +434,7 @@ export function DataTable({
       header: () => null,
       cell: ({ row }) => <DragHandle id={row.original.id} />,
     },
-    // select
-    {
-      id: "select",
-      header: ({ table }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
-            aria-label="Select all"
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // removed selection checkbox column globally
     // header (name/title)
     {
       accessorKey: "header",
@@ -485,7 +453,6 @@ export function DataTable({
               setUpdatingCells((prev) => new Set(prev).add(cellKey));
               try {
                 await onUpdate(row.original, "header", value);
-                // Update local state after successful backend update
                 setData((prevData) =>
                   prevData.map((item) =>
                     item.id === row.original.id
@@ -495,7 +462,6 @@ export function DataTable({
                 );
               } catch (error) {
                 console.error("Update failed:", error);
-                // Reset input to original value on error
                 e.currentTarget.value = row.original.header;
               } finally {
                 setUpdatingCells((prev) => {
@@ -818,6 +784,60 @@ export function DataTable({
         />
       ),
     },
+    // mentors image url (additional column only when Mentors view)
+    {
+      id: "imageUrl",
+      header: () => {
+        const isMentors = (views?.[selectedView]?.label || "") === "Mentors";
+        return isMentors ? "Image URL" : null;
+      },
+      cell: ({ row }) => {
+        const isMentors = (views?.[selectedView]?.label || "") === "Mentors";
+        if (!isMentors) return null;
+        const current = (row.original as { imageUrl?: string }).imageUrl || "";
+        return (
+          <Input
+            defaultValue={current}
+            className={`h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background ${
+              updatingCells.has(`${row.original.id}-imageUrl`)
+                ? "opacity-50"
+                : ""
+            }`}
+            disabled={updatingCells.has(`${row.original.id}-imageUrl`)}
+            onBlur={async (e) => {
+              const value = e.currentTarget.value;
+              if (onUpdate && value !== current) {
+                const cellKey = `${row.original.id}-imageUrl`;
+                setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                try {
+                  await onUpdate(row.original, "imageUrl", value);
+                  setData((prevData) =>
+                    prevData.map((item) =>
+                      item.id === row.original.id
+                        ? {
+                            ...item,
+                            imageUrl: value,
+                          }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Update failed:", error);
+                  e.currentTarget.value = current;
+                } finally {
+                  setUpdatingCells((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(cellKey);
+                    return newSet;
+                  });
+                }
+              }
+            }}
+          />
+        );
+      },
+      enableHiding: true,
+    },
     // actions
     {
       id: "actions",
@@ -929,9 +949,9 @@ export function DataTable({
   return (
     <Tabs
       defaultValue="outline"
-      className="flex w-full flex-col justify-start gap-6"
+      className="flex w-full flex-col justify-start gap-4"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex items-center justify-between px-3 lg:px-5">
         <Label
           htmlFor="view-selector"
           className="text-sm text-muted-foreground"
@@ -978,49 +998,10 @@ export function DataTable({
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <ColumnsIcon />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
-                <ChevronDownIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {table
-                .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
-                )
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <PlusIcon />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
-        </div>
       </div>
       <TabsContent
         value="outline"
-        className="relative flex flex-col gap-4 overflow-hidden px-4 lg:px-6"
+        className="relative flex flex-col gap-3 overflow-hidden px-3 lg:px-5"
       >
         <div className="overflow-hidden rounded-lg border">
           <DndContext
@@ -1033,8 +1014,8 @@ export function DataTable({
             <Table className="table-fixed">
               <colgroup>
                 <col className="w-10" />
-                <col className="w-12" />
-                <col className="w-[40%]" />
+                <col className="w-[36%]" />
+                <col className="w-[16%]" />
                 <col className="w-[16%]" />
                 <col className="w-[16%]" />
                 <col className="w-[16%]" />
