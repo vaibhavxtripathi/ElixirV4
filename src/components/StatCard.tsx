@@ -32,12 +32,14 @@ export function StatCard({
           className ?? "bg-white/5 border-white/10"
         } transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-blue-500/10`}
       >
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white/60">{label}</p>
+              <p className="text-xs sm:text-sm font-medium text-white/60">
+                {label}
+              </p>
               <motion.p
-                className="text-3xl font-bold text-white mt-1"
+                className="text-2xl sm:text-3xl font-bold text-white mt-1"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -47,7 +49,7 @@ export function StatCard({
             </div>
             {icon && (
               <motion.div
-                className={`p-3 rounded-lg border border-white/10 ${
+                className={`p-2 sm:p-3 rounded-lg border border-white/10 ${
                   iconBgClassName ?? "bg-white/10 text-white/80"
                 } transition-all duration-300`}
                 whileHover={{
