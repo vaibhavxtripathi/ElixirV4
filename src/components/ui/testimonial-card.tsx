@@ -1,5 +1,7 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export interface TestimonialAuthor {
   name: string;
@@ -23,6 +25,7 @@ export function TestimonialCard({
   truncate = false,
 }: TestimonialCardProps) {
   const Card = href ? "a" : "div";
+  const [imageError, setImageError] = useState(false);
 
   return (
     <Card
@@ -39,27 +42,22 @@ export function TestimonialCard({
     >
       <div className="flex items-start gap-4">
         <div className="h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-blue-500/20 flex items-center justify-center">
-          <img
-            src={author.avatar}
-            alt={author.name}
-            className="h-full w-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              const fallback = target.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = "flex";
-            }}
-          />
-          <div
-            className="h-full w-full bg-blue-500/20 text-white text-sm font-medium flex items-center justify-center"
-            style={{ display: "none" }}
-          >
-            {author.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .toUpperCase()}
-          </div>
+          {!imageError ? (
+            <img
+              src={author.avatar}
+              alt={author.name}
+              className="h-full w-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="h-full w-full bg-blue-500/20 text-white text-sm font-medium flex items-center justify-center">
+              {author.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
+            </div>
+          )}
         </div>
         <div className="flex flex-col items-start min-w-0 flex-1">
           <h3 className="text-base font-semibold leading-tight">
