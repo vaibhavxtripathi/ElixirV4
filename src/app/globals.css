@@ -73,6 +73,8 @@
   .theme {
     --animate-marquee: marquee var(--duration) linear infinite;
     --animate-meteor: meteor 5s linear infinite;
+    --animate-star-movement-bottom: star-movement-bottom linear infinite alternate;
+    --animate-star-movement-top: star-movement-top linear infinite alternate;
   }
   :root {
     --background: 0 0% 100%;
@@ -101,7 +103,7 @@
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent: 240 15% 12.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
@@ -227,6 +229,26 @@
       opacity: 0;
     }
   }
+  @keyframes star-movement-bottom {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+    }
+  100% {
+    transform: translate(-100%, 0%);
+    opacity: 0;
+    }
+  }
+  @keyframes star-movement-top {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+    }
+  100% {
+    transform: translate(100%, 0%);
+    opacity: 0;
+    }
+  }
 }
 
 /* Shadow utility */
@@ -339,4 +361,40 @@
   100% {
     background-position: 200% 0;
   }
+}
+
+/* Elixir themed scrollbars */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.06);
+}
+
+/* WebKit */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.12)
+  );
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.32),
+    rgba(255, 255, 255, 0.18)
+  );
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
