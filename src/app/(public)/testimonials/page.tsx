@@ -23,8 +23,8 @@ export default async function TestimonialsPage() {
   const testimonials = data.items || data.testimonials || [];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
-      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-10">
+    <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-32 sm:pt-36 pb-12 sm:pb-18">
+      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-6 sm:mb-8 md:mb-10 text-center sm:text-left">
         Testimonials
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
