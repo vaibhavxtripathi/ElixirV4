@@ -19,8 +19,9 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} dark`}
     >
+      <head></head>
       <body
-        className="bg-[#080914] min-h-screen overflow-x-hidden flex flex-col font-sans 
+        className="bg-card min-h-screen overflow-x-hidden flex flex-col font-sans 
       font-primary h-full [--pattern-fg:var(--color-charcoal-900)]/10 dark:[--pattern-fg:var(--color-neutral-100)]/30"
       >
         <ReactQueryProvider>
