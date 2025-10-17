@@ -344,24 +344,26 @@ function AdminDashboardContent() {
         >
           {/* Header */}
           <motion.div
-            className="flex items-center justify-between"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
             variants={fadeInUp}
           >
             <div>
-              <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-              <p className="text-white/60">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                Admin Dashboard
+              </h1>
+              <p className="text-white/60 text-sm sm:text-base">
                 Welcome back! Here&apos;s what&apos;s happening with your
                 platform.
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Button className="bg-white/10 hover:bg-white/20 text-white border-white/20">
-                <Plus className="w-4 h-4 mr-2" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs sm:text-sm px-3 sm:px-4 py-2">
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Quick Create
               </Button>
               <Button
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
+                className="border-white/20 text-white hover:bg-white/10 p-2 sm:p-3"
               >
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
@@ -373,7 +375,7 @@ function AdminDashboardContent() {
               {/* KPI Grid */}
               <motion.div
                 variants={fadeIn}
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6"
               >
                 <StatCard
                   label="Total Users"
@@ -530,7 +532,7 @@ function AdminDashboardContent() {
               </motion.div>
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/5 border-white/10 rounded-xl">
-                  <CardContent className="p-6 space-y-4">
+                  <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     {(() => {
                       const pendingBlogs = (blogsData?.blogs || []).filter(
                         (b: Blog) => b.status !== "PUBLISHED"
@@ -642,20 +644,20 @@ function AdminDashboardContent() {
             </motion.div>
           )}
           {showOverview && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
               {/* Recent Users */}
               <motion.div variants={fadeIn}>
                 <Card className="bg-card">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-base">
+                    <CardTitle className="text-white text-sm sm:text-base">
                       Recent Users
                     </CardTitle>
-                    <CardDescription className="text-white/60">
+                    <CardDescription className="text-white/60 text-xs sm:text-sm">
                       Latest user registrations
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+                    <div className="space-y-2 sm:space-y-3 max-h-60 sm:max-h-80 overflow-y-auto pr-1 sm:pr-2">
                       {isLoading ? (
                         <div className="text-center py-4 text-white/60">
                           Loading...
@@ -669,17 +671,17 @@ function AdminDashboardContent() {
                           {(data?.users || []).slice(0, 5).map((user: User) => (
                             <div
                               key={user.id}
-                              className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10"
+                              className="flex items-center justify-between p-2 sm:p-3 bg-white/5 rounded-lg border border-white/10"
                             >
-                              <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                                  <Users className="w-4 h-4 text-blue-400" />
+                              <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                                  <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-white">
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs sm:text-sm font-medium text-white truncate">
                                     {user.firstName} {user.lastName}
                                   </p>
-                                  <p className="text-xs text-white/60">
+                                  <p className="text-xs text-white/60 truncate">
                                     {user.email}
                                   </p>
                                 </div>
@@ -703,29 +705,29 @@ function AdminDashboardContent() {
               <motion.div variants={fadeIn}>
                 <Card className="bg-card">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-white text-base">
+                    <CardTitle className="text-white text-sm sm:text-base">
                       Recent Events
                     </CardTitle>
-                    <CardDescription className="text-white/60">
+                    <CardDescription className="text-white/60 text-xs sm:text-sm">
                       Latest events created
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
+                    <div className="space-y-2 max-h-60 sm:max-h-80 overflow-y-auto pr-1 sm:pr-2">
                       {eventsData?.events?.slice(0, 5).map((event: Event) => (
                         <div
                           key={event.id}
-                          className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10"
+                          className="flex items-center justify-between p-2 sm:p-3 bg-white/5 rounded-lg border border-white/10"
                         >
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                              <Calendar className="w-4 h-4 text-green-400" />
+                          <div className="flex items-center space-x-2 sm:space-x-3">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-white">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs sm:text-sm font-medium text-white truncate">
                                 {event.title}
                               </p>
-                              <p className="text-xs text-white/60">
+                              <p className="text-xs text-white/60 truncate">
                                 {event.club?.name || "No club"}
                               </p>
                             </div>
@@ -1130,7 +1132,7 @@ function AdminDashboardContent() {
                   <Card className="bg-white/5 border-white/10 rounded-xl">
                     <CardContent className="p-6 space-y-6">
                       {/* Review queue quick actions */}
-                      <div className="mb-2 text-white/80 text-sm">
+                      <div className="mb-2 text-white/80 text-xs sm:text-sm">
                         Review Queue:{" "}
                         {
                           (blogsData?.blogs || []).filter(
