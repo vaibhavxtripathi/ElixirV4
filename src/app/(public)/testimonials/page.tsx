@@ -3,6 +3,8 @@ export const metadata = {
   description: "Meet our expert testimonials.",
 };
 
+import { TestimonialCard } from "@/components/ui/testimonial-card";
+
 async function getTestimonials() {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
@@ -21,27 +23,41 @@ export default async function TestimonialsPage() {
   const testimonials = data.items || data.testimonials || [];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Testimonials</h1>
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
+      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-10">
+        Testimonials
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
         {testimonials.map(
           (testimonial: {
             id: string | number;
             name: string;
             content: string;
             batchYear?: string | number;
+            imageUrl?: string | null;
           }) => (
-            <div key={testimonial.id} className="border rounded p-6">
-              <h3 className="text-lg font-semibold mb-2">{testimonial.name}</h3>
-              <p className="text-gray-600 mb-3">{testimonial.content}</p>
-              <div className="text-sm text-gray-500">
-                Batch Year: {testimonial.batchYear}
-              </div>
-            </div>
+            <TestimonialCard
+              key={testimonial.id}
+              author={{
+                name: testimonial.name,
+                handle: `Batch of ${testimonial.batchYear ?? "—"}`,
+                avatar:
+                  testimonial.imageUrl && testimonial.imageUrl.trim() !== ""
+                    ? testimonial.imageUrl
+                    : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+                        testimonial.name || "User"
+                      )}`,
+              }}
+              text={testimonial.content}
+              className="w-full h-full"
+            />
           )
         )}
         {testimonials.length === 0 && (
-          <p className="text-gray-600 col-span-full">No testimonials yet.</p>
+          <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-blue-500/10 bg-[#080914]/50 p-10 text-center">
+            <div className="h-16 w-16 rounded-full bg-white/10 mb-4" />
+            <p className="text-white/80 text-base">No testimonials yet.</p>
+          </div>
         )}
       </div>
     </main>
