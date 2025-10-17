@@ -12,7 +12,7 @@ export function AboutElixir() {
       <Header
         badge="About Elixir"
         title="Everything you need to grow in tech"
-        subtitle="Connect, learn, and build with 5000+ passionate developers"
+        subtitle="Connect, learn, and build with 5000+ passionate developers."
         variant="secondary"
       />
 
