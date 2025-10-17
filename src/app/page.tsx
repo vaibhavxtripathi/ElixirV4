@@ -1,9 +1,16 @@
 import { TestimonialsSection } from "@/components/testimonials-with-marquee";
 import { Header } from "@/components/Header";
-import { DemoSection } from "@/components/DemoSection";
 import { AboutElixir } from "@/components/AboutElixir";
 import dynamic from "next/dynamic";
 import { FAQSection } from "@/components/FAQ";
+import { AnimatedDemoSection } from "@/components/AnimatedDemoSection";
+import { StarBorder } from "@/components/ui/star-border";
+import { DiscordLogo } from "@/icons/general";
+
+export const metadata = {
+  title: "Elixir | Home",
+  description: "Discover events, mentors, and blogs in the Elixir community.",
+};
 
 // Lazy load heavy components
 const HowItWorks = dynamic(
@@ -26,57 +33,8 @@ interface BackendTestimonial {
   handle?: string;
 }
 
-export const metadata = {
-  title: "Elixir | Home",
-  description: "Discover events, mentors, and blogs in the Elixir community.",
-};
-
 async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
   const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-  // Static fallback data
-  const fallbackData = [
-    {
-      id: 1,
-      name: "John Doe",
-      content: "Elixir helped me land my dream job at Google!",
-      batchYear: "2023",
-      avatar:
-        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      content: "The community support here is incredible.",
-      batchYear: "2022",
-      avatar:
-        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      content: "Best tech community I've ever been part of.",
-      batchYear: "2024",
-      avatar:
-        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      content: "Amazing workshops and networking opportunities!",
-      batchYear: "2023",
-      avatar:
-        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
-    },
-    {
-      id: 5,
-      name: "Alex Chen",
-      content: "The mentorship program changed my career trajectory.",
-      batchYear: "2022",
-      avatar:
-        "https://ui-avatars.com/api/?name=John&background=random&color=fff",
-    },
-  ];
 
   try {
     // Very short timeout - 2 seconds max
@@ -91,8 +49,7 @@ async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      console.log("API returned error, using fallback data");
-      return fallbackData;
+      return [] as BackendTestimonial[];
     }
 
     const data = await res.json();
@@ -102,10 +59,9 @@ async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
       return items as BackendTestimonial[];
     }
 
-    console.log("API returned empty data, using fallback");
-    return fallbackData;
+    return [] as BackendTestimonial[];
   } catch {
-    return fallbackData;
+    return [] as BackendTestimonial[];
   }
 }
 
@@ -125,16 +81,21 @@ export default async function HomePage() {
     href: t.href,
   }));
   return (
-    <main className="relative min-h-[88vh] text-white">
+    <main className="relative min-h-[88vh] text-white pt-10">
       <Header
-        badge="✦ Elixir Tech Community"
+        badge="Elixir Tech Community"
         title="Think better with Elixir"
-        subtitle="We build the future of technology with you"
+        subtitle="We build the future of technology with you."
         variant="default"
-      />
 
-      {/* Showcase layout replica (chrome only, no content) */}
-      <DemoSection />
+      />
+      <StarBorder className="flex mx-auto mt-12">
+        <div className="flex items-center gap-2">
+          <span>Join Discord</span>
+          <DiscordLogo className="w-5 h-5" />
+        </div>
+      </StarBorder>
+      <AnimatedDemoSection />
 
       <AboutElixir />
 
