@@ -50,14 +50,14 @@ export function FAQSection() {
       />
 
       <motion.div
-        className="mx-auto mt-16 w-full max-w-5xl px-4 pb-10 lg:px-6"
+        className="mx-auto mt-8 sm:mt-12 lg:mt-16 w-full max-w-5xl px-3 sm:px-4 pb-6 sm:pb-8 lg:pb-10 lg:px-6"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
         variants={containerStagger(0.1, 0.2)}
       >
         <motion.div
-          className="overflow-hidden rounded-2xl border border-white/10 bg-[#0A0B1A]/60 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur"
+          className="overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-[#0A0B1A]/60 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur"
           variants={fadeInUp}
         >
           {faqs.map((item, idx) => (
@@ -77,29 +77,29 @@ function FAQRow({ item }: { item: FAQItem }) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left text-white/90 transition-colors hover:bg-white/5"
+        className="flex w-full items-center justify-between gap-3 sm:gap-4 px-3 sm:px-4 lg:px-5 py-3 sm:py-4 lg:py-5 text-left text-white/90 transition-colors hover:bg-white/5"
       >
-        <span className="text-base font-medium md:text-lg">
+        <span className="text-sm sm:text-base font-medium md:text-lg leading-relaxed">
           {item.question}
         </span>
         <span
-          className={`inline-flex items-center justify-center transition-transform duration-300 ${
+          className={`inline-flex items-center justify-center transition-transform duration-300 shrink-0 ${
             open ? "rotate-180" : "rotate-90"
           }`}
         >
           {open ? (
-            <MinusIcon className="h-5 w-5 shrink-0 text-white/70" />
+            <MinusIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white/70" />
           ) : (
-            <PlusIcon className="h-5 w-5 shrink-0 text-white/70" />
+            <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white/70" />
           )}
         </span>
       </button>
       <div
-        className={`px-5 transition-all duration-300 ease-in-out ${
+        className={`px-3 sm:px-4 lg:px-5 transition-all duration-300 ease-in-out ${
           open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         } overflow-hidden`}
       >
-        <div className="pb-5 text-sm leading-relaxed text-white/70">
+        <div className="pb-3 sm:pb-4 lg:pb-5 text-xs sm:text-sm leading-relaxed text-white/70">
           {item.answer}
         </div>
       </div>
