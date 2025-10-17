@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { verifyToken } from "../utils/jwt";
+import { AuthRequest } from "../middleware/auth";
 
 // get all blogs (publicly on blogs page)
 export const getAllBlogs = async (req: Request, res: Response) => {
@@ -37,7 +39,7 @@ export const createBlog = async (req: any, res: Response) => {
       data: {
         title,
         content,
-        imageUrl,
+        imageUrl: imageUrl ?? null,
         status,
         authorId: userId,
       },
@@ -94,7 +96,7 @@ export const deleteBlog = async (req: any, res: Response) => {
   }
 };
 
-// get blog by id (public)
+// get blog by id (public, but restrict unpublished to admin/author)
 export const getBlogById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
@@ -105,9 +107,130 @@ export const getBlogById = async (req: Request, res: Response) => {
       },
     });
     if (!blog) return res.status(404).json({ message: "Blog not found" });
-    return res.json({ blog });
+    // If blog is published, always allow
+    if (blog.status === "PUBLISHED") return res.json({ blog });
+
+    // For drafts/archived: allow only if requester is admin or the author
+    try {
+      const authHeader = req.headers["authorization"] as string | undefined;
+      const token = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : undefined;
+      if (token) {
+        const payload = verifyToken(token) as {
+          userId: string;
+          role: string;
+        };
+        if (payload.role === "ADMIN" || payload.userId === blog.authorId) {
+          return res.json({ blog });
+        }
+      }
+    } catch {}
+
+    return res
+      .status(403)
+      .json({ message: "You are not allowed to view this blog" });
   } catch (error) {
     console.error("Get blog by id error:", error);
     return res.status(500).json({ message: "Failed to fetch blog" });
+  }
+};
+
+// submit blog (STUDENT) - always creates DRAFT under current user
+export const submitBlog = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    const { title, content, imageUrl } = req.body as {
+      title?: string;
+      content?: string;
+      imageUrl?: string;
+    };
+
+    if (!title || !content) {
+      return res
+        .status(400)
+        .json({ message: "Title and content are required" });
+    }
+
+    const blog = await prisma.blog.create({
+      data: {
+        title,
+        content,
+        imageUrl: imageUrl ?? null,
+        status: "DRAFT",
+        authorId: userId,
+      },
+      include: {
+        author: { select: { firstName: true, lastName: true } },
+      },
+    });
+
+    return res.status(201).json({ blog });
+  } catch (error) {
+    console.error("Submit blog error:", error);
+    return res.status(500).json({ message: "Failed to submit blog" });
+  }
+};
+
+// list my blogs (STUDENT)
+export const getMyBlogs = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    const blogs = await prisma.blog.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: "desc" },
+    });
+    return res.json({ blogs });
+  } catch (error) {
+    console.error("Get my blogs error:", error);
+    return res.status(500).json({ message: "Failed to fetch your blogs" });
+  }
+};
+
+// admin: list all blogs (all statuses)
+export const adminListBlogs = async (_req: AuthRequest, res: Response) => {
+  try {
+    const blogs = await prisma.blog.findMany({
+      include: {
+        author: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return res.json({ blogs });
+  } catch (error) {
+    console.error("Admin list blogs error:", error);
+    return res.status(500).json({ message: "Failed to fetch blogs" });
+  }
+};
+
+// admin: approve (publish) a blog
+export const approveBlog = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const blog = await prisma.blog.update({
+      where: { id },
+      data: { status: "PUBLISHED" },
+    });
+    return res.json({ blog });
+  } catch (error) {
+    console.error("Approve blog error:", error);
+    return res.status(500).json({ message: "Failed to approve blog" });
+  }
+};
+
+// admin: archive a blog
+export const archiveBlog = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const blog = await prisma.blog.update({
+      where: { id },
+      data: { status: "ARCHIVED" },
+    });
+    return res.json({ blog });
+  } catch (error) {
+    console.error("Archive blog error:", error);
+    return res.status(500).json({ message: "Failed to archive blog" });
   }
 };
