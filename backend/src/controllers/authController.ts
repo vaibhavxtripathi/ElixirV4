@@ -253,7 +253,9 @@ export const googleOAuthStart = async (req: Request, res: Response) => {
     });
     console.log("[OAuth] Using redirect URI:", googleRedirectUri);
     console.log("[OAuth] Generated Google auth URL:", url);
-    console.log("[OAuth] WARNING: If you see localhost in the redirect, check your Google Cloud Console OAuth configuration!");
+    console.log(
+      "[OAuth] WARNING: If you see localhost in the redirect, check your Google Cloud Console OAuth configuration!"
+    );
     return res.redirect(url);
   } catch (e) {
     return res.status(500).json({ message: "Failed to start Google OAuth" });

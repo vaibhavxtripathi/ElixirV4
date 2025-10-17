@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Events | Elixir",
+  title: "Elixir | Events",
   description: "Explore upcoming events by clubs.",
   alternates: { canonical: "/events" },
 };
