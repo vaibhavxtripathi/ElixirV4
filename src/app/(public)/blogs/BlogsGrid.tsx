@@ -24,8 +24,8 @@ export default function BlogsGrid() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
-        <h1 className="text-2xl font-bold grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-32 sm:pt-36 pb-12 sm:pb-18">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center sm:text-left">
           Blogs
         </h1>
         <ContentSkeleton variant="blog" count={6} />
@@ -35,9 +35,11 @@ export default function BlogsGrid() {
 
   if (error) {
     return (
-      <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
-        <h1 className="text-2xl font-bold mb-6">Blogs</h1>
-        <p className="text-red-400">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-32 sm:pt-36 pb-12 sm:pb-18">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center sm:text-left">
+          Blogs
+        </h1>
+        <p className="text-red-400 text-sm sm:text-base">
           Failed to load blogs. Please try again later.
         </p>
       </main>
@@ -45,8 +47,10 @@ export default function BlogsGrid() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
-      <h1 className="text-2xl font-bold mb-6">Blogs</h1>
+    <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-32 sm:pt-36 pb-12 sm:pb-18">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center sm:text-left">
+        Blogs
+      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {blogs.map((blog: Blog) => (
           <a
