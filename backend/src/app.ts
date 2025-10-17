@@ -1,6 +1,6 @@
 import express from "express";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import authRoutes from "./routes/auth";
 import eventsRoutes from "./routes/events";
 import clubsRoutes from "./routes/clubs";
@@ -41,7 +41,35 @@ app.use((req, res, next) => {
   next();
 });
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
+// Rate limiter: be careful behind proxies and avoid over-eager 429s
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000, // raise ceiling to reduce false positives for normal browsing
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Distinguish users where possible; otherwise fall back to IP (respecting trust proxy)
+    keyGenerator: (req: any) => {
+      // Prefer authenticated user id
+      const authHeader = req.headers?.authorization as string | undefined;
+      const bearer = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : undefined;
+      // lightweight decode without verification to avoid cost; if it fails, ignore
+      try {
+        if (bearer) {
+          const payload = JSON.parse(
+            Buffer.from(bearer.split(".")[1] || "", "base64").toString("utf8")
+          );
+          if (payload?.userId) return `uid:${payload.userId}`;
+        }
+      } catch {}
+      // IPv6-safe fallback using helper
+      return ipKeyGenerator(req);
+    },
+    message: { message: "Too many requests, please slow down." },
+  })
+);
 app.use(express.json());
 
 app.get("/health", (req, res) => {
