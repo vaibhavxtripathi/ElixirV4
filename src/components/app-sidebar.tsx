@@ -21,7 +21,6 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { roleToDashboard } from "@/lib/auth";
 import { usePathname } from "next/navigation";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Sidebar,
   SidebarContent,
@@ -64,17 +63,17 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/dashboard",
+      url: "#",
       icon: SettingsIcon,
     },
     {
       title: "Help",
-      url: "/",
+      url: "#",
       icon: HelpCircleIcon,
     },
     {
       title: "Search",
-      url: "/",
+      url: "#",
       icon: SearchIcon,
     },
   ],
@@ -95,14 +94,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         avatar:
           me.user.avatar ??
           `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            me.user.firstName
-          )}&background=random&color=fff`,
+            `${me.user.firstName} ${me.user.lastName ?? ""}`.trim()
+          )}&background=1E293B&color=ffffff`,
       }
     : {
         name: "Guest",
         email: "",
         avatar:
-          "https://ui-avatars.com/api/?name=Guest&background=random&color=fff",
+          "https://ui-avatars.com/api/?name=Guest&background=1E293B&color=ffffff",
       };
 
   const isAdmin = me?.user?.role === "ADMIN";
@@ -112,6 +111,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     isAdmin && isAdminRoute
       ? [
           { title: "Overview", url: "/admin", icon: LayoutDashboardIcon },
+          {
+            title: "Review Blogs",
+            url: "/admin?view=review-blogs",
+            icon: FileTextIcon,
+          },
           {
             title: "Create Event",
             url: "/admin?view=create-event",
@@ -128,20 +132,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: UsersIcon,
           },
           {
+            title: "Create Testimonial",
+            url: "/admin?view=create-testimonial",
+            icon: MessageSquareIcon,
+          },
+          {
             title: "Manage Users",
             url: "/admin?view=manage-users",
             icon: UsersIcon,
           },
         ]
       : me?.user
-      ? [
-          {
-            title: "Dashboard",
-            url: roleToDashboard(me.user.role),
-            icon: LayoutDashboardIcon,
-          },
-          ...data.navMain.slice(1),
-        ]
+      ? (() => {
+          const base = [
+            {
+              title: "Dashboard",
+              url: roleToDashboard(me.user.role),
+              icon: LayoutDashboardIcon,
+            },
+          ];
+          // Add student-specific entry when on student dashboard
+          if (pathname === "/student") {
+            base.push({
+              title: "My Blogs",
+              url: "/student?view=my-blogs",
+              icon: FileTextIcon,
+            });
+          }
+          return [...base, ...data.navMain.slice(1)];
+        })()
       : data.navMain;
 
   return (
@@ -157,15 +176,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5 text-white hover:bg-white/10"
             >
-              <div className="flex items-center justify-between gap-2">
-                <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <ArrowUpCircleIcon className="h-5 w-5 text-white" />
                   <span className="text-base font-semibold text-white">
                     Elixir
                   </span>
-                </Link>
-                <SidebarTrigger className="ml-auto text-white hover:bg-white/10" />
-              </div>
+                </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

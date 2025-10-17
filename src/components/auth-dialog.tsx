@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { api } from "@/lib/api";
 import { setToken, roleToDashboard } from "@/lib/auth";
+import { GoogleIcon } from "@/icons/general";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -106,6 +107,30 @@ export default function AuthDialog({
       );
     }
   };
+  console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+
+  async function handleGoogle() {
+    try {
+      const currentPath =
+        typeof window !== "undefined"
+          ? window.location.pathname + window.location.search
+          : "/";
+      const startUrl = `${
+        api.defaults.baseURL
+      }/auth/google/start?redirect=${encodeURIComponent(currentPath)}`;
+      window.location.href = startUrl;
+    } catch (e: unknown) {
+      const error = e as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setErr(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Google sign-in failed"
+      );
+    }
+  }
 
   const isSubmitting =
     mode === "login"
@@ -136,8 +161,23 @@ export default function AuthDialog({
           </DialogHeader>
         </div>
 
+        <div className="space-y-5 mt-4">
+          <Button
+            onClick={handleGoogle}
+            variant="gradientOutline"
+            className="w-full rounded-lg"
+          >
+            <GoogleIcon className="w-4 h-4" />
+            Continue with Google
+          </Button>
+
+          <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1">
+            <span className="text-muted-foreground text-xs">Or</span>
+          </div>
+        </div>
+
         <form
-          className="space-y-4"
+          className="space-y-5"
           onSubmit={
             mode === "login"
               ? loginForm.handleSubmit(onSubmit)
@@ -246,35 +286,6 @@ export default function AuthDialog({
 
         {mode === "signup" && (
           <>
-            <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1 my-4">
-              <span className="text-muted-foreground text-xs">Or</span>
-            </div>
-            <Button variant="gradientOutline" className="w-full rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 48 48"
-                className="h-4 w-4"
-                aria-hidden
-              >
-                <path
-                  fill="#FFC107"
-                  d="M43.611 20.083H42V20H24v8h11.303C33.602 31.91 29.197 35 24 35c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C33.642 5.1 28.982 3 24 3 12.955 3 4 11.955 4 23s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.651-.389-3.917z"
-                />
-                <path
-                  fill="#FF3D00"
-                  d="M6.306 14.691l6.571 4.819C14.381 16.108 18.824 13 24 13c3.059 0 5.842 1.153 7.961 3.039l5.657-5.657C33.642 5.1 28.982 3 24 3 16.318 3 9.706 7.337 6.306 14.691z"
-                />
-                <path
-                  fill="#4CAF50"
-                  d="M24 43c5.137 0 9.739-1.97 13.213-5.178l-6.095-5.154C29.07 34.091 26.666 35 24 35c-5.176 0-9.582-3.09-11.302-7.417l-6.55 5.044C9.57 40.569 16.318 43 24 43z"
-                />
-                <path
-                  fill="#1976D2"
-                  d="M43.611 20.083H42V20H24v8h11.303c-1.021 2.853-3.107 5.237-5.89 6.668l6.095 5.154C38.564 36.65 41 30.5 41 23c0-1.341-.138-2.651-.389-3.917z"
-                />
-              </svg>
-              Continue with Google
-            </Button>
             <p className="text-muted-foreground text-center text-xs mt-2">
               By signing up you agree to our{" "}
               <a className="underline hover:no-underline" href="#">
