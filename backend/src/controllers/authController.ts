@@ -13,14 +13,23 @@ const googleRedirectUri =
 const frontendBaseUrl =
   process.env.FRONTEND_BASE_URL ||
   process.env.FRONTEND_URL ||
-  "http://localhost:3000";
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000");
 
 // Log OAuth configuration status on startup
 console.log("[OAuth] Configuration status:");
-console.log("[OAuth] GOOGLE_CLIENT_ID:", googleClientId ? "✓ Set" : "✗ Missing");
-console.log("[OAuth] GOOGLE_CLIENT_SECRET:", googleClientSecret ? "✓ Set" : "✗ Missing");
-console.log("[OAuth] GOOGLE_REDIRECT_URI:", googleRedirectUri ? `✓ Set (${googleRedirectUri})` : "✗ Missing");
-console.log("[OAuth] FRONTEND_BASE_URL:", frontendBaseUrl);
+console.log(
+  "[OAuth] GOOGLE_CLIENT_ID:",
+  googleClientId ? "✓ Set" : "✗ Missing"
+);
+console.log(
+  "[OAuth] GOOGLE_CLIENT_SECRET:",
+  googleClientSecret ? "✓ Set" : "✗ Missing"
+);
+console.log(
+  "[OAuth] GOOGLE_REDIRECT_URI:",
+  googleRedirectUri ? `✓ Set (${googleRedirectUri})` : "✗ Missing"
+);
+console.log("[OAuth] FRONTEND_BASE_URL:", frontendBaseUrl ? `✓ Set (${frontendBaseUrl})` : "✗ Missing");
 
 const googleClient = new OAuth2Client({
   clientId: googleClientId,
@@ -144,10 +153,11 @@ export const googleLogin = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "idToken is required" });
     if (!googleClientId) {
       console.error("[OAuth] GOOGLE_CLIENT_ID environment variable is not set");
-      return res.status(500).json({ 
+      return res.status(500).json({
         message: "Google client not configured",
         missingVariable: "GOOGLE_CLIENT_ID",
-        details: "Please set the GOOGLE_CLIENT_ID environment variable in your production environment"
+        details:
+          "Please set the GOOGLE_CLIENT_ID environment variable in your production environment",
       });
     }
 
@@ -212,14 +222,16 @@ export const googleOAuthStart = async (req: Request, res: Response) => {
     const missingVars = [];
     if (!googleClientId) missingVars.push("GOOGLE_CLIENT_ID");
     if (!googleClientSecret) missingVars.push("GOOGLE_CLIENT_SECRET");
-    if (!googleRedirectUri) missingVars.push("GOOGLE_REDIRECT_URI or GOOGLE_REDIRECT_URL");
-    
+    if (!googleRedirectUri)
+      missingVars.push("GOOGLE_REDIRECT_URI or GOOGLE_REDIRECT_URL");
+
     if (missingVars.length > 0) {
       console.error("[OAuth] Missing environment variables:", missingVars);
-      return res.status(500).json({ 
+      return res.status(500).json({
         message: "Google OAuth not configured",
         missingVariables: missingVars,
-        details: "Please set the required Google OAuth environment variables in your production environment"
+        details:
+          "Please set the required Google OAuth environment variables in your production environment",
       });
     }
     const nonce = crypto.randomBytes(16).toString("hex");
@@ -330,9 +342,17 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       email: user.email,
       role: user.role,
     });
+    
+    // Validate frontend URL in production
+    if (!frontendBaseUrl) {
+      console.error("[OAuth] FRONTEND_BASE_URL is not set in production");
+      return res.status(500).send("Frontend URL not configured");
+    }
+    
     const dest = `${frontendBaseUrl}/auth/callback?token=${encodeURIComponent(
       token
     )}&to=${encodeURIComponent(redirect || "/")}`;
+    console.log("[OAuth] Redirecting to:", dest);
     return res.redirect(dest);
   } catch (e) {
     console.error(e);

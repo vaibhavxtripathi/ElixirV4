@@ -1,7 +1,8 @@
 # Google OAuth Setup Guide
 
-## Problem
-The error "Google OAuth not configured" occurs when the required Google OAuth environment variables are not set in your production environment.
+## Problems
+1. **"Google OAuth not configured"** - Occurs when required Google OAuth environment variables are not set
+2. **Redirecting to localhost after consent** - Occurs when `FRONTEND_BASE_URL` is not set in production
 
 ## Required Environment Variables
 
@@ -92,13 +93,22 @@ After setting up the environment variables:
    - Check that all required environment variables are set
    - Verify the variable names match exactly (case-sensitive)
 
-2. **"Invalid redirect URI"**
+2. **"Redirecting to localhost after consent screen"**
+   - **CRITICAL**: Set `FRONTEND_BASE_URL` environment variable in production
+   - Should be: `FRONTEND_BASE_URL=https://your-frontend-domain.com`
+   - Without this, OAuth will redirect to localhost instead of your production frontend
+
+3. **"Invalid redirect URI"**
    - Ensure the redirect URI in Google Console matches your `GOOGLE_REDIRECT_URI`
    - Must be exactly: `https://your-backend-domain.com/auth/google/callback`
 
-3. **"Invalid client"**
+4. **"Invalid client"**
    - Verify your `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are correct
    - Check that the OAuth consent screen is properly configured
+
+5. **"Frontend URL not configured"**
+   - Set `FRONTEND_BASE_URL` environment variable in your backend deployment
+   - This is required for OAuth callback redirects to work properly
 
 ## Security Notes
 
