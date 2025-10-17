@@ -111,21 +111,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     isAdmin && isAdminRoute
       ? [
           { title: "Overview", url: "/admin", icon: LayoutDashboardIcon },
-          {
-            title: "Review Blogs",
-            url: "/admin?view=review-blogs",
-            icon: FileTextIcon,
-          },
+
           {
             title: "Create Event",
             url: "/admin?view=create-event",
             icon: CalendarIcon,
           },
-          {
-            title: "Create Blog",
-            url: "/admin?view=create-blog",
-            icon: FileTextIcon,
-          },
+
           {
             title: "Create Mentor",
             url: "/admin?view=create-mentor",
@@ -135,6 +127,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Create Testimonial",
             url: "/admin?view=create-testimonial",
             icon: MessageSquareIcon,
+          },
+          {
+            title: "Create Blog",
+            url: "/admin?view=create-blog",
+            icon: FileTextIcon,
+          },
+          {
+            title: "Review Blogs",
+            url: "/admin?view=review-blogs",
+            icon: FileTextIcon,
           },
           {
             title: "Manage Users",
@@ -192,7 +194,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Suspense fallback={<div>Loading navigation...</div>}>
           <NavMain items={navMain} />
         </Suspense>
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary items={data.navSecondary} className="mt-auto border-t border-white/10" />
       </SidebarContent>
       <SidebarFooter className="border-t border-white/10 bg-[#0A0B1A]">
         <NavUser user={user} />

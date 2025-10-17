@@ -65,8 +65,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="bg-[#0A0B1A]">
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-white/10">
-            <div className="flex items-center gap-2 px-4">
+          <header className="flex h-12 sm:h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-white/10">
+            <div className="flex items-center gap-2 px-2 sm:px-4">
               <Separator
                 orientation="vertical"
                 className="mr-2 h-4 bg-white/20"
@@ -101,7 +101,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Breadcrumb>
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-[#0A0B1A]">
+          <div className="flex flex-1 flex-col gap-4 p-2 sm:p-4 pt-0 bg-[#0A0B1A]">
             {children}
           </div>
         </SidebarInset>

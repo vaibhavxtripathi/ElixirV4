@@ -147,13 +147,13 @@ export default function AuthDialog({
       }}
     >
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent className="sm:max-w-md !rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md text-white">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto !rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md text-white">
         <div className="flex flex-col items-center gap-2">
           <DialogHeader>
-            <DialogTitle className="sm:text-center text-white">
+            <DialogTitle className="sm:text-center text-white text-lg">
               {mode === "signup" ? "Create account" : "Login"}
             </DialogTitle>
-            <DialogDescription className="sm:text-center text-white/70">
+            <DialogDescription className="sm:text-center text-white/70 text-sm">
               {mode === "signup"
                 ? "We just need a few details to get you started."
                 : "Enter your credentials to log in."}
@@ -161,11 +161,11 @@ export default function AuthDialog({
           </DialogHeader>
         </div>
 
-        <div className="space-y-5 mt-4">
+        <div className="space-y-4 sm:space-y-5 mt-4">
           <Button
             onClick={handleGoogle}
             variant="gradientOutline"
-            className="w-full rounded-lg"
+            className="w-full rounded-lg text-sm"
           >
             <GoogleIcon className="w-4 h-4" />
             Continue with Google
@@ -177,7 +177,7 @@ export default function AuthDialog({
         </div>
 
         <form
-          className="space-y-5"
+          className="space-y-4 sm:space-y-5"
           onSubmit={
             mode === "login"
               ? loginForm.handleSubmit(onSubmit)
@@ -185,54 +185,62 @@ export default function AuthDialog({
           }
         >
           {mode === "signup" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className=":not-first:mt-2">
-                <Label htmlFor={`${id}-firstName`}>First name</Label>
+                <Label htmlFor={`${id}-firstName`} className="text-sm">
+                  First name
+                </Label>
                 <Input
                   id={`${id}-firstName`}
                   placeholder="Jane"
                   type="text"
                   required
-                  className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50"
+                  className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm"
                   {...registerForm.register("firstName")}
                 />
               </div>
               <div className=":not-first:mt-2">
-                <Label htmlFor={`${id}-lastName`}>Last name</Label>
+                <Label htmlFor={`${id}-lastName`} className="text-sm">
+                  Last name
+                </Label>
                 <Input
                   id={`${id}-lastName`}
                   placeholder="Doe"
                   type="text"
                   required
-                  className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50"
+                  className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm"
                   {...registerForm.register("lastName")}
                 />
               </div>
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className=":not-first:mt-2">
-              <Label htmlFor={`${id}-email`}>Email</Label>
+              <Label htmlFor={`${id}-email`} className="text-sm">
+                Email
+              </Label>
               <Input
                 id={`${id}-email`}
                 placeholder="Enter your email"
                 type="email"
                 required
-                className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50"
+                className="rounded-lg border-white/15 bg-white/5 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm"
                 {...(mode === "login"
                   ? loginForm.register("email")
                   : registerForm.register("email"))}
               />
             </div>
             <div className="relative">
-              <Label htmlFor={`${id}-password`}>Password</Label>
+              <Label htmlFor={`${id}-password`} className="text-sm">
+                Password
+              </Label>
               <Input
                 id={`${id}-password`}
                 placeholder="Enter your password"
                 type={showPassword ? "text" : "password"}
                 required
-                className="rounded-lg pr-10 border-white/15 bg-white/5 text-white placeholder:text-white/50"
+                className="rounded-lg pr-10 border-white/15 bg-white/5 text-white placeholder:text-white/50 h-10 sm:h-11 text-sm"
                 {...(mode === "login"
                   ? loginForm.register("password")
                   : registerForm.register("password"))}
@@ -243,7 +251,7 @@ export default function AuthDialog({
                 className="absolute right-3 top-[38px] text-white/70"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
@@ -252,7 +260,7 @@ export default function AuthDialog({
 
           <Button
             type="submit"
-            className="w-full rounded-lg"
+            className="w-full rounded-lg text-sm"
             variant="gradientOutline"
             disabled={isSubmitting}
           >
@@ -266,7 +274,7 @@ export default function AuthDialog({
           </Button>
         </form>
 
-        <div className="mt-2 text-center text-sm text-muted-foreground">
+        <div className="mt-2 text-center text-xs sm:text-sm text-muted-foreground">
           {mode === "signup" ? (
             <>
               Already have an account?{" "}
