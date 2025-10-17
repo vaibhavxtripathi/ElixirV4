@@ -87,12 +87,11 @@ export default async function HomePage() {
         title="Think better with Elixir"
         subtitle="We build the future of technology with you."
         variant="default"
-
       />
-      <StarBorder className="flex mx-auto mt-12">
+      <StarBorder className="flex mx-auto mt-8 sm:mt-12">
         <div className="flex items-center gap-2">
-          <span>Join Discord</span>
-          <DiscordLogo className="w-5 h-5" />
+          <span className="text-sm sm:text-base">Join Discord</span>
+          <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
       </StarBorder>
       <AnimatedDemoSection />
