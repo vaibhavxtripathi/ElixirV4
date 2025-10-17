@@ -136,42 +136,42 @@ export default function ClubHeadDashboard() {
         >
           {/* Header */}
           <motion.div
-            className="flex items-center justify-between"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
             variants={fadeInUp}
           >
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
                 {clubName
                   ? `${clubName} Club Dashboard`
                   : "Club Head Dashboard"}
               </h1>
-              <p className="text-white/60">
+              <p className="text-white/60 text-sm sm:text-base">
                 Manage your club events and activities
               </p>
             </div>
             <Button
-              // className="bg-blue-600 hover:bg-blue-700 text-white"
               variant="gradient"
               onClick={() => {
                 setShow(!show);
               }}
+              className="text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               {show ? "Hide Form" : "Create Event"}
             </Button>
           </motion.div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             <motion.div variants={fadeInUp}>
               <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white/60">
+                      <p className="text-xs sm:text-sm font-medium text-white/60">
                         Total Events
                       </p>
-                      <p className="text-2xl font-bold text-white">
+                      <p className="text-xl sm:text-2xl font-bold text-white">
                         {myEvents.length}
                       </p>
                       <p className="text-xs text-green-400 flex items-center mt-1">
@@ -179,8 +179,8 @@ export default function ClubHeadDashboard() {
                         +2 this month
                       </p>
                     </div>
-                    <div className="p-3 bg-blue-500/20 rounded-lg">
-                      <Calendar className="w-6 h-6 text-blue-400" />
+                    <div className="p-2 sm:p-3 bg-blue-500/20 rounded-lg">
+                      <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                     </div>
                   </div>
                 </CardContent>
@@ -189,13 +189,13 @@ export default function ClubHeadDashboard() {
 
             <motion.div variants={fadeInUp}>
               <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white/60">
+                      <p className="text-xs sm:text-sm font-medium text-white/60">
                         Upcoming Events
                       </p>
-                      <p className="text-2xl font-bold text-white">
+                      <p className="text-xl sm:text-2xl font-bold text-white">
                         {
                           myEvents.filter(
                             (e: Event) => new Date(e.date) > new Date()
@@ -204,8 +204,8 @@ export default function ClubHeadDashboard() {
                       </p>
                       <p className="text-xs text-green-400 mt-1">Scheduled</p>
                     </div>
-                    <div className="p-3 bg-green-500/20 rounded-lg">
-                      <Clock className="w-6 h-6 text-green-400" />
+                    <div className="p-2 sm:p-3 bg-green-500/20 rounded-lg">
+                      <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
                     </div>
                   </div>
                 </CardContent>
@@ -214,19 +214,21 @@ export default function ClubHeadDashboard() {
 
             <motion.div variants={fadeInUp}>
               <Card className="bg-white/5 border-white/10">
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white/60">
+                      <p className="text-xs sm:text-sm font-medium text-white/60">
                         Event Activity
                       </p>
-                      <p className="text-2xl font-bold text-white">High</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">
+                        High
+                      </p>
                       <p className="text-xs text-green-400 mt-1">
                         Active engagement
                       </p>
                     </div>
-                    <div className="p-3 bg-purple-500/20 rounded-lg">
-                      <Activity className="w-6 h-6 text-purple-400" />
+                    <div className="p-2 sm:p-3 bg-purple-500/20 rounded-lg">
+                      <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
                     </div>
                   </div>
                 </CardContent>
@@ -350,13 +352,119 @@ export default function ClubHeadDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {myEvents.map((event: Event) => (
                       <div
                         key={event.id}
-                        className="p-4 bg-white/5 rounded-lg border border-white/10"
+                        className="p-3 sm:p-4 bg-white/5 rounded-lg border border-white/10"
                       >
-                        <div className="flex items-center gap-4">
+                        {/* Mobile Layout */}
+                        <div className="flex flex-col sm:hidden space-y-3">
+                          {/* Event image */}
+                          <div className="w-full h-32 rounded-md overflow-hidden bg-white/10 border border-white/10">
+                            {event.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={event.imageUrl}
+                                alt={event.title}
+                                className="w-full h-full object-cover object-center"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-white/40 text-xs">
+                                No Image
+                              </div>
+                            )}
+                          </div>
+                          {/* Details */}
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <h3 className="text-base font-semibold text-white flex-1">
+                                {event.title}
+                              </h3>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "text-xs shrink-0",
+                                  new Date(event.date) > new Date()
+                                    ? "bg-green-500/5 text-green-400 border border-green-500/20"
+                                    : "bg-red-500/5 text-red-400 border border-red-500/20"
+                                )}
+                              >
+                                {new Date(event.date) > new Date()
+                                  ? "Upcoming"
+                                  : "Past"}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-white/60 line-clamp-2">
+                              {event.description}
+                            </p>
+                            <div className="flex items-center gap-3 text-xs text-white/60">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {(() => {
+                                  const d = new Date(event.date);
+                                  return isNaN(d.getTime())
+                                    ? "—"
+                                    : d.toLocaleDateString(undefined, {
+                                        month: "short",
+                                        day: "2-digit",
+                                      });
+                                })()}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {(() => {
+                                  const d = new Date(event.date);
+                                  return isNaN(d.getTime())
+                                    ? "—"
+                                    : d.toLocaleTimeString(undefined, {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      });
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                          {/* Actions */}
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-white/20 text-white/95 hover:bg-white/10 rounded-md text-xs px-3 py-1.5 flex-1"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setRegistrationsOpen(true);
+                              }}
+                            >
+                              Registrations
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-white/20 text-white/95 hover:bg-white/10 rounded-md text-xs px-3 py-1.5 flex-1"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setEditOpen(true);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-red-500/20 text-red-400 hover:bg-red-500/10 rounded-md text-xs px-3 py-1.5"
+                              onClick={() => {
+                                setActiveEvent(event);
+                                setConfirmOpen(true);
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Desktop Layout */}
+                        <div className="hidden sm:flex items-center gap-4">
                           {/* Event image */}
                           <div className="w-32 h-24 rounded-md overflow-hidden bg-white/10 border border-white/10 shrink-0">
                             {event.imageUrl ? (
