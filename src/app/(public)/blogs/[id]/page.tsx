@@ -21,6 +21,8 @@ async function getBlog(id: string) {
   }
 }
 
+import DOMPurify from "isomorphic-dompurify";
+
 export default async function BlogDetail({
   params,
 }: {
@@ -29,6 +31,35 @@ export default async function BlogDetail({
   const data = await getBlog(params.id);
   const blog = data?.blog;
   if (!blog) return <div className="pt-36 text-center">Blog not found.</div>;
+
+  const renderContent = (content: string) => {
+    // Content is already HTML from editor; sanitize strictly.
+    return DOMPurify.sanitize(String(content || ""), {
+      USE_PROFILES: { html: true },
+      ALLOWED_TAGS: [
+        "a",
+        "b",
+        "strong",
+        "i",
+        "em",
+        "u",
+        "p",
+        "br",
+        "ul",
+        "ol",
+        "li",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "blockquote",
+        "span",
+        "div",
+      ],
+      ALLOWED_ATTR: ["href", "target", "rel", "class"],
+      ADD_ATTR: ["target", "rel"],
+    });
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-4 pt-36 pb-18">
@@ -47,9 +78,12 @@ export default async function BlogDetail({
         By {blog.author?.firstName} {blog.author?.lastName} •{" "}
         {new Date(blog.createdAt).toDateString()}
       </div>
-      <article className="prose prose-invert max-w-none">
-        {blog.content}
-      </article>
+      <article
+        className="prose prose-invert max-w-none"
+        dangerouslySetInnerHTML={{
+          __html: renderContent(String(blog.content || "")),
+        }}
+      />
     </main>
   );
 }
