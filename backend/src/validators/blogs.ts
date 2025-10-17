@@ -22,3 +22,11 @@ export const updateBlogSchema = z.object({
 export const idParamSchema = z.object({
   params: z.object({ id: z.string().min(1) }),
 });
+
+export const submitBlogSchema = z.object({
+  body: z.object({
+    title: z.string().min(3),
+    content: z.string().min(20),
+    imageUrl: z.string().url().optional(),
+  }),
+});
