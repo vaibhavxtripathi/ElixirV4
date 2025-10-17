@@ -31,17 +31,17 @@ export function TestimonialCard({
     <Card
       {...(href ? { href } : {})}
       className={cn(
-        "flex flex-col rounded-2xl border border-blue-500/10",
+        "flex flex-col rounded-xl sm:rounded-2xl border border-blue-500/10",
         "bg-blue-900/5 hover:bg-blue-900/10 backdrop-blur-sm",
-        "p-6 text-start sm:p-8",
-        "w-[380px] flex-shrink-0",
-        truncate ? "h-[200px]" : "min-h-[200px]",
+        "p-4 sm:p-6 md:p-8 text-start",
+        "w-[280px] sm:w-[320px] md:w-[380px] flex-shrink-0",
+        truncate ? "h-[180px] sm:h-[200px]" : "min-h-[180px] sm:min-h-[200px]",
         "text-white transition-colors duration-300",
         className
       )}
     >
-      <div className="flex items-start gap-4">
-        <div className="h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-blue-500/20 flex items-center justify-center">
+      <div className="flex items-start gap-3 sm:gap-4">
+        <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 rounded-full overflow-hidden bg-blue-500/20 flex items-center justify-center">
           {!imageError ? (
             <img
               src={author.avatar}
@@ -50,7 +50,7 @@ export function TestimonialCard({
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="h-full w-full bg-blue-500/20 text-white text-sm font-medium flex items-center justify-center">
+            <div className="h-full w-full bg-blue-500/20 text-white text-xs sm:text-sm font-medium flex items-center justify-center">
               {author.name
                 .split(" ")
                 .map((n) => n[0])
@@ -60,15 +60,17 @@ export function TestimonialCard({
           )}
         </div>
         <div className="flex flex-col items-start min-w-0 flex-1">
-          <h3 className="text-base font-semibold leading-tight">
+          <h3 className="text-sm sm:text-base font-semibold leading-tight">
             {author.name}
           </h3>
-          <p className="text-sm text-white/60 mt-1">{author.handle}</p>
+          <p className="text-xs sm:text-sm text-white/60 mt-1">
+            {author.handle}
+          </p>
         </div>
       </div>
       <p
         className={cn(
-          "text-sm text-white/70 mt-4 leading-relaxed",
+          "text-xs sm:text-sm text-white/70 mt-3 sm:mt-4 leading-relaxed",
           truncate ? "line-clamp-3 overflow-hidden" : ""
         )}
       >
