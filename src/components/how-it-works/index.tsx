@@ -72,16 +72,16 @@ export const HowItWorks = () => {
     return () => clearTimeout(t);
   }, [activeTab]);
   return (
-    <section className="relative py-8 lg:py-12">
+    <section className="relative z-99">
       <Container>
         <Header
           badge="How it works?"
           title="Join the Elixir Tech Community"
-          subtitle="Three simple steps to connect with fellow developers and grow your skills"
+          subtitle="Connect with fellow developers and grow your skills."
           variant="secondary"
         />
 
-        <div className="mt-20 relative w-full grid-cols-2 items-stretch divide-x divide-white/10 border-t border-b border-l border-r border-white/10 lg:grid">
+        <div className="mt-20 bg-card relative w-full grid-cols-2 items-stretch divide-x divide-white/10 border-t border-b border-l border-r border-white/10 lg:grid">
           {/* Ensure center divider is always visible above masked content */}
           <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block z-50" />
           {/* Left Column - Feature Cards */}

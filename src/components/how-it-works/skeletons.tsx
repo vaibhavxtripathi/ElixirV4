@@ -1,5 +1,5 @@
 "use client";
-import { AnthropicLogo, ElixirLogo, ForkIcon, GDGLogo, GFGLogo, OpenAILogo } from "@/icons/general";
+import { ElixirLogo, ForkIcon, GDGLogo, GFGLogo } from "@/icons/general";
 import { CCLogo } from "@/icons/general";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -11,6 +11,7 @@ import { Scale } from "../scale";
 import { LogoSVG } from "../logo";
 import { IntegrationsLogo } from "@/icons/bento-icons";
 import Image from "next/image";
+import { BuildingIcon, CalendarIcon, UsersIcon } from "lucide-react";
 
 export const DesignYourWorkflowSkeleton = () => {
   return (
@@ -19,7 +20,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <Card
           title="Elixir"
           subtitle="#elixir"
-          logo={<ElixirLogo className="w-5 h-5"/>}
+          logo={<ElixirLogo className="w-5 h-5" />}
           cta="Community"
           tone="default"
         />
@@ -126,7 +127,7 @@ const ScrollingDeployCard = ({
 };
 
 export const ConnectYourTooklsSkeleton = () => {
-  const text = `Write the first and second rule of it using Claude and ChatGPT.`;
+  const text = `Managing, tracking, and growing our college clubs and the events we organize.`;
   const [mounted, setMounted] = useState(false);
   // Generate once after mount; value doesn't need to track `mounted`
   const randomWidth = useMemo(() => Math.random() * 100, []);
@@ -237,15 +238,15 @@ export const ConnectYourTooklsSkeleton = () => {
             Integrations
           </span>
           <span className="text-charcoal-700 rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200">
-            200
+            Elixir
           </span>
         </div>
         <DivideX className="mt-2" />
         <div className="mt-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <OpenAILogo className="h-4 w-4 shrink-0" />
+            <UsersIcon className="h-4 w-4 shrink-0 text-blue-500" />
             <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-              ChatGPT
+              Students
             </span>
           </div>
 
@@ -255,18 +256,30 @@ export const ConnectYourTooklsSkeleton = () => {
         </div>
         <div className="mt-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <AnthropicLogo className="h-4 w-4 shrink-0" />
+            <BuildingIcon className="h-4 w-4 shrink-0 text-blue-500" />
             <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-              Claude 4 Opus
+              Clubs
             </span>
           </div>
 
           <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
-            Connected
+            Synced
+          </div>
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 shrink-0 text-blue-500" />
+            <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
+              Events
+            </span>
+          </div>
+
+          <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
+            Synced
           </div>
         </div>
         <div className="mt-2 flex flex-col">
-          {[...Array(3)].map((_, index) => (
+          {[...Array(2)].map((_, index) => (
             <motion.div
               key={`width-bar-right-${index}`}
               initial={{
@@ -297,66 +310,66 @@ export const DeployAndScaleSkeleton = () => {
 
   // Define deploy cards data for reusability
   const deployCards = [
-    { title: "deploy-dev-eu-324", subtitle: "2h ago", branch: "master" },
+    { title: "reg-elxr-CS22-487", subtitle: "2h ago", branch: "master" },
     {
-      title: "deploy-prod-eu-128",
+      title: "reg-elxr-IT23-941",
       subtitle: "10m ago",
       branch: "main",
       variant: "success" as const,
     },
-    { title: "deploy-dev-us-445", subtitle: "45m ago", branch: "feature/auth" },
+    { title: "reg-elxr-EE23-653", subtitle: "45m ago", branch: "events/elixir" },
     {
-      title: "deploy-prod-ap-223",
+      title: "reg-elxr-CS22-234",
       subtitle: "1h ago",
-      branch: "main",
+      branch: "signup",
       variant: "success" as const,
     },
     {
-      title: "deploy-dev-eu-891",
+      title: "reg-elxr-DS25-212",
       subtitle: "2h ago",
-      branch: "fix/cache",
+      branch: "blogs/elixir",
       variant: "warning" as const,
     },
     {
-      title: "deploy-prod-us-337",
+      title: "reg-elxr-ME23-480",
       subtitle: "3h ago",
-      branch: "main",
+      branch: "added as a mentor",
       variant: "success" as const,
     },
     {
-      title: "deploy-dev-ap-556",
+      title: "reg-elxr-CE24-338",
       subtitle: "4h ago",
-      branch: "feat/api",
+      branch: "club head added",
       variant: "danger" as const,
     },
     {
-      title: "deploy-dev-eu-672",
+      title: "reg-elxr-IT22-725",
       subtitle: "5h ago",
-      branch: "feat/search",
+      branch: "member added",
       variant: "default" as const,
     },
     {
-      title: "deploy-prod-ap-445",
+      title: "reg-elxr-CS25-502",
       subtitle: "6h ago",
-      branch: "main",
+      branch: "event created",
       variant: "success" as const,
     },
     {
-      title: "deploy-dev-us-891",
+      title: "reg-elxr-EE23-653",
       subtitle: "7h ago",
-      branch: "fix/perf",
+      branch: "event updated",
       variant: "warning" as const,
     },
     {
-      title: "deploy-prod-eu-223",
+      title: "reg-elxr-CS22-234",
       subtitle: "8h ago",
-      branch: "main",
+      branch: "event pushed",
       variant: "success" as const,
     },
     {
-      title: "deploy-dev-ap-337",
+      title: "reg-elxr-DS25-212",
       subtitle: "9h ago",
-      branch: "feat/analytics",
+      branch: "analytics",
       variant: "default" as const,
     },
   ];
