@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import Image from "next/image";
 import { FaLinkedin } from "react-icons/fa6";
 import { CheckCircle2, Heart } from "lucide-react";
+import ContentSkeleton from "@/components/ContentSkeleton";
 
 export default function MentorsPage() {
   const { data, isLoading, error } = useQuery({
@@ -19,28 +20,7 @@ export default function MentorsPage() {
     return (
       <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
         <h1 className="text-2xl font-bold mb-6">Mentors</h1>
-        <div className="flex flex-wrap justify-center gap-8">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="w-72 h-96 rounded-2xl border border-white/10 bg-[#0A0B1A]/60 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur overflow-hidden"
-            >
-              {/* Profile image shimmer */}
-              <div className="relative h-56 w-full">
-                <div className="h-full w-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-              </div>
-              <div className="p-4">
-                {/* Name shimmer */}
-                <div className="h-6 w-3/4 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-2" />
-                {/* Expertise shimmer */}
-                <div className="h-4 w-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-3" />
-                <div className="h-4 w-2/3 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded mb-4" />
-                {/* LinkedIn button shimmer */}
-                <div className="h-8 w-full bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] rounded" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <ContentSkeleton variant="mentor" count={6} />
       </main>
     );
   }
@@ -59,7 +39,7 @@ export default function MentorsPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 pt-36 pb-18">
       <h1 className="text-2xl font-bold mb-6">Mentors</h1>
-      <div className="flex flex-wrap justify-center gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {mentors.map(
           (m: {
             id: string | number;
