@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
-import { GlobalLoader, ContentSkeleton, ErrorFallback, EmptyState } from "./GlobalLoader";
+import {
+  GlobalLoader,
+  ContentSkeleton,
+  ErrorFallback,
+  EmptyState,
+} from "./GlobalLoader";
 import { cn } from "@/lib/utils";
 
 interface LayoutWrapperProps {
@@ -12,11 +17,11 @@ interface LayoutWrapperProps {
   loadingText?: string;
 }
 
-export function LayoutWrapper({ 
-  children, 
+export function LayoutWrapper({
+  children,
   fallback,
   showLoader = true,
-  loadingText = "Loading content..."
+  loadingText = "Loading content...",
 }: LayoutWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -39,8 +44,8 @@ export function LayoutWrapper({
       setError(new Error(event.message));
     };
 
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
+    window.addEventListener("error", handleError);
+    return () => window.removeEventListener("error", handleError);
   }, []);
 
   const resetError = () => {
@@ -82,9 +87,7 @@ export function LayoutWrapper({
   }
 
   return (
-    <Suspense fallback={fallback || <ContentSkeleton />}>
-      {children}
-    </Suspense>
+    <Suspense fallback={fallback || <ContentSkeleton />}>{children}</Suspense>
   );
 }
 
@@ -98,14 +101,17 @@ export function HomePageLoader() {
         <div className="h-12 w-96 bg-white/10 rounded mx-auto animate-pulse" />
         <div className="h-6 w-80 bg-white/10 rounded mx-auto animate-pulse" />
       </div>
-      
+
       {/* Demo Section Skeleton */}
       <div className="h-96 bg-white/5 rounded-2xl border border-white/10 animate-pulse" />
-      
+
       {/* Features Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-80 bg-white/5 rounded-xl border border-white/10 animate-pulse" />
+          <div
+            key={i}
+            className="h-80 bg-white/5 rounded-xl border border-white/10 animate-pulse"
+          />
         ))}
       </div>
     </div>
