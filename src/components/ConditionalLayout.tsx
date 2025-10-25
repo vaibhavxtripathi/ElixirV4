@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useMemo, Suspense } from "react";
+import { useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Particles } from "@/components/ui/particles";
@@ -46,8 +46,8 @@ export default function ConditionalLayout({
   if (isDashboardRoute) {
     // For dashboard routes, only render children with loader wrapper
     return (
-      <LayoutWrapper 
-        fallback={getRouteLoader()} 
+      <LayoutWrapper
+        fallback={getRouteLoader()}
         showLoader={true}
         loadingText="Loading dashboard..."
       >

@@ -6,9 +6,7 @@ import {
   GlobalLoader,
   ContentSkeleton,
   ErrorFallback,
-  EmptyState,
 } from "./GlobalLoader";
-import { cn } from "@/lib/utils";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -25,7 +23,7 @@ export function LayoutWrapper({
 }: LayoutWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [isRouteChanging, setIsRouteChanging] = useState(false);
   const pathname = usePathname();
 
@@ -56,7 +54,7 @@ export function LayoutWrapper({
 
   const resetError = () => {
     setHasError(false);
-    setError(null);
+    setError(undefined);
     setIsLoading(true);
   };
 
@@ -171,13 +169,13 @@ export function DashboardLoader() {
       <div className="text-center space-y-6">
         {/* Dashboard Icon Skeleton */}
         <div className="w-16 h-16 bg-white/10 rounded-xl mx-auto animate-pulse" />
-        
+
         {/* Loading Text */}
         <div className="space-y-3">
           <div className="h-6 w-48 bg-white/10 rounded mx-auto animate-pulse" />
           <div className="h-4 w-32 bg-white/10 rounded mx-auto animate-pulse" />
         </div>
-        
+
         {/* Progress Bar */}
         <div className="w-64 h-1 bg-white/20 rounded-full overflow-hidden mx-auto">
           <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse" />
