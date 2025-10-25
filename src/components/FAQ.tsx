@@ -41,7 +41,7 @@ const faqs: FAQItem[] = [
 
 export function FAQSection() {
   return (
-    <section className="relative overflow-hidden -mt-8">
+    <section className="relative overflow-hidden pb-2 sm:pb-4 md:pb-6">
       <Header
         badge="Need help?"
         title="Frequently asked questions"
