@@ -81,15 +81,14 @@ export const HowItWorks = () => {
   }, [activeTab]);
   return (
     <section className="relative z-99">
+      <Header
+        badge="How it works?"
+        title="Join the Elixir Tech Community"
+        subtitle="Connect with fellow developers and grow your skills."
+        variant="secondary"
+      />
       <Container>
-        <Header
-          badge="How it works?"
-          title="Join the Elixir Tech Community"
-          subtitle="Connect with fellow developers and grow your skills."
-          variant="secondary"
-        />
-
-        <div className="mt-20 bg-card relative w-full grid-cols-2 items-stretch divide-x divide-white/10 border-t border-b border-l border-r border-white/10 lg:grid">
+        <div className="mt-6 lg:mt-12 md:mt-10 bg-card relative w-full grid-cols-2 items-stretch divide-x divide-white/10 lg:border-t lg:border-b lg:border-l lg:border-r  lg:grid">
           {/* Ensure center divider is always visible above masked content */}
           <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block z-50" />
           {/* Left Column - Feature Cards */}
@@ -188,13 +187,14 @@ export const HowItWorks = () => {
             </AnimatePresence>
           </div>
         </div>
+
         {/* Mobile Tabs - Show all sections */}
-        <div className="mt-8 w-full lg:hidden space-y-6 sm:space-y-8">
+        <div className="mt-8 w-full lg:hidden flex flex-col">
           {tabs.map((tab, index) => (
             <div
               key={tab.id}
               className={cn(
-                "relative flex w-full flex-col items-start rounded-md border border-white/10 bg-white/5 px-4 py-6 sm:px-6 sm:py-8",
+                "relative flex w-full flex-col items-start rounded-md border border-blue-300/20 px-4 py-6 sm:px-6 sm:py-8",
                 "bg-[radial-gradient(var(--color-dots)_1px,transparent_1px)] [background-size:10px_10px]"
               )}
             >
