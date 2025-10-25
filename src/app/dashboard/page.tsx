@@ -1,46 +1,11 @@
-"use client";
+import { AppSidebar } from "@/components/app-sidebar"
+import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { DataTable } from "@/components/data-table"
+import { SectionCards } from "@/components/section-cards"
+import { SiteHeader } from "@/components/site-header"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
-import dynamic from "next/dynamic";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
-// Dynamically import components to prevent prerendering issues
-const AppSidebar = dynamic(
-  () =>
-    import("@/components/app-sidebar").then((mod) => ({
-      default: mod.AppSidebar,
-    })),
-  { ssr: false }
-);
-const ChartAreaInteractive = dynamic(
-  () =>
-    import("@/components/chart-area-interactive").then((mod) => ({
-      default: mod.ChartAreaInteractive,
-    })),
-  { ssr: false }
-);
-const DataTable = dynamic(
-  () =>
-    import("@/components/data-table").then((mod) => ({
-      default: mod.DataTable,
-    })),
-  { ssr: false }
-);
-const SectionCards = dynamic(
-  () =>
-    import("@/components/section-cards").then((mod) => ({
-      default: mod.SectionCards,
-    })),
-  { ssr: false }
-);
-const SiteHeader = dynamic(
-  () =>
-    import("@/components/site-header").then((mod) => ({
-      default: mod.SiteHeader,
-    })),
-  { ssr: false }
-);
-
-import data from "./data.json";
+import data from "./data.json"
 
 export default function Page() {
   return (
@@ -61,5 +26,5 @@ export default function Page() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

@@ -1,4 +1,8 @@
-"use client";
+export const metadata = {
+  title: "Elixir | Events",
+  description: "Explore upcoming events by clubs.",
+  alternates: { canonical: "/events" },
+};
 
 import EventsGrid from "./EventsGrid";
 
