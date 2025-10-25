@@ -23,6 +23,7 @@ model User {
 
   eventRegistrations EventRegistration[]
   blogs              Blog[]
+  mentorLikes        MentorLike[]
 
   @@map("users")
 }
@@ -75,15 +76,29 @@ model EventRegistration {
 }
 
 model Mentor {
-  id          String @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
   expertise   String
   imageUrl    String
-  linkedInUrl String @default("")
+  linkedInUrl String       @default("")
   clubId      String
-  club        Club   @relation(fields: [clubId], references: [id])
+  club        Club         @relation(fields: [clubId], references: [id])
+  likes       MentorLike[]
 
   @@map("mentors")
+}
+
+model MentorLike {
+  id        String   @id @default(cuid())
+  userId    String
+  mentorId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mentor Mentor @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mentorId])
+  @@map("mentor_likes")
 }
 
 model Blog {
