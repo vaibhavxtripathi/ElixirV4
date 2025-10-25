@@ -68,7 +68,15 @@ export default function EventsGrid({ page }: { page: number }) {
   };
 
   if (eventsLoading) {
-    return <ContentSkeleton variant="event" count={6} />;
+    return (
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex items-center justify-center">
+            <ContentSkeleton variant="event" count={1} />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -103,6 +111,7 @@ export default function EventsGrid({ page }: { page: number }) {
               imageUrl={normalizeImageUrl(
                 e.imageUrl ?? e.image ?? e.banner ?? e.cover ?? ""
               )}
+              club={e.club?.name}
             />
           </div>
         ))}
