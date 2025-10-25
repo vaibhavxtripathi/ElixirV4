@@ -4,6 +4,8 @@ import {
   createMentor,
   updateMentor,
   deleteMentor,
+  toggleMentorLike,
+  getUserLikedMentors,
 } from "../controllers/mentorController";
 import { authenticateToken, requireRole } from "../middleware/auth";
 import { validate } from "../middleware/validate";
@@ -14,6 +16,14 @@ const router = Router();
 
 // Public routes
 router.get("/", getAllMentors);
+
+// Authenticated user routes
+router.post(
+  "/:mentorId/like",
+  authenticateToken,
+  asyncHandler(toggleMentorLike)
+);
+router.get("/liked", authenticateToken, asyncHandler(getUserLikedMentors));
 
 // Admin only routes
 router.post(
