@@ -1,8 +1,18 @@
 "use client";
+
+import dynamic from "next/dynamic";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import RequireAuth from "@/components/RequireAuth";
-import { DashboardLayout } from "@/components/dashboard-layout";
+
+// Dynamically import components to prevent prerendering issues
+const DashboardLayout = dynamic(
+  () =>
+    import("@/components/dashboard-layout").then((mod) => ({
+      default: mod.DashboardLayout,
+    })),
+  { ssr: false }
+);
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

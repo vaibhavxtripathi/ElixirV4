@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Separator from "./Separator";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -14,12 +15,13 @@ export default function Footer() {
               href="/"
               className="flex items-center gap-3 justify-center sm:justify-start"
             >
-              <div className="flex flex-col gap-1">
-                <div className="w-6 h-1 bg-white rounded-sm" />
-                <div className="w-6 h-1 bg-white rounded-sm ml-1" />
-                <div className="w-6 h-1 bg-white rounded-sm ml-2" />
-                <div className="w-6 h-1 bg-white rounded-sm ml-3" />
-              </div>
+              <Image
+                src="/elixir-white.png"
+                alt="Elixir"
+                width={30}
+                height={30}
+              />
+
               <span className="text-white font-semibold text-lg">Elixir</span>
             </Link>
 

@@ -1,8 +1,4 @@
-export const metadata = {
-  title: "Elixir | Mentors",
-  description: "Explore mentors by clubs.",
-  alternates: { canonical: "/mentors" },
-};
+"use client";
 
 import MentorsGrid from "./MentorsGrid";
 

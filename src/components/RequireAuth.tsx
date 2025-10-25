@@ -69,6 +69,6 @@ export default function RequireAuth({
 
   // If not authenticated, return null (will redirect to login)
   if (!ok) return null;
-  
+
   return <>{children}</>;
 }

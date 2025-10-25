@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 export default function Navbar() {
   const queryClient = useQueryClient();
@@ -43,12 +44,13 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex justify-start">
             <Link href="/" className="flex items-center gap-2 sm:gap-3">
-              <div className="flex flex-col gap-1">
+              {/* <div className="flex flex-col gap-1">
                 <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm" />
                 <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-1" />
                 <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-2" />
                 <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-3" />
-              </div>
+              </div> */}
+              <Image src="/elixir-white.png" alt="Elixir" width={30} height={30} />
               <span className="text-white font-semibold text-base sm:text-lg">
                 Elixir
               </span>
@@ -56,7 +58,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav links */}
-          <div className="hidden xl:flex items-center justify-center gap-8 border border-blue-300/20 rounded-full py-3 px-8 w-fit absolute left-1/2 -translate-x-1/2 text-sm">
+          <div className="hidden xl:flex items-center justify-center gap-8 border bord3r-blue-300/50 rounded-full py-3 px-8 w-fit absolute left-1/2 -translate-x-1/2 text-sm">
             <Link
               href="/"
               className="text-white/90 hover:text-white/80 transition-colors"

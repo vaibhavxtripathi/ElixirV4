@@ -190,7 +190,7 @@ export const HowItWorks = () => {
 
         {/* Mobile Tabs - Show all sections */}
         <div className="mt-8 w-full lg:hidden flex flex-col">
-          {tabs.map((tab, index) => (
+          {tabs.map((tab) => (
             <div
               key={tab.id}
               className={cn(

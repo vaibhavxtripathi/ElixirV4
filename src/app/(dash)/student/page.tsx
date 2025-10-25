@@ -1,8 +1,18 @@
 "use client";
+
+import dynamic from "next/dynamic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import RequireAuth from "@/components/RequireAuth";
-import { DashboardLayout } from "@/components/dashboard-layout";
+
+// Dynamically import components to prevent prerendering issues
+const DashboardLayout = dynamic(
+  () =>
+    import("@/components/dashboard-layout").then((mod) => ({
+      default: mod.DashboardLayout,
+    })),
+  { ssr: false }
+);
 import {
   Card,
   CardContent,
@@ -20,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { containerStagger, fadeInUp, fadeIn } from "@/lib/motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { EventDetailsDialog } from "@/components/EventDetailsDialog";
 import * as Logos from "@/icons/general";
 import { toast } from "sonner";
@@ -630,9 +640,5 @@ function StudentDashboardContent() {
 }
 
 export default function StudentDashboard() {
-  return (
-    <Suspense fallback={null}>
-      <StudentDashboardContent />
-    </Suspense>
-  );
+  return <StudentDashboardContent />;
 }

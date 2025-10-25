@@ -1,8 +1,4 @@
-export const metadata = {
-  title: "Elixir | Blogs",
-  description: "Explore blogs by clubs.",
-  alternates: { canonical: "/blogs" },
-};
+"use client";
 
 import BlogsGrid from "./BlogsGrid";
 

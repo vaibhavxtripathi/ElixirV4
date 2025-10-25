@@ -2,11 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
-import {
-  GlobalLoader,
-  ContentSkeleton,
-  ErrorFallback,
-} from "./GlobalLoader";
+import { GlobalLoader, ContentSkeleton, ErrorFallback } from "./GlobalLoader";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
