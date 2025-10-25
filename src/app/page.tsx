@@ -8,7 +8,8 @@ import { FAQSection } from "@/components/FAQ";
 
 export const metadata: Metadata = {
   title: "Elixir - Student Tech Community | Learn, Build, Launch",
-  description: "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs. Attend workshops, hackathons, and mentorship programs to grow your tech career.",
+  description:
+    "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs. Attend workshops, hackathons, and mentorship programs to grow your tech career.",
   keywords: [
     "tech community",
     "student developers",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     "CodeChef",
     "coding",
     "software development",
-    "tech events"
+    "tech events",
   ],
   authors: [{ name: "Elixir Tech Community" }],
   creator: "Elixir Tech Community",
@@ -42,7 +43,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://elixir.tech",
     title: "Elixir - Student Tech Community | Learn, Build, Launch",
-    description: "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs.",
+    description:
+      "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs.",
     siteName: "Elixir Tech Community",
     images: [
       {
@@ -56,7 +58,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Elixir - Student Tech Community | Learn, Build, Launch",
-    description: "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs.",
+    description:
+      "Join Elixir, the premier student tech community with 5000+ developers. Connect with GFG, GDG, and CodeChef clubs.",
     images: ["/elixir-logo.png"],
     creator: "@ElixirTech",
   },
