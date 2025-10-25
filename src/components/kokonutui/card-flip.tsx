@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { GDGLogo, GFGLogo, CCLogo } from "@/icons/general";
 
 export interface CardFlipProps {
   title: string;
@@ -27,6 +28,7 @@ export interface CardFlipProps {
   eventId?: string;
   eventDate?: string | Date;
   isRegistered?: boolean;
+  club?: string;
 }
 
 export default function CardFlip({
@@ -38,6 +40,7 @@ export default function CardFlip({
   eventId,
   eventDate,
   isRegistered,
+  club,
 }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -59,6 +62,20 @@ export default function CardFlip({
   const status = computeStatus();
   const isPast = status === "Past";
   const isAlreadyRegistered = status === "Registered";
+
+  const renderClubLogo = () => {
+    switch (club?.toUpperCase()) {
+      case "GFG":
+        return <GFGLogo className="w-5 h-5" />;
+      case "CC":
+        return <CCLogo className="w-5 h-5" />;
+      case "GDG":
+      case "GDSC":
+        return <GDGLogo className="w-5 h-5" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
@@ -139,8 +156,9 @@ export default function CardFlip({
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-white leading-snug tracking-tighter transition-all duration-500 ease-out-expo group-hover:translate-y-[-4px]">
                   {title}
                 </h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-200 line-clamp-2 tracking-tight transition-all duration-500 ease-out-expo group-hover:translate-y-[-4px] delay-[50ms]">
+                <p className="text-sm text-zinc-600 dark:text-zinc-200 line-clamp-2 tracking-tight transition-all duration-500 ease-out-expo group-hover:translate-y-[-4px] delay-[50ms] flex items-center gap-2">
                   {subtitle}
+                  {renderClubLogo()}
                 </p>
               </div>
               <div className="relative group/icon">
