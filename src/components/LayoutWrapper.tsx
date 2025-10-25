@@ -94,7 +94,7 @@ export function LayoutWrapper({
 // Route-specific loading components
 export function HomePageLoader() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-screen flex flex-col justify-center p-6">
       {/* Hero Section Skeleton */}
       <div className="text-center space-y-6 py-16">
         <div className="h-6 w-48 bg-white/10 rounded mx-auto animate-pulse" />
@@ -120,7 +120,7 @@ export function HomePageLoader() {
 
 export function EventsPageLoader() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen flex flex-col justify-center p-6">
       <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -137,7 +137,7 @@ export function EventsPageLoader() {
 
 export function BlogsPageLoader() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen flex flex-col justify-center p-6">
       <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -155,7 +155,7 @@ export function BlogsPageLoader() {
 
 export function MentorsPageLoader() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen flex flex-col justify-center p-6">
       <div className="h-8 w-48 bg-white/10 rounded animate-pulse" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (

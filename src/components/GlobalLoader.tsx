@@ -9,22 +9,24 @@ interface GlobalLoaderProps {
   text?: string;
 }
 
-export function GlobalLoader({ 
-  className, 
-  size = "md", 
-  text = "Loading..." 
+export function GlobalLoader({
+  className,
+  size = "md",
+  text = "Loading...",
 }: GlobalLoaderProps) {
   const sizeClasses = {
     sm: "w-6 h-6",
-    md: "w-8 h-8", 
-    lg: "w-12 h-12"
+    md: "w-8 h-8",
+    lg: "w-12 h-12",
   };
 
   return (
-    <div className={cn(
-      "flex flex-col items-center justify-center min-h-[50vh] gap-4",
-      className
-    )}>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center min-h-screen gap-4",
+        className
+      )}
+    >
       {/* Animated Spinner */}
       <motion.div
         className={cn(
@@ -35,10 +37,10 @@ export function GlobalLoader({
         transition={{
           duration: 1,
           repeat: Infinity,
-          ease: "linear"
+          ease: "linear",
         }}
       />
-      
+
       {/* Loading Text */}
       <motion.p
         className="text-white/70 text-sm font-medium"
@@ -55,14 +57,14 @@ export function GlobalLoader({
 // Skeleton Loader for content blocks
 export function ContentSkeleton() {
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 min-h-screen flex flex-col justify-center">
       {/* Header Skeleton */}
       <div className="text-center space-y-4">
         <div className="h-4 w-32 bg-white/10 rounded mx-auto animate-pulse" />
         <div className="h-8 w-96 bg-white/10 rounded mx-auto animate-pulse" />
         <div className="h-4 w-80 bg-white/10 rounded mx-auto animate-pulse" />
       </div>
-      
+
       {/* Content Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -85,21 +87,21 @@ export function PageLoader() {
         {/* Elixir Logo Animation */}
         <motion.div
           className="w-16 h-16 mx-auto"
-          animate={{ 
+          animate={{
             scale: [1, 1.1, 1],
-            rotate: [0, 5, -5, 0]
+            rotate: [0, 5, -5, 0],
           }}
           transition={{
             duration: 2,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         >
           <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
             <span className="text-white font-bold text-xl">E</span>
           </div>
         </motion.div>
-        
+
         {/* Loading Text */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -110,7 +112,7 @@ export function PageLoader() {
           <h2 className="text-white text-xl font-semibold">Elixir</h2>
           <p className="text-white/70 text-sm">Loading your experience...</p>
         </motion.div>
-        
+
         {/* Progress Bar */}
         <motion.div
           className="w-64 h-1 bg-white/20 rounded-full overflow-hidden mx-auto"
@@ -131,25 +133,28 @@ export function PageLoader() {
 }
 
 // Error Fallback Component
-export function ErrorFallback({ 
-  error, 
-  resetError 
-}: { 
-  error?: Error; 
+export function ErrorFallback({
+  error,
+  resetError,
+}: {
+  error?: Error;
   resetError?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6">
       <div className="text-center space-y-4">
         <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
           <span className="text-red-400 text-2xl">⚠️</span>
         </div>
-        <h2 className="text-white text-xl font-semibold">Something went wrong</h2>
+        <h2 className="text-white text-xl font-semibold">
+          Something went wrong
+        </h2>
         <p className="text-white/70 text-sm max-w-md">
-          {error?.message || "We encountered an unexpected error. Please try again."}
+          {error?.message ||
+            "We encountered an unexpected error. Please try again."}
         </p>
       </div>
-      
+
       {resetError && (
         <button
           onClick={resetError}
@@ -163,17 +168,17 @@ export function ErrorFallback({
 }
 
 // Empty State Component
-export function EmptyState({ 
-  title, 
-  description, 
-  action 
-}: { 
-  title: string; 
-  description: string; 
+export function EmptyState({
+  title,
+  description,
+  action,
+}: {
+  title: string;
+  description: string;
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6">
       <div className="text-center space-y-4">
         <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto">
           <span className="text-white/50 text-2xl">📭</span>
@@ -181,7 +186,7 @@ export function EmptyState({
         <h2 className="text-white text-xl font-semibold">{title}</h2>
         <p className="text-white/70 text-sm max-w-md">{description}</p>
       </div>
-      
+
       {action && <div>{action}</div>}
     </div>
   );
