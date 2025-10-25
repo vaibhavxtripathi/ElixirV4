@@ -17,7 +17,7 @@ export const Header = ({
 }) => {
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 sm:pt-36 md:pt-40"
+      className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 md:pt-12"
       initial={"hidden"}
       whileInView="show"
       viewport={{ once: true, amount: 0.3 }}
@@ -31,9 +31,10 @@ export const Header = ({
 
       <motion.h1
         className={cn(
-          "mt-4 sm:mt-6 text-center text-transparent text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight tracking-tight bg-clip-text bg-gradient-to-b from-white to-white/50",
-          variant === "secondary" &&
-            "text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+          "mt-4 sm:mt-6 text-center text-transparent leading-tight tracking-tight bg-clip-text bg-gradient-to-b from-white to-white/50",
+          variant === "secondary"
+            ? "text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+            : "text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
         )}
         variants={fadeInUp}
       >
@@ -42,8 +43,10 @@ export const Header = ({
 
       <motion.p
         className={cn(
-          "mt-3 sm:mt-5 text-center text-sm sm:text-base md:text-lg text-white/70 max-w-3xl mx-auto px-4",
-          variant === "secondary" && "text-xs sm:text-sm md:text-base"
+          "mt-3 sm:mt-5 text-center text-white/70 max-w-3xl mx-auto px-4",
+          variant === "secondary"
+            ? "text-xs sm:text-sm md:text-base"
+            : "text-sm sm:text-base md:text-lg"
         )}
         variants={fadeInUp}
       >
