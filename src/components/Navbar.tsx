@@ -38,7 +38,7 @@ export default function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="backdrop-blur-md border border-white/10 rounded-md px-4 sm:px-6 py-3 sm:py-4">
+      <div className="backdrop-blur-md border border-blue-300/20 rounded-md px-4 sm:px-6 py-4 sm:py-4">
         <div className="flex items-center justify-between w-full backdrop-saturate-200">
           {/* Logo */}
           <div className="flex justify-start">
@@ -56,7 +56,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav links */}
-          <div className="hidden xl:flex items-center justify-center gap-8 border border-white/10 rounded-full py-3 px-8 w-fit mx-auto text-sm">
+          <div className="hidden xl:flex items-center justify-center gap-8 border border-blue-300/20 rounded-full py-3 px-8 w-fit absolute left-1/2 -translate-x-1/2 text-sm">
             <Link
               href="/"
               className="text-white/90 hover:text-white/80 transition-colors"
