@@ -1,3 +1,5 @@
+"use client";
+
 import { EmptyState } from "@/components/GlobalLoader";
 import Link from "next/link";
 
