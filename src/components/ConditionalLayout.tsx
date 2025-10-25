@@ -1,10 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Particles } from "@/components/ui/particles";
+import { LayoutWrapper, HomePageLoader, EventsPageLoader, BlogsPageLoader, MentorsPageLoader } from "@/components/LayoutWrapper";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -25,9 +26,25 @@ export default function ConditionalLayout({
     [pathname]
   );
 
+  // Get appropriate loader based on route
+  const getRouteLoader = () => {
+    if (pathname === "/") return <HomePageLoader />;
+    if (pathname.startsWith("/events")) return <EventsPageLoader />;
+    if (pathname.startsWith("/blogs")) return <BlogsPageLoader />;
+    if (pathname.startsWith("/mentors")) return <MentorsPageLoader />;
+    return undefined;
+  };
+
   if (isDashboardRoute) {
-    // For dashboard routes, only render children (no navbar/footer)
-    return <>{children}</>;
+    // For dashboard routes, only render children with loader wrapper
+    return (
+      <LayoutWrapper 
+        fallback={getRouteLoader()}
+        showLoader={false}
+      >
+        {children}
+      </LayoutWrapper>
+    );
   }
 
   // For all other routes, render with navbar and footer
@@ -42,7 +59,12 @@ export default function ConditionalLayout({
         size={0.4}
       />
       <Navbar />
-      {children}
+      <LayoutWrapper 
+        fallback={getRouteLoader()}
+        loadingText="Loading Elixir..."
+      >
+        {children}
+      </LayoutWrapper>
       <Footer />
     </>
   );
