@@ -15,7 +15,7 @@ import { BuildingIcon, CalendarIcon, UsersIcon } from "lucide-react";
 
 export const DesignYourWorkflowSkeleton = () => {
   return (
-    <div className="mt-12 flex flex-col items-center">
+    <div className="mt-4 sm:mt-8 md:mt-12 flex flex-col items-center">
       <div className="relative">
         <Card
           title="Elixir"
@@ -24,12 +24,12 @@ export const DesignYourWorkflowSkeleton = () => {
           cta="Community"
           tone="default"
         />
-        <LeftSVG className="absolute top-14 -left-[128px]" />
-        <RightSVG className="absolute top-14 -right-[149px]" />
+        <LeftSVG className="absolute top-14 -left-[128px] hidden sm:block" />
+        <RightSVG className="absolute top-14 -right-[149px] hidden sm:block" />
         <CenterSVG className="absolute top-24 right-[80px]" />
       </div>
 
-      <div className="mt-12 flex flex-row gap-8">
+      <div className="mt-6 sm:mt-8 md:mt-12 flex flex-row gap-4 sm:gap-6 md:gap-8 pl-10 sm:pl-4">
         <Card
           title="GDG"
           subtitle="Google"
@@ -45,6 +45,7 @@ export const DesignYourWorkflowSkeleton = () => {
           cta="GeeksForGeeks"
           tone="green"
           delay={0.4}
+          className="block sm:block lg:block md:block xl:block"
         />
         <Card
           title="CodeChef"
@@ -113,7 +114,7 @@ const ScrollingDeployCard = ({
 
   return (
     <motion.div
-      className="mx-auto mt-4 w-full max-w-sm shrink-0 rounded-2xl shadow-xl"
+      className="mx-auto mt-4 w-full max-w-xs sm:max-w-sm shrink-0 rounded-2xl shadow-xl"
       style={{ scale, background, borderColor }}
     >
       <DeployCard
@@ -139,168 +140,170 @@ export const ConnectYourTooklsSkeleton = () => {
   if (!mounted) return null;
 
   return (
-    <div className="relative flex h-full w-full items-center justify-between">
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative h-70 w-60 -translate-x-2 rounded-2xl border-t border-gray-300 bg-white p-4 shadow-2xl md:translate-x-0 dark:border-neutral-700 dark:bg-neutral-900"
-      >
-        <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-inherit  shadow-xl">
-          <Scale />
-          <Image
-            src="/elixir-logo.png"
-            height={8}
-            width={8}
-            alt="Elixir"
-            className="relative z-20 h-8 w-8"
-          />
-        </div>
-        <div className="mt-12 flex items-center gap-2">
-          <IntegrationsLogo />
-          <span className="text-charcoal-700 text-sm font-medium dark:text-neutral-200">
-            Tasks
-          </span>
-        </div>
-        <DivideX className="mt-2" />
-
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-charcoal-700 text-[10px] leading-loose font-normal md:text-xs dark:text-neutral-200">
-              {text.split(/(\s+)/).map((word, index) => (
-                <motion.span
-                  key={index}
-                  initial={{
-                    opacity: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                    delay: index * 0.02,
-                    ease: "linear",
-                  }}
-                  className="inline-block"
-                >
-                  {word === " " ? "\u00A0" : word}
-                </motion.span>
-              ))}
-            </span>
-          </div>
-        </div>
-        <div className="mt-2 flex flex-col">
-          {[...Array(2)].map((_, index) => (
-            <motion.div
-              key={`width-bar-right-${index}`}
-              initial={{
-                width: "0%",
-              }}
-              animate={{
-                width: `${randomWidth}%`,
-              }}
-              transition={{
-                duration: 4,
-                delay: index * 0.2,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-              className="mt-2 h-4 w-full rounded-full bg-gray-200 dark:bg-neutral-800"
+    <>
+      <div className="relative flex h-full w-full flex-row sm:flex-row items-center justify-between gap-4 sm:gap-0 px-4 sm:px-0">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="relative h-70 w-full sm:w-60 rounded-2xl border-t border-gray-300 bg-white p-4 shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+        >
+          <div className="absolute -top-4 -right-4 flex h-14 w-14 items-center justify-center rounded-lg bg-inherit  shadow-xl">
+            <Scale />
+            <Image
+              src="/elixir-logo.png"
+              height={8}
+              width={8}
+              alt="Elixir"
+              className="relative z-20 h-8 w-8"
             />
-          ))}
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1 }}
-        className="absolute inset-x-0 z-30 hidden items-center justify-center md:flex"
-      >
-        <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
-        <div className="h-[2px] w-36 bg-blue-500" />
-        <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
-      </motion.div>
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 1 }}
-        className="relative h-70 w-60 translate-x-10 rounded-2xl border-t border-gray-300 bg-white p-4 shadow-2xl md:translate-x-0 dark:border-neutral-700 dark:bg-neutral-900"
-      >
-        <div className="absolute -top-4 -left-4 flex h-14 w-14 items-center justify-center rounded-lg bg-white shadow-xl dark:bg-neutral-800">
-          <Scale />
-          <LogoSVG className="relative z-20 h-8 w-8" />
-        </div>
-        <div className="mt-12 flex items-center gap-2">
-          <IntegrationsLogo className="dark:text-neutral-200" />
-          <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-            Integrations
-          </span>
-          <span className="text-charcoal-700 rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200">
-            Elixir
-          </span>
-        </div>
-        <DivideX className="mt-2" />
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <UsersIcon className="h-4 w-4 shrink-0 text-blue-500" />
-            <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-              Students
+          </div>
+          <div className="mt-12 flex items-center gap-2">
+            <IntegrationsLogo />
+            <span className="text-charcoal-700 text-sm font-medium dark:text-neutral-200">
+              Tasks
             </span>
           </div>
+          <DivideX className="mt-2" />
 
-          <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
-            Connected
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-charcoal-700 text-[10px] leading-loose font-normal md:text-xs dark:text-neutral-200">
+                {text.split(/(\s+)/).map((word, index) => (
+                  <motion.span
+                    key={index}
+                    initial={{
+                      opacity: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      delay: index * 0.02,
+                      ease: "linear",
+                    }}
+                    className="inline-block"
+                  >
+                    {word === " " ? "\u00A0" : word}
+                  </motion.span>
+                ))}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <BuildingIcon className="h-4 w-4 shrink-0 text-blue-500" />
+          <div className="mt-2 flex flex-col">
+            {[...Array(2)].map((_, index) => (
+              <motion.div
+                key={`width-bar-right-${index}`}
+                initial={{
+                  width: "0%",
+                }}
+                animate={{
+                  width: `${randomWidth}%`,
+                }}
+                transition={{
+                  duration: 4,
+                  delay: index * 0.2,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+                className="mt-2 h-4 w-full rounded-full bg-gray-200 dark:bg-neutral-800"
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="absolute inset-x-0 z-30 hidden items-center justify-center md:flex"
+        >
+          <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
+          <div className="h-[2px] w-36 bg-blue-500" />
+          <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
+        </motion.div>
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          className="relative h-70 w-full sm:w-60 rounded-2xl border-t border-gray-300 bg-white p-4 shadow-2xl dark:border-neutral-700 dark:bg-neutral-900"
+        >
+          <div className="absolute -top-4 -left-4 flex h-14 w-14 items-center justify-center rounded-lg bg-white shadow-xl dark:bg-neutral-800">
+            <Scale />
+            <LogoSVG className="relative z-20 h-8 w-8" />
+          </div>
+          <div className="mt-12 flex items-center gap-2">
+            <IntegrationsLogo className="dark:text-neutral-200" />
             <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-              Clubs
+              Integrations
+            </span>
+            <span className="text-charcoal-700 rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200">
+              Elixir
             </span>
           </div>
+          <DivideX className="mt-2" />
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <UsersIcon className="h-4 w-4 shrink-0 text-blue-500" />
+              <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
+                Students
+              </span>
+            </div>
 
-          <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
-            Synced
+            <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
+              Connected
+            </div>
           </div>
-        </div>
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 shrink-0 text-blue-500" />
-            <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
-              Events
-            </span>
-          </div>
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <BuildingIcon className="h-4 w-4 shrink-0 text-blue-500" />
+              <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
+                Clubs
+              </span>
+            </div>
 
-          <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
-            Synced
+            <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
+              Synced
+            </div>
           </div>
-        </div>
-        <div className="mt-2 flex flex-col">
-          {[...Array(2)].map((_, index) => (
-            <motion.div
-              key={`width-bar-right-${index}`}
-              initial={{
-                width: `${20 + Math.random() * 20}%`,
-              }}
-              animate={{
-                width: `${70 + Math.random() * 30}%`,
-              }}
-              transition={{
-                duration: 4,
-                delay: index * 0.2,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-              className="mt-2 h-4 w-full rounded-full bg-gray-200 dark:bg-neutral-800"
-            />
-          ))}
-        </div>
-      </motion.div>
-    </div>
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-4 w-4 shrink-0 text-blue-500" />
+              <span className="text-charcoal-700 text-xs font-medium md:text-sm dark:text-neutral-200">
+                Events
+              </span>
+            </div>
+
+            <div className="rounded-sm border border-blue-500 bg-blue-50 px-2 py-0.5 text-xs text-blue-500">
+              Synced
+            </div>
+          </div>
+          <div className="mt-2 flex flex-col">
+            {[...Array(2)].map((_, index) => (
+              <motion.div
+                key={`width-bar-right-${index}`}
+                initial={{
+                  width: `${20 + Math.random() * 20}%`,
+                }}
+                animate={{
+                  width: `${70 + Math.random() * 30}%`,
+                }}
+                transition={{
+                  duration: 4,
+                  delay: index * 0.2,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+                className="mt-2 h-4 w-full rounded-full bg-gray-200 dark:bg-neutral-800"
+              />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </>
   );
 };
 
@@ -424,7 +427,7 @@ export const DeployAndScaleSkeleton = () => {
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden"
+      className="relative h-full w-full overflow-hidden px-2 sm:px-0"
       ref={containerRef}
       // style={{
       //   maskImage:
