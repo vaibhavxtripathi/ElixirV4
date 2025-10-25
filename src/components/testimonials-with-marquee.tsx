@@ -44,8 +44,8 @@ export function TestimonialsSection({
       const testimonial = baseTestimonials[index];
       result.push({
         ...testimonial,
-        // Add unique key to prevent React warnings
-        uniqueId: `infinite-${i}-${Math.random().toString(36).substr(2, 9)}`,
+        // Add unique key to prevent React warnings - use deterministic ID for SSR
+        uniqueId: `infinite-${i}-${index}`,
       });
     }
     return result;
@@ -55,11 +55,23 @@ export function TestimonialsSection({
   // Create second row with different starting position to avoid synchronization
   const infiniteTestimonials2 = createInfiniteTestimonials(testimonials, 8, 3); // Start from index 3
 
+  // Don't render if no testimonials
+  if (!testimonials || testimonials.length === 0) {
+    console.log(
+      "TestimonialsSection: No testimonials provided, returning null"
+    );
+    return null;
+  }
+
+  console.log(
+    `TestimonialsSection: Rendering with ${testimonials.length} testimonials`
+  );
+
   return (
     <motion.section
       className={cn(
         "bg-transparent text-white font-geist-sans",
-        "py-12 sm:py-24 md:py-32 px-0",
+        "pb-2 sm:pb-4 md:pb-6 px-0",
         className
       )}
       initial="hidden"
