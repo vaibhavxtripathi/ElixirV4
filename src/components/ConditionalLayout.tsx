@@ -5,7 +5,14 @@ import { useMemo, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Particles } from "@/components/ui/particles";
-import { LayoutWrapper, HomePageLoader, EventsPageLoader, BlogsPageLoader, MentorsPageLoader } from "@/components/LayoutWrapper";
+import {
+  LayoutWrapper,
+  HomePageLoader,
+  EventsPageLoader,
+  BlogsPageLoader,
+  MentorsPageLoader,
+  DashboardLoader,
+} from "@/components/LayoutWrapper";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -32,6 +39,7 @@ export default function ConditionalLayout({
     if (pathname.startsWith("/events")) return <EventsPageLoader />;
     if (pathname.startsWith("/blogs")) return <BlogsPageLoader />;
     if (pathname.startsWith("/mentors")) return <MentorsPageLoader />;
+    if (isDashboardRoute) return <DashboardLoader />;
     return undefined;
   };
 
@@ -39,8 +47,9 @@ export default function ConditionalLayout({
     // For dashboard routes, only render children with loader wrapper
     return (
       <LayoutWrapper 
-        fallback={getRouteLoader()}
-        showLoader={false}
+        fallback={getRouteLoader()} 
+        showLoader={true}
+        loadingText="Loading dashboard..."
       >
         {children}
       </LayoutWrapper>
@@ -59,7 +68,7 @@ export default function ConditionalLayout({
         size={0.4}
       />
       <Navbar />
-      <LayoutWrapper 
+      <LayoutWrapper
         fallback={getRouteLoader()}
         loadingText="Loading Elixir..."
       >

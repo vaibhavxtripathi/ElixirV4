@@ -26,13 +26,19 @@ export function LayoutWrapper({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [isRouteChanging, setIsRouteChanging] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    // Show loader immediately when route changes
+    setIsRouteChanging(true);
+    setIsLoading(true);
+
     // Simulate loading time for better UX
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+      setIsRouteChanging(false);
+    }, 800); // Reduced from 1000ms to 800ms for faster response
 
     return () => clearTimeout(timer);
   }, [pathname]);
@@ -61,28 +67,16 @@ export function LayoutWrapper({
     return <ErrorFallback error={error} resetError={resetError} />;
   }
 
-  if (isLoading && showLoader) {
+  // Show loader if:
+  // 1. We're loading and showLoader is true
+  // 2. Route is changing (for smooth transitions)
+  // 3. No content is available (prevents blank screen)
+  if ((isLoading && showLoader) || isRouteChanging || !hasContent) {
+    const loaderText = isRouteChanging ? "Loading..." : loadingText;
     return (
       <Suspense fallback={<ContentSkeleton />}>
-        <GlobalLoader text={loadingText} />
+        <GlobalLoader text={loaderText} />
       </Suspense>
-    );
-  }
-
-  if (!hasContent) {
-    return (
-      <EmptyState
-        title="No Content Available"
-        description="The page you're looking for doesn't have any content to display at the moment."
-        action={
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-          >
-            Refresh Page
-          </button>
-        }
-      />
     );
   }
 
@@ -165,6 +159,29 @@ export function MentorsPageLoader() {
             <div className="h-3 w-1/2 bg-white/10 rounded mx-auto animate-pulse" />
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// Dashboard-specific loader for authentication transitions
+export function DashboardLoader() {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center p-6">
+      <div className="text-center space-y-6">
+        {/* Dashboard Icon Skeleton */}
+        <div className="w-16 h-16 bg-white/10 rounded-xl mx-auto animate-pulse" />
+        
+        {/* Loading Text */}
+        <div className="space-y-3">
+          <div className="h-6 w-48 bg-white/10 rounded mx-auto animate-pulse" />
+          <div className="h-4 w-32 bg-white/10 rounded mx-auto animate-pulse" />
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="w-64 h-1 bg-white/20 rounded-full overflow-hidden mx-auto">
+          <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse" />
+        </div>
       </div>
     </div>
   );
