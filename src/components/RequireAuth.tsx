@@ -2,7 +2,22 @@
 import { ReactNode, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { GlobalLoader } from "./GlobalLoader";
+
+// Simple authentication loader component
+function AuthLoader({ text }: { text: string }) {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center p-6">
+      <div className="text-center space-y-6">
+        <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto" />
+        <div className="space-y-3">
+          <div className="h-6 w-48 bg-white/10 rounded mx-auto animate-pulse" />
+          <div className="h-4 w-32 bg-white/10 rounded mx-auto animate-pulse" />
+        </div>
+        <p className="text-white/70 text-sm">{text}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function RequireAuth({
   children,
@@ -64,7 +79,7 @@ export default function RequireAuth({
 
   // Show loader while checking authentication
   if (isChecking) {
-    return <GlobalLoader text="Verifying authentication..." />;
+    return <AuthLoader text="Verifying authentication..." />;
   }
 
   // If not authenticated, return null (will redirect to login)

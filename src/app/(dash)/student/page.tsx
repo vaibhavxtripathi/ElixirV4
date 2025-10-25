@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { containerStagger, fadeInUp, fadeIn } from "@/lib/motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { EventDetailsDialog } from "@/components/EventDetailsDialog";
 import * as Logos from "@/icons/general";
 import { toast } from "sonner";
@@ -640,5 +640,9 @@ function StudentDashboardContent() {
 }
 
 export default function StudentDashboard() {
-  return <StudentDashboardContent />;
+  return (
+    <Suspense fallback={null}>
+      <StudentDashboardContent />
+    </Suspense>
+  );
 }
