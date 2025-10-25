@@ -9,12 +9,12 @@ export function AboutElixir() {
   // Helper function to get the correct image path
   const getImagePath = (index: number) => {
     const imageMap = [
-      "1st.png",
-      "2nd.png",
-      "3rd.png",
-      "4th.png",
-      "5th.png",
-      "6th.png",
+      "1st.webp",
+      "2nd.webp",
+      "3rd.webp",
+      "4th.webp",
+      "5th.webp",
+      "6th.webp",
     ];
     return `/${imageMap[index]}`;
   };
