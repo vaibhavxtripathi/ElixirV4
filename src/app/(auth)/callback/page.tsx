@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { setToken, roleToDashboard } from "@/lib/auth";
 import { api } from "@/lib/api";
+import { GlobalLoader } from "@/components/GlobalLoader";
 
 function OAuthCallbackContent() {
   const router = useRouter();
   const params = useSearchParams();
+  const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
     const token = params.get("token");
@@ -24,8 +26,13 @@ function OAuthCallbackContent() {
       } else {
         router.replace("/");
       }
+      setIsProcessing(false);
     })();
   }, [params, router]);
+
+  if (isProcessing) {
+    return <GlobalLoader text="Completing authentication..." />;
+  }
 
   return null;
 }
