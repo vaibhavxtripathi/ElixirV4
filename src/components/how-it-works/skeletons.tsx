@@ -15,7 +15,7 @@ import { BuildingIcon, CalendarIcon, UsersIcon } from "lucide-react";
 
 export const DesignYourWorkflowSkeleton = () => {
   return (
-    <div className="mt-4 sm:mt-8 md:mt-12 flex flex-col items-center">
+    <div className="mt-4 sm:mt-12 md:mt-16 flex flex-col items-center">
       <div className="relative">
         <Card
           title="Elixir"
@@ -29,7 +29,7 @@ export const DesignYourWorkflowSkeleton = () => {
         <CenterSVG className="absolute top-24 right-[80px]" />
       </div>
 
-      <div className="mt-6 sm:mt-8 md:mt-12 flex flex-row gap-4 sm:gap-6 md:gap-8 pl-10 sm:pl-4">
+      <div className="mt-6 sm:mt-8 md:mt-12 flex flex-row gap-4 sm:gap-6 md:gap-8 pl-10 sm:pl-8">
         <Card
           title="GDG"
           subtitle="Google"
@@ -141,7 +141,7 @@ export const ConnectYourTooklsSkeleton = () => {
 
   return (
     <>
-      <div className="relative flex h-full w-full flex-row sm:flex-row items-center justify-between gap-4 sm:gap-0 px-4 sm:px-0">
+      <div className="relative flex h-full w-full flex-row sm:flex-row items-center justify-between gap-4 sm:gap-0 px-0 sm:px-0">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -220,9 +220,9 @@ export const ConnectYourTooklsSkeleton = () => {
           transition={{ duration: 1, delay: 1 }}
           className="absolute inset-x-0 z-30 hidden items-center justify-center md:flex"
         >
-          <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
+          {/* <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
           <div className="h-[2px] w-36 bg-blue-500" />
-          <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" />
+          <div className="size-3 rounded-full border-2 border-blue-500 bg-white dark:bg-neutral-800" /> */}
         </motion.div>
         <motion.div
           initial={{ y: -20, opacity: 0 }}
