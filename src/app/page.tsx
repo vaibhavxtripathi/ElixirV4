@@ -7,6 +7,7 @@ import { AnimatedDemoSection } from "@/components/AnimatedDemoSection";
 import { StarBorder } from "@/components/ui/star-border";
 import { DiscordLogo } from "@/icons/general";
 import Separator from "@/components/Separator";
+import Container from "@/components/container";
 
 export const metadata = {
   title: "Elixir | Home",
@@ -97,89 +98,91 @@ export default async function HomePage() {
   }
   return (
     <main className="relative min-h-[88vh] text-white pt-10 mt-32">
-      <Header
-        badge="Elixir Tech Community"
-        title="Think better with Elixir"
-        subtitle="We build the future of technology with you."
-        variant="default"
-      />
-      <StarBorder className="flex mx-auto mt-8 sm:mt-12">
-        <div className="flex items-center gap-2">
-          <span className="text-sm sm:text-base">Join Discord</span>
-          <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
+      <Container size="wide">
+        <Header
+          badge="Elixir Tech Community"
+          title="Think better with Elixir"
+          subtitle="We build the future of technology with you."
+          variant="default"
+        />
+        <StarBorder className="flex mx-auto mt-8 sm:mt-12">
+          <div className="flex items-center gap-2">
+            <span className="text-sm sm:text-base">Join Discord</span>
+            <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+        </StarBorder>
+        <AnimatedDemoSection />
+
+        {/* Uniform spacing between demo and about */}
+        <div className="mt-2 sm:mt-4 md:mt-6">
+          <AboutElixir />
         </div>
-      </StarBorder>
-      <AnimatedDemoSection />
 
-      {/* Uniform spacing between demo and about */}
-      <div className="mt-2 sm:mt-4 md:mt-6">
-        <AboutElixir />
-      </div>
-
-      {/* Separator between About and How It Works */}
-      <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
-        <Separator className="w-32 sm:w-48 md:w-64" />
-      </div>
-
-      {/* Increased spacing between about and how it works */}
-      <div className="mt-6 sm:mt-8 md:mt-10">
-        <div className="their-component-wrapper dark">
-          <HowItWorks />
+        {/* Separator between About and How It Works */}
+        <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
+          <Separator className="w-32 sm:w-48 md:w-64" />
         </div>
-      </div>
 
-      {/* Separator between How It Works and Testimonials */}
-      <div className="flex justify-center mt-8 sm:mt-8 md:mt-16">
-        <Separator className="w-32 sm:w-48 md:w-64" />
-      </div>
+        {/* Increased spacing between about and how it works */}
+        <div className="mt-6 sm:mt-8 md:mt-10">
+          <div className="their-component-wrapper dark">
+            <HowItWorks />
+          </div>
+        </div>
 
-      {/* Increased spacing between how it works and testimonials */}
-      <div className="mt-8 sm:mt-8 md:mt-10">
-        <section>
-          <TestimonialsSection
-            badge="Testimonials"
-            headline="What our alumni say"
-            subtext="Real voices from the Elixir community."
-            testimonials={testimonials}
-            variant="secondary"
-          />
-          {/* Fallback when no testimonials are available */}
-          {testimonials.length === 0 && (
-            <div className="py-8 sm:py-12 md:py-16 px-4">
-              <div className="mx-auto max-w-7xl text-center">
-                <div className="mb-4">
-                  <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">
-                    Testimonials
-                  </span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
-                  What our alumni say
-                </h2>
-                <p className="text-lg text-white/70 mb-6">
-                  Real voices from the Elixir community.
-                </p>
-                <div className="rounded-2xl border border-blue-500/10 bg-[#080914]/50 p-6 sm:p-8">
-                  <div className="h-12 w-12 rounded-full bg-white/10 mx-auto mb-3" />
-                  <p className="text-white/80 text-base">
-                    Testimonials are loading... Check back soon to see what our
-                    community members have to say!
+        {/* Separator between How It Works and Testimonials */}
+        <div className="flex justify-center mt-8 sm:mt-8 md:mt-16">
+          <Separator className="w-32 sm:w-48 md:w-64" />
+        </div>
+
+        {/* Increased spacing between how it works and testimonials */}
+        <div className="mt-8 sm:mt-8 md:mt-10">
+          <section>
+            <TestimonialsSection
+              badge="Testimonials"
+              headline="What our alumni say"
+              subtext="Real voices from the Elixir community."
+              testimonials={testimonials}
+              variant="secondary"
+            />
+            {/* Fallback when no testimonials are available */}
+            {testimonials.length === 0 && (
+              <div className="py-8 sm:py-12 md:py-16 px-4">
+                <div className="mx-auto max-w-7xl text-center">
+                  <div className="mb-4">
+                    <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">
+                      Testimonials
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
+                    What our alumni say
+                  </h2>
+                  <p className="text-lg text-white/70 mb-6">
+                    Real voices from the Elixir community.
                   </p>
+                  <div className="rounded-2xl border border-blue-500/10 bg-[#080914]/50 p-6 sm:p-8">
+                    <div className="h-12 w-12 rounded-full bg-white/10 mx-auto mb-3" />
+                    <p className="text-white/80 text-base">
+                      Testimonials are loading... Check back soon to see what
+                      our community members have to say!
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </section>
-      </div>
+            )}
+          </section>
+        </div>
 
-      {/* Separator between Testimonials and FAQ */}
-      <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
-        <Separator className="w-32 sm:w-48 md:w-64" />
-      </div>
+        {/* Separator between Testimonials and FAQ */}
+        <div className="flex justify-center mt-6 sm:mt-8 md:mt-10">
+          <Separator className="w-32 sm:w-48 md:w-64" />
+        </div>
 
-      {/* Increased spacing between testimonials and FAQ */}
-      <div className="mt-6 sm:mt-8 md:mt-10">
-        <FAQSection />
-      </div>
+        {/* Increased spacing between testimonials and FAQ */}
+        <div className="mt-6 sm:mt-8 md:mt-10">
+          <FAQSection />
+        </div>
+      </Container>
     </main>
   );
 }
