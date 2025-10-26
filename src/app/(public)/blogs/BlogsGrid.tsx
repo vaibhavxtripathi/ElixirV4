@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import ContentSkeleton from "@/components/ContentSkeleton";
+import { BlogSkeletonGrid } from "@/components/CustomSkeletons";
 
 type Blog = {
   id: string;
@@ -23,7 +23,7 @@ export default function BlogsGrid() {
   const blogs = data?.blogs || [];
 
   if (isLoading) {
-    return <ContentSkeleton variant="blog" count={6} />;
+    return <BlogSkeletonGrid count={6} />;
   }
 
   if (error) {
