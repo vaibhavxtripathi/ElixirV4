@@ -8,6 +8,7 @@ import { StarBorder } from "@/components/ui/star-border";
 import { DiscordLogo } from "@/icons/general";
 import Separator from "@/components/Separator";
 import Container from "@/components/container";
+import Link from "next/link";
 
 export const metadata = {
   title: "Elixir | Home",
@@ -105,12 +106,14 @@ export default async function HomePage() {
           subtitle="We build the future of technology with you."
           variant="default"
         />
-        <StarBorder className="flex mx-auto mt-8 sm:mt-12">
-          <div className="flex items-center gap-2">
-            <span className="text-sm sm:text-base">Join Discord</span>
-            <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-        </StarBorder>
+        <Link href="https://dsc.gg/elixirtechcommunity" target="_blank">
+          <StarBorder className="flex mx-auto mt-8 sm:mt-12">
+            <div className="flex items-center gap-2">
+              <span className="text-sm sm:text-base">Join Discord</span>
+              <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
+          </StarBorder>
+        </Link>
         <AnimatedDemoSection />
 
         {/* Uniform spacing between demo and about */}

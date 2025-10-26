@@ -39,7 +39,7 @@ export const AdminDashboardSection = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
 
           {/* Bottom fade gradient for seamless transition */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0A0B1A] via-[#0A0B1A]/80 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-18 sm:h-32 lg:h-56 bg-gradient-to-t from-[#0A0B1A] via-[#0A0B1A]/80 to-transparent pointer-events-none" />
         </div>
       </div>
     </motion.section>

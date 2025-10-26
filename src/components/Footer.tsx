@@ -58,7 +58,7 @@ export default function Footer() {
             {/* Social Icons - Mobile: Center, Desktop: Right */}
             <div className="flex items-center justify-center sm:justify-end gap-4 sm:gap-6">
               <a
-                href="https://x.com"
+                href="https://x.com/theelixirtech"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-white/50 hover:text-white/70 transition-colors p-2 rounded-md hover:bg-white/5"
@@ -76,7 +76,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://www.linkedin.com"
+                href="https://www.linkedin.com/company/elixir-tech-community/"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-white/50 hover:text-white/70 transition-colors p-2 rounded-md hover:bg-white/5"
@@ -94,7 +94,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://github.com"
+                href="https://github.com/vaibhavxtripathi/ElixirV4"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-white/50 hover:text-white/70 transition-colors p-2 rounded-md hover:bg-white/5"
