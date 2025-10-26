@@ -106,14 +106,14 @@ export default async function HomePage() {
           subtitle="We build the future of technology with you."
           variant="default"
         />
-        <Link href="https://dsc.gg/elixirtechcommunity" target="_blank">
-          <StarBorder className="flex mx-auto mt-8 sm:mt-12">
+        <StarBorder className="flex mx-auto mt-8 sm:mt-12">
+          <Link href="https://dsc.gg/elixirtechcommunity" target="_blank">
             <div className="flex items-center gap-2">
               <span className="text-sm sm:text-base">Join Discord</span>
               <DiscordLogo className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-          </StarBorder>
-        </Link>
+          </Link>
+        </StarBorder>
         <AnimatedDemoSection />
 
         {/* Uniform spacing between demo and about */}
