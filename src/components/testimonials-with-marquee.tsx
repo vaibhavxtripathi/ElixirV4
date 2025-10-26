@@ -8,6 +8,7 @@ import {
 import { Header } from "./Header";
 import { motion } from "framer-motion";
 import { containerStagger, fadeIn } from "@/lib/motion";
+import Container from "@/components/container";
 
 interface TestimonialsSectionProps {
   badge: string;
@@ -79,7 +80,7 @@ export function TestimonialsSection({
       viewport={{ once: true, amount: 0.2 }}
       variants={containerStagger(0.1, 0)}
     >
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-[1.5rem] text-center">
+      <Container size="wide">
         <Header
           badge={badge}
           title={headline}
@@ -119,10 +120,10 @@ export function TestimonialsSection({
 
         {/* Row 2 - Infinite scroll reverse direction */}
         <motion.div
-          className="relative w-full overflow-hidden"
+          className="relative w-full overflow-hidden mt-4 sm:mt-6"
           variants={fadeIn}
         >
-          <div className="flex overflow-hidden -py-6 sm:-py-9 px-3 sm:px-5 [--gap:1rem] sm:[--gap:1.5rem] [gap:var(--gap)]">
+          <div className="flex overflow-hidden py-0 px-3 sm:px-5 [--gap:1rem] sm:[--gap:1.5rem] [gap:var(--gap)]">
             <div className="flex shrink-0 justify-start [gap:var(--gap)] animate-marquee-infinite-reverse">
               {infiniteTestimonials2.map((testimonial, i) => (
                 <TestimonialCard
@@ -146,7 +147,7 @@ export function TestimonialsSection({
           <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[20%] bg-gradient-to-r from-[#0A0B1A] to-transparent sm:block" />
           <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[20%] bg-gradient-to-l from-[#0A0B1A] to-transparent sm:block" />
         </motion.div>
-      </div>
+      </Container>
     </motion.section>
   );
 }
