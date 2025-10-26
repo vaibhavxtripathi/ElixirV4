@@ -28,7 +28,7 @@ export function AboutElixir() {
         variant="secondary"
       />
 
-      <div className="mx-auto mt-4 sm:mt-6 md:mt-8 grid w-[min(1200px,95%)] grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 sm:mt-8 md:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-3 sm:px-6 md:px-6">
         {features.map(
           (
             f: { title: string; description: string; accent: string },
@@ -40,15 +40,10 @@ export function AboutElixir() {
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.6, delay: idx * 0.05, ease: "easeOut" }}
               className={cn(
-                "group relative overflow-hidden rounded-xl sm:rounded-2xl border border-blue-500/20 p-4 sm:p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] mt-6",
+                "group relative overflow-hidden rounded-xl sm:rounded-2xl border border-blue-500/20 p-4 sm:p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]",
                 "hover:border-blue-500/20 transition-all duration-300 h-64 sm:h-72 md:h-80"
               )}
             >
-              {/* Background layers */}
-              <div
-                className={`pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r ${f.accent}`}
-              />
-              {/* Feature Image - Full card background with vignette */}
               <div className="absolute inset-0 -z-5 overflow-hidden rounded-xl sm:rounded-2xl">
                 <img
                   src={getImagePath(idx)}
