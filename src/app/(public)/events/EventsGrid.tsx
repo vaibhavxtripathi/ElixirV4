@@ -3,7 +3,7 @@
 import CardFlip from "@/components/kokonutui/card-flip";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import ContentSkeleton from "@/components/ContentSkeleton";
+import { EventSkeletonGrid } from "@/components/CustomSkeletons";
 
 type EventItem = {
   id: string | number;
@@ -68,20 +68,12 @@ export default function EventsGrid({ page }: { page: number }) {
   };
 
   if (eventsLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-center">
-            <ContentSkeleton variant="event" count={1} />
-          </div>
-        ))}
-      </div>
-    );
+    return <EventSkeletonGrid count={6} />;
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {events.map((e: EventItem) => (
           <div key={e.id} className="flex items-center justify-center">
             <CardFlip
