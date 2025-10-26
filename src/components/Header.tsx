@@ -17,7 +17,7 @@ export const Header = ({
 }) => {
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 md:pt-12"
+      className="pt-8 sm:pt-10 md:pt-12"
       initial={"hidden"}
       whileInView="show"
       viewport={{ once: true, amount: 0.3 }}
