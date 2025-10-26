@@ -5,6 +5,7 @@ import { PlusIcon, MinusIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { fadeInUp, containerStagger } from "@/lib/motion";
+import Container from "@/components/container";
 
 interface FAQItem {
   question: string;
@@ -49,22 +50,24 @@ export function FAQSection() {
         variant="secondary"
       />
 
-      <motion.div
-        className="mx-auto mt-8 sm:mt-12 lg:mt-16 w-full max-w-5xl px-3 sm:px-4 pb-6 sm:pb-8 lg:pb-10 lg:px-6"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
-        variants={containerStagger(0.1, 0.2)}
-      >
+      <Container>
         <motion.div
-          className="overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-[#0A0B1A]/60 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur"
-          variants={fadeInUp}
+          className="mt-8 sm:mt-12 lg:mt-16 pb-6 sm:pb-8 lg:pb-10"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
+          variants={containerStagger(0.1, 0.2)}
         >
-          {faqs.map((item, idx) => (
-            <FAQRow key={idx} item={item} />
-          ))}
+          <motion.div
+            className="overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 bg-[#0A0B1A]/60 shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur"
+            variants={fadeInUp}
+          >
+            {faqs.map((item, idx) => (
+              <FAQRow key={idx} item={item} />
+            ))}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </Container>
     </section>
   );
 }
