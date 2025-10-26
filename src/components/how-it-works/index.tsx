@@ -189,7 +189,7 @@ export const HowItWorks = () => {
         </div>
 
         {/* Mobile Tabs - Show all sections */}
-        <div className="mt-8 w-full lg:hidden flex flex-col">
+        <div className="mt-8 w-full bg-card lg:hidden flex flex-col">
           {tabs.map((tab, index) => (
             <div
               key={tab.id}
