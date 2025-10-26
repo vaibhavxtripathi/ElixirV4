@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import Image from "next/image";
 import { FaLinkedin } from "react-icons/fa6";
 import { CheckCircle2, Heart } from "lucide-react";
-import ContentSkeleton from "@/components/ContentSkeleton";
+import { MentorSkeletonGrid } from "@/components/CustomSkeletons";
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from "react";
 import AuthDialog from "@/components/auth-dialog";
 
@@ -60,7 +60,7 @@ const MentorCard = memo(
     }, [mentor.id, onLikeClick]);
 
     return (
-      <div className="relative w-[320px] flex-[0_0_320px] overflow-hidden rounded-[28px] border border-white/10 bg-[#0B0C14] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.45)] transition-shadow duration-300 group">
+      <div className="relative w-full overflow-hidden rounded-[28px] border border-white/10 bg-[#0B0C14] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.45)] transition-shadow duration-300 group">
         {/* Image */}
         <div className="relative h-[420px] w-full">
           <Image
@@ -378,7 +378,7 @@ export default function MentorsGrid() {
   );
 
   if (isLoading) {
-    return <ContentSkeleton variant="mentor" count={6} />;
+    return <MentorSkeletonGrid count={6} />;
   }
 
   return (
