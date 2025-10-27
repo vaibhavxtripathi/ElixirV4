@@ -22,13 +22,17 @@ app.use((req, res, next) => {
   const defaultOrigins = [
     "https://elixir-v4.vercel.app",
     "https://dev.elixircommunity.in",
+    "https://elixircommunity.in",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
   ];
 
   // Allow additional origins from environment variable (comma-separated)
-  const envOrigins = process.env.ALLOWED_ORIGINS?.split(",").map(origin => origin.trim()).filter(Boolean) || [];
-  
+  const envOrigins =
+    process.env.ALLOWED_ORIGINS?.split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean) || [];
+
   const allowedOrigins = [...defaultOrigins, ...envOrigins];
 
   const origin = req.headers.origin;
