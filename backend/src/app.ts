@@ -16,13 +16,20 @@ const app = express();
 app.set("trust proxy", 1);
 
 app.use(helmet());
-// CORS middleware
+// CORS middleware - supports dynamic origins via env var
 app.use((req, res, next) => {
-  const allowedOrigins = [
+  // Default allowed origins
+  const defaultOrigins = [
     "https://elixir-v4.vercel.app",
+    "https://dev.elixircommunity.in",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
   ];
+
+  // Allow additional origins from environment variable (comma-separated)
+  const envOrigins = process.env.ALLOWED_ORIGINS?.split(",").map(origin => origin.trim()).filter(Boolean) || [];
+  
+  const allowedOrigins = [...defaultOrigins, ...envOrigins];
 
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {
