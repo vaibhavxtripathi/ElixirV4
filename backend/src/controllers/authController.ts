@@ -11,6 +11,7 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 const googleRedirectUri =
   process.env.GOOGLE_REDIRECT_URI || process.env.GOOGLE_REDIRECT_URL || "";
 const frontendBaseUrl =
+  process.env.NEXT_PUBLIC_FRONTEND_BASE_URL ||
   process.env.FRONTEND_BASE_URL ||
   process.env.FRONTEND_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000");
