@@ -51,11 +51,11 @@ export default async function BlogDetail({
       )}
       <h1 className="text-3xl font-bold mb-3">{blog.title}</h1>
       <div className="flex items-center gap-3 text-sm text-white/60 mb-8 pb-8 border-b border-white/10">
-        <Avatar className="h-10 w-10">
+        <Avatar className="h-10 w-10 rounded-md">
           {blog.author?.avatar && (
             <AvatarImage src={blog.author.avatar} alt={authorName} />
           )}
-          <AvatarFallback className="bg-white/10 text-white/80 text-sm">
+          <AvatarFallback className="bg-white/10 text-white/80 text-sm rounded-md">
             {authorInitials || "?"}
           </AvatarFallback>
         </Avatar>
