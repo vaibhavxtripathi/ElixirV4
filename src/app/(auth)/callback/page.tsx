@@ -15,10 +15,14 @@ function OAuthCallbackContent() {
     (async () => {
       if (token) {
         setToken(token);
+        // Small delay to ensure token is stored before making request
+        await new Promise((resolve) => setTimeout(resolve, 100));
         try {
           const me = await api.get("/auth/me");
           router.replace(roleToDashboard(me.data.user?.role) || to);
-        } catch {
+        } catch (error) {
+          console.error("Failed to fetch user after login:", error);
+          // Still redirect even if /auth/me fails - token is set
           router.replace(to);
         }
       } else {

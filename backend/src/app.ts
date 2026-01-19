@@ -37,17 +37,29 @@ app.use((req, res, next) => {
   const allowedOrigins = [...defaultOrigins, ...envOrigins];
 
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-
+  
+  // Handle preflight OPTIONS requests first
   if (req.method === "OPTIONS") {
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
+      res.header("Access-Control-Allow-Credentials", "true");
+      res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+      res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+      res.header("Vary", "Origin"); // Important: prevents caching issues
+      res.header("Cache-Control", "no-store, no-cache, must-revalidate"); // Prevent caching of CORS responses
+    }
     res.status(200).end();
     return;
+  }
+
+  // For actual requests, set CORS headers if origin matches
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.header("Vary", "Origin"); // Important: prevents caching issues
+    res.header("Cache-Control", "no-store, no-cache, must-revalidate"); // Prevent caching of CORS responses
   }
 
   next();
