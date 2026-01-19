@@ -28,8 +28,8 @@ export function TestimonialCard({
   const [imageError, setImageError] = useState(false);
   
   // Determine if we should use fixed width (for marquee) or full width (for grid)
-  const useFixedWidth = truncate && className && !className.includes("w-full");
-  const useFullWidth = !truncate || (className && className.includes("w-full"));
+  // Marquee uses truncate=true without w-full class, testimonials page uses w-full class
+  const useFixedWidth = truncate && (!className || !className.includes("w-full"));
 
   return (
     <Card
@@ -67,17 +67,30 @@ export function TestimonialCard({
           )}
         </div>
         <div className="flex flex-col items-start min-w-0 flex-1">
-          <h3 className="text-sm sm:text-base lg:text-lg font-semibold leading-tight">
+          <h3 className={cn(
+            "font-semibold leading-tight",
+            useFixedWidth 
+              ? "text-sm sm:text-base" 
+              : "text-sm sm:text-base lg:text-lg"
+          )}>
             {author.name}
           </h3>
-          <p className="text-xs sm:text-sm lg:text-base text-white/60 mt-1">
+          <p className={cn(
+            "text-white/60 mt-1",
+            useFixedWidth
+              ? "text-xs sm:text-sm"
+              : "text-xs sm:text-sm lg:text-base"
+          )}>
             {author.handle}
           </p>
         </div>
       </div>
       <p
         className={cn(
-          "text-xs sm:text-sm lg:text-base text-white/70 mt-3 sm:mt-4 lg:mt-5 leading-relaxed",
+          "text-white/70 leading-relaxed",
+          useFixedWidth
+            ? "text-xs sm:text-sm mt-3 sm:mt-4"
+            : "text-xs sm:text-sm lg:text-base mt-3 sm:mt-4 lg:mt-5",
           truncate ? "line-clamp-3 overflow-hidden" : ""
         )}
       >
