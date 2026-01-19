@@ -21,10 +21,7 @@ async function getBlog(id: string) {
   }
 }
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import DOMPurify from "isomorphic-dompurify";
 import BlogContentRenderer from "./BlogContentRenderer";
 
 export default async function BlogDetail({
@@ -53,20 +50,21 @@ export default async function BlogDetail({
         </div>
       )}
       <h1 className="text-3xl font-bold mb-3">{blog.title}</h1>
-      <div className="flex items-center gap-2 text-sm text-white/60 mb-6">
-        <Avatar className="h-8 w-8">
+      <div className="flex items-center gap-3 text-sm text-white/60 mb-8 pb-8 border-b border-white/10">
+        <Avatar className="h-10 w-10">
           {blog.author?.avatar && (
             <AvatarImage src={blog.author.avatar} alt={authorName} />
           )}
-          <AvatarFallback className="bg-white/10 text-white/80 text-xs">
+          <AvatarFallback className="bg-white/10 text-white/80 text-sm">
             {authorInitials || "?"}
           </AvatarFallback>
         </Avatar>
-        <span>
-          By {authorName || "Unknown"} • {new Date(blog.createdAt).toDateString()}
-        </span>
+        <div>
+          <p className="text-white/90 font-medium">{authorName || "Unknown"}</p>
+          <p className="text-white/50 text-xs">{new Date(blog.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
       </div>
-      <article className="prose prose-invert prose-lg max-w-none">
+      <article className="blog-article">
         <BlogContentRenderer content={content} />
       </article>
     </main>

@@ -6,16 +6,48 @@ import { BlogSkeletonGrid } from "@/components/CustomSkeletons";
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-// Utility function to strip HTML tags for preview
-function stripHtmlTags(html: string): string {
-  if (typeof window === "undefined") {
-    // Server-side: use regex to strip tags
-    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
-  }
-  // Client-side: use DOM API
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = html;
-  return tempDiv.textContent || tempDiv.innerText || "";
+// Utility function to strip HTML tags and markdown syntax for preview
+function getPlainTextPreview(content: string): string {
+  let text = content;
+  
+  // Strip HTML tags
+  text = text.replace(/<[^>]*>/g, "");
+  
+  // Strip markdown syntax
+  // Headers
+  text = text.replace(/^#{1,6}\s+/gm, "");
+  // Bold/italic
+  text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+  text = text.replace(/\*([^*]+)\*/g, "$1");
+  text = text.replace(/__([^_]+)__/g, "$1");
+  text = text.replace(/_([^_]+)_/g, "$1");
+  // Strikethrough
+  text = text.replace(/~~([^~]+)~~/g, "$1");
+  // Code blocks
+  text = text.replace(/```[\s\S]*?```/g, "");
+  text = text.replace(/`([^`]+)`/g, "$1");
+  // Links
+  text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  // Images
+  text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, "");
+  // Blockquotes
+  text = text.replace(/^>\s+/gm, "");
+  // Lists
+  text = text.replace(/^[-*+]\s+/gm, "");
+  text = text.replace(/^\d+\.\s+/gm, "");
+  // Horizontal rules
+  text = text.replace(/^[-*_]{3,}\s*$/gm, "");
+  // HTML entities
+  text = text.replace(/&nbsp;/g, " ");
+  text = text.replace(/&amp;/g, "&");
+  text = text.replace(/&lt;/g, "<");
+  text = text.replace(/&gt;/g, ">");
+  
+  // Clean up whitespace
+  text = text.replace(/\n{3,}/g, "\n\n");
+  text = text.trim();
+  
+  return text;
 }
 
 type Blog = {
@@ -91,7 +123,7 @@ export default function BlogsGrid() {
               {blog.title}
             </h2>
             <p className="mt-2 text-sm text-white/70 line-clamp-3">
-              {stripHtmlTags(blog.content || "")}
+              {getPlainTextPreview(blog.content || "")}
             </p>
           </div>
         </a>
