@@ -222,7 +222,24 @@ export const googleOAuthStart = async (req: Request, res: Response) => {
     const nonce = crypto.randomBytes(16).toString("hex");
     const redirect =
       typeof req.query.redirect === "string" ? req.query.redirect : "/";
-    const stateObj = { n: nonce, r: redirect };
+    
+    // Get frontend origin from request or use default
+    const requestOrigin = req.headers.origin || req.headers.referer;
+    let frontendOrigin = frontendBaseUrl;
+    if (requestOrigin) {
+      try {
+        const originUrl = new URL(requestOrigin);
+        if (originUrl.hostname === "www.elixircommunity.in") {
+          frontendOrigin = "https://www.elixircommunity.in";
+        } else if (originUrl.hostname === "dev.elixircommunity.in") {
+          frontendOrigin = "https://dev.elixircommunity.in";
+        } else if (originUrl.hostname === "elixircommunity.in") {
+          frontendOrigin = "https://www.elixircommunity.in";
+        }
+      } catch {}
+    }
+    
+    const stateObj = { n: nonce, r: redirect, o: frontendOrigin };
     const state = Buffer.from(JSON.stringify(stateObj)).toString("base64url");
     setCookie(res, "oauth_state_nonce", nonce, 600);
 
@@ -247,7 +264,7 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       typeof req.query.state === "string" ? req.query.state : undefined;
     if (!code || !stateB64) return res.status(400).send("Missing code/state");
 
-    const { n: nonce, r: redirect } = JSON.parse(
+    const { n: nonce, r: redirect, o: storedFrontendOrigin } = JSON.parse(
       Buffer.from(stateB64, "base64url").toString("utf8")
     );
     const cookieNonce = getCookie(req, "oauth_state_nonce");
@@ -305,13 +322,16 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       role: user.role,
     });
 
-    // Validate frontend URL in production
-    if (!frontendBaseUrl) {
-      console.error("[OAuth] FRONTEND_BASE_URL is not set in production");
+    // Use stored frontend origin from OAuth start, fallback to env var
+    const finalFrontendUrl = storedFrontendOrigin || frontendBaseUrl;
+
+    // Validate frontend URL
+    if (!finalFrontendUrl) {
+      console.error("[OAuth] FRONTEND_BASE_URL is not set and could not be determined");
       return res.status(500).send("Frontend URL not configured");
     }
 
-    const dest = `${frontendBaseUrl}/auth/callback?token=${encodeURIComponent(
+    const dest = `${finalFrontendUrl}/auth/callback?token=${encodeURIComponent(
       token
     )}&to=${encodeURIComponent(redirect || "/")}`;
     return res.redirect(dest);

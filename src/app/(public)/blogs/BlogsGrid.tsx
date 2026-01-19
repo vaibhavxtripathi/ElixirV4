@@ -4,13 +4,26 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { BlogSkeletonGrid } from "@/components/CustomSkeletons";
 import Image from "next/image";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+// Utility function to strip HTML tags for preview
+function stripHtmlTags(html: string): string {
+  if (typeof window === "undefined") {
+    // Server-side: use regex to strip tags
+    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+  }
+  // Client-side: use DOM API
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+  return tempDiv.textContent || tempDiv.innerText || "";
+}
 
 type Blog = {
   id: string;
   title: string;
   content: string;
   createdAt: string;
-  author?: { firstName?: string; lastName?: string };
+  author?: { firstName?: string; lastName?: string; avatar?: string | null };
   imageUrl?: string;
 };
 
@@ -60,7 +73,15 @@ export default function BlogsGrid() {
           </div>
           <div className="p-5">
             <div className="flex items-center gap-2 text-xs text-white/60 mb-2">
-              <div className="h-6 w-6 rounded-full bg-white/10" />
+              <Avatar className="h-6 w-6 shrink-0">
+                {blog.author?.avatar && (
+                  <AvatarImage src={blog.author.avatar} alt={`${blog.author.firstName} ${blog.author.lastName}`} />
+                )}
+                <AvatarFallback className="bg-white/10 text-white/80 text-[10px] font-medium">
+                  {blog.author?.firstName?.[0] || ""}
+                  {blog.author?.lastName?.[0] || ""}
+                </AvatarFallback>
+              </Avatar>
               <span>
                 {blog.author?.firstName} {blog.author?.lastName}
               </span>
@@ -70,7 +91,7 @@ export default function BlogsGrid() {
               {blog.title}
             </h2>
             <p className="mt-2 text-sm text-white/70 line-clamp-3">
-              {blog.content}
+              {stripHtmlTags(blog.content || "")}
             </p>
           </div>
         </a>

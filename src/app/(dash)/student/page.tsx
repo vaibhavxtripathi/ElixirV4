@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import RichTextEditor from "@/components/RichTextEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { Calendar, Users, Clock, ExternalLink, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -250,12 +250,12 @@ function StudentDashboardContent() {
                     >
                       Content
                     </Label>
-                    <RichTextEditor
+                    <MarkdownEditor
                       value={blogForm.content}
-                      onChange={(html) =>
-                        setBlogForm({ ...blogForm, content: html })
+                      onChange={(markdown) =>
+                        setBlogForm({ ...blogForm, content: markdown })
                       }
-                      placeholder="Write your blog content here..."
+                      placeholder="Write your blog content in Markdown..."
                     />
                   </div>
                   <div>

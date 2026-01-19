@@ -10,7 +10,7 @@ export const getAllBlogs = async (req: Request, res: Response) => {
       where: { status: "PUBLISHED" },
       include: {
         author: {
-          select: { firstName: true, lastName: true },
+          select: { firstName: true, lastName: true, avatar: true },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -48,7 +48,7 @@ export const createBlog = async (req: any, res: Response) => {
       },
       include: {
         author: {
-          select: { firstName: true, lastName: true },
+          select: { firstName: true, lastName: true, avatar: true },
         },
       },
     });
@@ -71,7 +71,7 @@ export const updateBlog = async (req: any, res: Response) => {
       data: { title, content, imageUrl, status },
       include: {
         author: {
-          select: { firstName: true, lastName: true },
+          select: { firstName: true, lastName: true, avatar: true },
         },
       },
     });
@@ -106,7 +106,7 @@ export const getBlogById = async (req: Request, res: Response) => {
     const blog = await prisma.blog.findUnique({
       where: { id },
       include: {
-        author: { select: { firstName: true, lastName: true } },
+        author: { select: { firstName: true, lastName: true, avatar: true } },
       },
     });
     if (!blog) return res.status(404).json({ message: "Blog not found" });

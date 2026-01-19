@@ -21,7 +21,11 @@ async function getBlog(id: string) {
   }
 }
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import DOMPurify from "isomorphic-dompurify";
+import BlogContentRenderer from "./BlogContentRenderer";
 
 export default async function BlogDetail({
   params,
@@ -32,34 +36,9 @@ export default async function BlogDetail({
   const blog = data?.blog;
   if (!blog) return <div className="pt-36 text-center">Blog not found.</div>;
 
-  const renderContent = (content: string) => {
-    // Content is already HTML from editor; sanitize strictly.
-    return DOMPurify.sanitize(String(content || ""), {
-      USE_PROFILES: { html: true },
-      ALLOWED_TAGS: [
-        "a",
-        "b",
-        "strong",
-        "i",
-        "em",
-        "u",
-        "p",
-        "br",
-        "ul",
-        "ol",
-        "li",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "blockquote",
-        "span",
-        "div",
-      ],
-      ALLOWED_ATTR: ["href", "target", "rel", "class"],
-      ADD_ATTR: ["target", "rel"],
-    });
-  };
+  const authorName = `${blog.author?.firstName || ""} ${blog.author?.lastName || ""}`.trim();
+  const authorInitials = `${blog.author?.firstName?.[0] || ""}${blog.author?.lastName?.[0] || ""}`;
+  const content = String(blog.content || "");
 
   return (
     <main className="mx-auto max-w-3xl px-4 pt-36 pb-18">
@@ -74,16 +53,22 @@ export default async function BlogDetail({
         </div>
       )}
       <h1 className="text-3xl font-bold mb-3">{blog.title}</h1>
-      <div className="text-sm text-white/60 mb-6">
-        By {blog.author?.firstName} {blog.author?.lastName} •{" "}
-        {new Date(blog.createdAt).toDateString()}
+      <div className="flex items-center gap-2 text-sm text-white/60 mb-6">
+        <Avatar className="h-8 w-8">
+          {blog.author?.avatar && (
+            <AvatarImage src={blog.author.avatar} alt={authorName} />
+          )}
+          <AvatarFallback className="bg-white/10 text-white/80 text-xs">
+            {authorInitials || "?"}
+          </AvatarFallback>
+        </Avatar>
+        <span>
+          By {authorName || "Unknown"} • {new Date(blog.createdAt).toDateString()}
+        </span>
       </div>
-      <article
-        className="prose prose-invert max-w-none"
-        dangerouslySetInnerHTML={{
-          __html: renderContent(String(blog.content || "")),
-        }}
-      />
+      <article className="prose prose-invert prose-lg max-w-none">
+        <BlogContentRenderer content={content} />
+      </article>
     </main>
   );
 }

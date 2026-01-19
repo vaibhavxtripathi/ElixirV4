@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import RichTextEditor from "@/components/RichTextEditor";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import {
   Select,
   SelectContent,
@@ -1232,12 +1232,12 @@ function AdminDashboardContent() {
                         >
                           Content
                         </Label>
-                        <RichTextEditor
+                        <MarkdownEditor
                           value={blogForm.content}
-                          onChange={(html) =>
-                            setBlogForm({ ...blogForm, content: html })
+                          onChange={(markdown) =>
+                            setBlogForm({ ...blogForm, content: markdown })
                           }
-                          placeholder="Write your blog..."
+                          placeholder="Write your blog in Markdown..."
                         />
                       </div>
                       <div className="space-y-3">
