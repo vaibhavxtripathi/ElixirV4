@@ -16,24 +16,6 @@ const frontendBaseUrl =
   process.env.FRONTEND_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000");
 
-// Log OAuth configuration status on startup
-console.log("[OAuth] Configuration status:");
-console.log(
-  "[OAuth] GOOGLE_CLIENT_ID:",
-  googleClientId ? "✓ Set" : "✗ Missing"
-);
-console.log(
-  "[OAuth] GOOGLE_CLIENT_SECRET:",
-  googleClientSecret ? "✓ Set" : "✗ Missing"
-);
-console.log(
-  "[OAuth] GOOGLE_REDIRECT_URI:",
-  googleRedirectUri ? `✓ Set (${googleRedirectUri})` : "✗ Missing"
-);
-console.log(
-  "[OAuth] FRONTEND_BASE_URL:",
-  frontendBaseUrl ? `✓ Set (${frontendBaseUrl})` : "✗ Missing"
-);
 
 const googleClient = new OAuth2Client({
   clientId: googleClientId,
@@ -109,7 +91,6 @@ export const register = async (req: Request, res: Response) => {
 
     return res.status(201).json({ user, token });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Registration failed" });
   }
 };
@@ -252,11 +233,6 @@ export const googleOAuthStart = async (req: Request, res: Response) => {
       prompt: "consent",
       state,
     });
-    console.log("[OAuth] Using redirect URI:", googleRedirectUri);
-    console.log("[OAuth] Generated Google auth URL:", url);
-    console.log(
-      "[OAuth] WARNING: If you see localhost in the redirect, check your Google Cloud Console OAuth configuration!"
-    );
     return res.redirect(url);
   } catch (e) {
     return res.status(500).json({ message: "Failed to start Google OAuth" });
@@ -293,11 +269,6 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
     if (!ures.ok) return res.status(401).send("Failed to fetch userinfo");
     const profile: any = await ures.json();
 
-    console.log("[OAuth] Google profile:", {
-      email: profile.email,
-      picture: profile.picture,
-    });
-
     const email: string | undefined = profile.email;
     if (!email) return res.status(401).send("No email in profile");
     const firstName: string = profile.given_name || "";
@@ -305,17 +276,8 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
     const avatar: string | null = profile.picture || null;
     const sub: string = profile.sub;
 
-    console.log("[OAuth] Extracted data:", {
-      email,
-      firstName,
-      lastName,
-      avatar,
-      sub,
-    });
-
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      console.log("[OAuth] Creating new user with avatar:", avatar);
       user = await prisma.user.create({
         data: {
           email,
@@ -328,7 +290,6 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
         },
       });
     } else if (!user.googleId) {
-      console.log("[OAuth] Updating existing user with avatar:", avatar);
       user = await prisma.user.update({
         where: { id: user.id },
         data: {
@@ -337,12 +298,6 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
         },
       });
     }
-
-    console.log("[OAuth] Final user object:", {
-      id: user.id,
-      email: user.email,
-      avatar: user.avatar,
-    });
 
     const token = generateToken({
       userId: user.id,
@@ -359,7 +314,6 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
     const dest = `${frontendBaseUrl}/auth/callback?token=${encodeURIComponent(
       token
     )}&to=${encodeURIComponent(redirect || "/")}`;
-    console.log("[OAuth] Redirecting to:", dest);
     return res.redirect(dest);
   } catch (e) {
     console.error(e);
@@ -398,12 +352,6 @@ export const getMe = async (req: any, res: Response) => {
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
     res.setHeader("Vary", "Authorization, Cookie");
-
-    console.log("[Auth/Me] Returning user:", {
-      id: user.id,
-      email: user.email,
-      avatar: user.avatar,
-    });
 
     return res.json({ user });
   } catch (error) {

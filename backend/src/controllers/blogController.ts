@@ -16,6 +16,9 @@ export const getAllBlogs = async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
+    // Set caching headers
+    res.setHeader("Cache-Control", "public, s-maxage=120, stale-while-revalidate=300");
+
     return res.json({ blogs });
   } catch (error) {
     console.error("Get blogs error:", error);

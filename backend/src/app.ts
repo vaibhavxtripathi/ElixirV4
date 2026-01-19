@@ -23,6 +23,7 @@ app.use((req, res, next) => {
     "https://elixir-v4.vercel.app",
     "https://dev.elixircommunity.in",
     "https://elixircommunity.in",
+    "https://www.elixircommunity.in",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
   ];

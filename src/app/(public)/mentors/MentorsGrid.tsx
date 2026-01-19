@@ -49,11 +49,13 @@ const MentorCard = memo(
     isLiked,
     isLiking,
     onLikeClick,
+    priority = false,
   }: {
     mentor: Mentor;
     isLiked: boolean;
     isLiking: boolean;
     onLikeClick: (mentorId: string) => void;
+    priority?: boolean;
   }) => {
     const handleLikeClick = useCallback(() => {
       onLikeClick(String(mentor.id));
@@ -75,7 +77,8 @@ const MentorCard = memo(
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority
+            priority={priority}
+            loading={priority ? undefined : "lazy"}
           />
           {/* Curved corners effect */}
           <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-white/10" />
@@ -158,10 +161,20 @@ export default function MentorsGrid() {
     }
   }, [showAuthDialog]);
 
-  const { data, isLoading } = useQuery<MentorsResponse>({
+  const { data, isLoading, error } = useQuery<MentorsResponse>({
     queryKey: ["mentors"],
-    queryFn: async () => (await api.get("/mentors")).data,
+    queryFn: async () => {
+      try {
+        const response = await api.get("/mentors");
+        return response.data;
+      } catch (err) {
+        // Return empty array on error to prevent UI crashes
+        return { mentors: [] };
+      }
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3, // Retry 3 times on failure
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 
   // Get user's liked mentors to show which ones are liked
@@ -190,7 +203,10 @@ export default function MentorsGrid() {
     [likedMentorsData?.likedMentors]
   );
 
-  const mentors = data?.mentors || [];
+  // Filter out any invalid mentors and ensure we have valid data
+  const mentors = (data?.mentors || []).filter(
+    (mentor: Mentor) => mentor && mentor.id && mentor.name
+  );
 
   // Mutation for liking/unliking mentors
   const likeMutation = useMutation<LikeResponse, Error, string>({
@@ -384,9 +400,11 @@ export default function MentorsGrid() {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {mentors.map((mentor: Mentor) => {
+        {mentors.map((mentor: Mentor, index: number) => {
           const isLiked = likedMentorIds.has(String(mentor.id));
           const isLiking = pendingMentorIds.has(String(mentor.id));
+          // Only prioritize first 6 images (above the fold)
+          const shouldPriority = index < 6;
 
           return (
             <MentorCard
@@ -395,6 +413,7 @@ export default function MentorsGrid() {
               isLiked={isLiked}
               isLiking={isLiking}
               onLikeClick={handleLikeClick}
+              priority={shouldPriority}
             />
           );
         })}

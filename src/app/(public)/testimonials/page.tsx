@@ -28,7 +28,7 @@ export default async function TestimonialsPage() {
     <main className="pt-32 sm:pt-36 pb-12 sm:pb-18">
       <Container>
         <PageHeader title="Testimonials" className="mb-6 sm:mb-8 md:mb-10" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-7xl mx-auto">
           {testimonials.map(
             (testimonial: {
               id: string | number;

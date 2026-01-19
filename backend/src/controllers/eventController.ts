@@ -4,19 +4,52 @@ import { prisma } from "../lib/prisma";
 // get all events (publically on landing page)
 export const getAllEvents = async (req: Request, res: Response) => {
   try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 12;
+    const sort = (req.query.sort as string) || "desc";
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const total = await prisma.event.count();
+
+    // Optimize query: use _count instead of loading all registrations
     const events = await prisma.event.findMany({
+      take: limit,
+      skip: skip,
       include: {
         club: {
           select: { name: true, imageUrl: true },
         },
-        registrations: {
-          select: { id: true },
+        _count: {
+          select: { registrations: true },
         },
       },
-      orderBy: { date: "desc" },
+      orderBy: { date: sort === "asc" ? "asc" : "desc" },
     });
-    return res.json({ events });
+
+    // Transform to include registration count
+    const eventsWithCounts = events.map((event) => {
+      const { _count, ...eventData } = event;
+      return {
+        ...eventData,
+        registrationCount: _count.registrations,
+      };
+    });
+
+    // Set caching headers
+    res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=120");
+
+    return res.json({
+      events: eventsWithCounts,
+      pagination: {
+        page,
+        pages: Math.ceil(total / limit),
+        total,
+        limit,
+      },
+    });
   } catch (error) {
+    console.error("Error fetching events:", error);
     res.status(500).json({ message: "Error fetching events" });
   }
 };

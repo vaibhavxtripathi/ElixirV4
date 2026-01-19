@@ -17,15 +17,22 @@ export const getAllMentors = async (req: Request, res: Response) => {
     });
 
     // Transform the data to include like count
-    const mentorsWithLikes = mentors.map((mentor) => ({
-      ...mentor,
-      likeCount: mentor._count.likes,
-      _count: undefined, // Remove the _count field
-    }));
+    const mentorsWithLikes = mentors.map((mentor) => {
+      const { _count, ...mentorData } = mentor;
+      return {
+        ...mentorData,
+        likeCount: _count?.likes || 0,
+      };
+    });
+
+    // Set caching headers for better performance
+    res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
 
     return res.json({ mentors: mentorsWithLikes });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching mentors" });
+    console.error("Error fetching mentors:", error);
+    // Return empty array instead of error to prevent frontend crashes
+    return res.json({ mentors: [] });
   }
 };
 

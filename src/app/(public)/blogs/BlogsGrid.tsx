@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { BlogSkeletonGrid } from "@/components/CustomSkeletons";
+import Image from "next/image";
 
 type Blog = {
   id: string;
@@ -45,11 +46,13 @@ export default function BlogsGrid() {
           {/* Card image */}
           <div className="relative h-64 sm:h-72 w-full overflow-hidden">
             {blog.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={blog.imageUrl}
                 alt={blog.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                loading="lazy"
               />
             ) : (
               <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900" />
