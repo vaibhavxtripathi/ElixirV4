@@ -8,12 +8,13 @@ import EventsGrid from "./EventsGrid";
 import Container from "@/components/container";
 import PageHeader from "@/components/PageHeader";
 
-export default function EventsPage({
+export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }> | { page?: string };
 }) {
-  const page = Number(searchParams?.page ?? 1);
+  const resolvedParams = await Promise.resolve(searchParams);
+  const page = Number(resolvedParams?.page ?? 1);
 
   return (
     <main className="pt-32 sm:pt-36 pb-12 sm:pb-18">

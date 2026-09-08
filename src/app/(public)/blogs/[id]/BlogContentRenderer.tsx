@@ -6,9 +6,67 @@ import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import DOMPurify from "isomorphic-dompurify";
+import { useState } from "react";
+import { Check, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 interface BlogContentRendererProps {
   content: string;
+}
+
+function CodeBlock({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [copied, setCopied] = useState(false);
+  const match = /language-(\w+)/.exec(className || "");
+  const language = match ? match[1] : "";
+  const codeString = String(children).replace(/\n$/, "");
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeString);
+      setCopied(true);
+      toast.success("Code copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy code");
+    }
+  };
+
+  return (
+    <div className="relative group my-5 overflow-hidden rounded-xl border border-white/10 bg-[#06070d]">
+      <div className="flex items-center justify-between px-4 py-2 bg-white/[0.04] border-b border-white/10 text-xs text-white/60">
+        <span className="font-mono uppercase tracking-wider text-[11px] text-blue-400">
+          {language || "code"}
+        </span>
+        <button
+          type="button"
+          onClick={onCopy}
+          aria-label="Copy code"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors text-xs focus:outline-none focus:ring-1 focus:ring-blue-400/50"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-emerald-400 text-[11px]">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              <span className="text-[11px]">Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="p-4 overflow-x-auto text-sm font-mono leading-relaxed text-zinc-100">
+        <code>{children}</code>
+      </pre>
+    </div>
+  );
 }
 
 export default function BlogContentRenderer({ content }: BlogContentRendererProps) {
@@ -82,16 +140,12 @@ export default function BlogContentRenderer({ content }: BlogContentRendererProp
             );
           }
           return (
-            <code className={`${className} block`} {...props}>
+            <CodeBlock className={className} {...props}>
               {children}
-            </code>
+            </CodeBlock>
           );
         },
-        pre: ({ children }) => (
-          <pre className="bg-black/40 border border-white/10 rounded-lg p-4 overflow-x-auto my-4 text-sm">
-            {children}
-          </pre>
-        ),
+        pre: ({ children }) => <>{children}</>,
         a: ({ href, children }) => (
           <a 
             href={href} 

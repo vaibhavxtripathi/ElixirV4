@@ -11,13 +11,14 @@
  */
 
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar, CalendarPlus, Download } from "lucide-react";
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { GDGLogo, GFGLogo, CCLogo } from "@/icons/general";
+import { createGoogleCalendarUrl, downloadIcsFile } from "@/lib/calendar";
 
 export interface CardFlipProps {
   title: string;
@@ -29,6 +30,26 @@ export interface CardFlipProps {
   eventDate?: string | Date;
   isRegistered?: boolean;
   club?: string;
+}
+
+function getEventCountdown(dateInput?: string | Date): string | null {
+  if (!dateInput) return null;
+  const target = new Date(dateInput).getTime();
+  if (Number.isNaN(target)) return null;
+  const now = Date.now();
+  const diffMs = target - now;
+  if (diffMs <= 0) return null;
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 0) {
+    if (diffHours === 0) {
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      return `In ${diffMins}m`;
+    }
+    return `In ${diffHours}h`;
+  }
+  if (diffDays === 1) return "Tomorrow";
+  return `In ${diffDays}d`;
 }
 
 export default function CardFlip({
@@ -45,7 +66,10 @@ export default function CardFlip({
   const [isFlipped, setIsFlipped] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(Boolean(isRegistered));
+  const [showCalendarMenu, setShowCalendarMenu] = useState(false);
   const router = useRouter();
+
+  const countdown = getEventCountdown(eventDate);
 
   const computeStatus = (): "Registered" | "Live" | "Past" => {
     if (hasRegistered) return "Registered";
@@ -62,6 +86,31 @@ export default function CardFlip({
   const status = computeStatus();
   const isPast = status === "Past";
   const isAlreadyRegistered = status === "Registered";
+
+  const handleGoogleCalendar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!eventDate) return;
+    const url = createGoogleCalendarUrl({
+      title,
+      description,
+      location: subtitle,
+      startDate: eventDate,
+    });
+    window.open(url, "_blank", "noopener,noreferrer");
+    toast.success("Opening Google Calendar...");
+  };
+
+  const handleDownloadIcs = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!eventDate) return;
+    downloadIcsFile({
+      title,
+      description,
+      location: subtitle,
+      startDate: eventDate,
+    });
+    toast.success("Calendar invite (.ics) downloaded!");
+  };
 
   const renderClubLogo = () => {
     switch (club?.toUpperCase()) {
@@ -162,21 +211,28 @@ export default function CardFlip({
                   {renderClubLogo()}
                 </p>
               </div>
-              <div className="relative group/icon">
-                <span
-                  className={cn(
-                    "relative z-10 px-2 py-0.5 rounded-md text-[10px] font-medium",
-                    "transition-transform duration-300 group-hover/icon:scale-105",
-                    status === "Live" &&
-                      "bg-red-500/15 text-red-400 border border-red-500/30",
-                    status === "Registered" &&
-                      "bg-blue-500/15 text-blue-400 border border-blue-500/30",
-                    status === "Past" &&
-                      "bg-zinc-500/10 text-zinc-300 border border-zinc-500/20"
-                  )}
-                >
-                  {status}
-                </span>
+              <div className="flex items-center gap-1.5">
+                {countdown && status === "Live" && (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    {countdown}
+                  </span>
+                )}
+                <div className="relative group/icon">
+                  <span
+                    className={cn(
+                      "relative z-10 px-2 py-0.5 rounded-md text-[10px] font-medium",
+                      "transition-transform duration-300 group-hover/icon:scale-105",
+                      status === "Live" &&
+                        "bg-red-500/15 text-red-400 border border-red-500/30",
+                      status === "Registered" &&
+                        "bg-blue-500/15 text-blue-400 border border-blue-500/30",
+                      status === "Past" &&
+                        "bg-zinc-500/10 text-zinc-300 border border-zinc-500/20"
+                    )}
+                  >
+                    {status}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -197,8 +253,8 @@ export default function CardFlip({
             !isFlipped ? "opacity-0" : "opacity-100"
           )}
         >
-          <div className="flex-1 space-y-6">
-            <div className="space-y-2">
+          <div className="flex-1 space-y-4">
+            <div className="space-y-1.5">
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-white leading-snug tracking-tight transition-all duration-500 ease-out-expo group-hover:translate-y-[-2px]">
                 {title}
               </h3>
@@ -207,11 +263,11 @@ export default function CardFlip({
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {features.map((feature, index) => (
                 <div
                   key={feature}
-                  className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 transition-all duration-500"
+                  className="flex items-center gap-2 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 transition-all duration-500"
                   style={{
                     transform: isFlipped
                       ? "translateX(0)"
@@ -220,14 +276,40 @@ export default function CardFlip({
                     transitionDelay: `${index * 100 + 200}ms`,
                   }}
                 >
-                  <ArrowRight className="w-3 h-3 text-blue-500" />
-                  <span>{feature}</span>
+                  <ArrowRight className="w-3 h-3 text-blue-500 shrink-0" />
+                  <span className="truncate">{feature}</span>
                 </div>
               ))}
             </div>
+
+            {/* Calendar Quick Sync Options */}
+            {eventDate && (
+              <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                <button
+                  type="button"
+                  data-cta
+                  onClick={handleGoogleCalendar}
+                  title="Add to Google Calendar"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-blue-500/15 hover:border-blue-500/30 text-white/80 hover:text-blue-300 text-xs transition-colors"
+                >
+                  <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Google Cal</span>
+                </button>
+                <button
+                  type="button"
+                  data-cta
+                  onClick={handleDownloadIcs}
+                  title="Download .ics calendar invite"
+                  className="flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>.ics</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className="pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="pt-3 mt-auto border-t border-zinc-200 dark:border-zinc-800">
             <button
               type="button"
               // Named group to let the flipper opt-out of rotating while CTA hovered

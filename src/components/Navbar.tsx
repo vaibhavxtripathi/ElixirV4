@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { clearToken, roleToDashboard } from "@/lib/auth";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import AuthDialog from "@/components/auth-dialog";
 import { motion } from "framer-motion";
@@ -12,6 +13,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -32,6 +34,13 @@ export default function Navbar() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Events", href: "/events" },
+    { name: "Blogs", href: "/blogs" },
+    { name: "Mentors", href: "/mentors" },
+  ];
+
   return (
     <motion.nav
       className="fixed top-0 z-50 w-full mx-auto"
@@ -44,12 +53,6 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex justify-start">
             <Link href="/" className="flex items-center gap-2 sm:gap-3">
-              {/* <div className="flex flex-col gap-1">
-                <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm" />
-                <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-1" />
-                <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-2" />
-                <div className="w-4 h-1 sm:w-6 sm:h-1 bg-white rounded-sm ml-3" />
-              </div> */}
               <Image src="/elixir-white.png" alt="Elixir" width={30} height={30} />
               <span className="text-white font-semibold text-base sm:text-lg">
                 Elixir
@@ -58,31 +61,26 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav links */}
-          <div className="hidden xl:flex items-center justify-center gap-8 border bord3r-blue-300/50 rounded-full py-3 px-8 w-fit absolute left-1/2 -translate-x-1/2 text-sm">
-            <Link
-              href="/"
-              className="text-white/90 hover:text-white/80 transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              href="/events"
-              className="text-white/90 hover:text-white/80 transition-colors"
-            >
-              Events
-            </Link>
-            <Link
-              href="/blogs"
-              className="text-white/90 hover:text-white/80 transition-colors"
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/mentors"
-              className="text-white/90 hover:text-white/80 transition-colors"
-            >
-              Mentors
-            </Link>
+          <div className="hidden xl:flex items-center justify-center gap-6 border border-blue-300/30 rounded-full py-2 px-6 w-fit absolute left-1/2 -translate-x-1/2 text-sm bg-[#080914]/40 backdrop-blur-md">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`px-3 py-1 rounded-full text-sm transition-all duration-200 ${
+                    isActive
+                      ? "text-white font-medium bg-white/15 shadow-inner"
+                      : "text-white/70 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Desktop Auth actions */}

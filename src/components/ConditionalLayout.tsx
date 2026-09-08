@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 import { Particles } from "@/components/ui/particles";
 
 interface ConditionalLayoutProps {
@@ -30,7 +31,7 @@ export default function ConditionalLayout({
     return <>{children}</>;
   }
 
-  // For all other routes, render with navbar and footer
+  // For all other routes, render with navbar, footer, and back-to-top button
   return (
     <>
       <Particles
@@ -44,6 +45,7 @@ export default function ConditionalLayout({
       <Navbar />
       {children}
       <Footer />
+      <BackToTop />
     </>
   );
 }
