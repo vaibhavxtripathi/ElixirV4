@@ -249,6 +249,7 @@ http://localhost:3000
 | -------------------- | ------------------------------------------ |
 | `npm run dev`        | Start Next.js development server           |
 | `npm run dev:fast`   | Development server with experimental HTTPS |
+| `npm run dev:backend`| Run the backend                            |
 | `npm run build`      | Production build                           |
 | `npm run start`      | Start production build                     |
 | `npm run lint`       | Run ESLint                                 |
