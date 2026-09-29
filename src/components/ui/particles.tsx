@@ -68,6 +68,8 @@ export function Particles({
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
   const rafID = useRef<number | null>(null);
   const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const canvasRect = useRef<{ left: number; top: number }>({ left: 0, top: 0 });
+  const prevRefreshRef = useRef(refresh);
 
   const rgb = useMemo(() => hexToRgb(color), [color]);
 
@@ -99,6 +101,9 @@ export function Particles({
     canvasRef.current.style.width = `${canvasSize.current.w}px`;
     canvasRef.current.style.height = `${canvasSize.current.h}px`;
     context.current.scale(dpr, dpr);
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    canvasRect.current = { left: rect.left, top: rect.top };
 
     circles.current = Array.from({ length: quantity }, () => createCircle());
   }, [dpr, quantity, createCircle]);
@@ -163,11 +168,9 @@ export function Particles({
     rafID.current = window.requestAnimationFrame(animate);
 
     const handleMouseMove = (event: MouseEvent) => {
-      if (!canvasRef.current) return;
-      const rect = canvasRef.current.getBoundingClientRect();
       const { w, h } = canvasSize.current;
-      const x = event.clientX - rect.left - w / 2;
-      const y = event.clientY - rect.top - h / 2;
+      const x = event.clientX - canvasRect.current.left - w / 2;
+      const y = event.clientY - canvasRect.current.top - h / 2;
       if (x < w / 2 && x > -w / 2 && y < h / 2 && y > -h / 2) {
         mouse.current.x = x;
         mouse.current.y = y;
@@ -179,19 +182,36 @@ export function Particles({
       resizeTimeout.current = setTimeout(resizeCanvas, 200);
     };
 
+    const handleScroll = () => {
+      if (!canvasRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
+      canvasRect.current = { left: rect.left, top: rect.top };
+    };
+
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      if (rafID.current != null) window.cancelAnimationFrame(rafID.current);
-      if (resizeTimeout.current) clearTimeout(resizeTimeout.current);
+      if (rafID.current != null) {
+        window.cancelAnimationFrame(rafID.current);
+        rafID.current = null;
+      }
+      if (resizeTimeout.current) {
+        clearTimeout(resizeTimeout.current);
+        resizeTimeout.current = null;
+      }
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [resizeCanvas, animate]);
 
   useEffect(() => {
-    resizeCanvas();
+    if (prevRefreshRef.current !== refresh) {
+      prevRefreshRef.current = refresh;
+      resizeCanvas();
+    }
   }, [refresh, resizeCanvas]);
 
   return (
