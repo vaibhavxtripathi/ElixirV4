@@ -10,7 +10,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  { ignores: ["backend/**"] },
+  { ignores: ["backend/**", "tailwind.config.ts"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
