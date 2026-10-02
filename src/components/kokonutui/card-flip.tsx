@@ -12,12 +12,15 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { GDGLogo, GFGLogo, CCLogo } from "@/icons/general";
+import { useQueryClient } from "@tanstack/react-query";
+
+export type RegistrationStatus = "CONFIRMED" | "WAITLISTED" | null;
 
 export interface CardFlipProps {
   title: string;
@@ -28,6 +31,9 @@ export interface CardFlipProps {
   eventId?: string;
   eventDate?: string | Date;
   isRegistered?: boolean;
+  registrationStatus?: RegistrationStatus;
+  maxCapacity?: number | null;
+  confirmedCount?: number;
   club?: string;
 }
 
@@ -40,28 +46,66 @@ export default function CardFlip({
   eventId,
   eventDate,
   isRegistered,
+  registrationStatus = null,
+  maxCapacity = null,
+  confirmedCount = 0,
   club,
 }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [hasRegistered, setHasRegistered] = useState(Boolean(isRegistered));
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [myStatus, setMyStatus] = useState<RegistrationStatus>(
+    registrationStatus ?? (isRegistered ? "CONFIRMED" : null)
+  );
+  const [localConfirmedCount, setLocalConfirmedCount] =
+    useState(confirmedCount);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const computeStatus = (): "Registered" | "Live" | "Past" => {
-    if (hasRegistered) return "Registered";
-    if (eventDate) {
-      const eventTime = new Date(eventDate).getTime();
-      if (!Number.isNaN(eventTime)) {
-        const now = Date.now();
-        if (eventTime >= now) return "Live";
-        return "Past";
-      }
-    }
-    return "Past";
+  useEffect(() => {
+    setMyStatus(registrationStatus ?? (isRegistered ? "CONFIRMED" : null));
+  }, [registrationStatus, isRegistered]);
+
+  useEffect(() => {
+    setLocalConfirmedCount(confirmedCount);
+  }, [confirmedCount]);
+
+  const eventIsPast =
+    !!eventDate &&
+    !Number.isNaN(new Date(eventDate).getTime()) &&
+    new Date(eventDate).getTime() < Date.now();
+
+  const hasRegistration = myStatus === "CONFIRMED" || myStatus === "WAITLISTED";
+  const isFull =
+    maxCapacity != null && localConfirmedCount >= maxCapacity && !hasRegistration;
+  const spotsLeft =
+    maxCapacity != null ? Math.max(maxCapacity - localConfirmedCount, 0) : null;
+  const isBusy = isRegistering || isCancelling;
+
+  const badgeLabel = hasRegistration
+    ? myStatus === "WAITLISTED"
+      ? "Waitlisted"
+      : "Registered"
+    : eventIsPast
+      ? "Past"
+      : "Live";
+
+  const invalidateRegistrationQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["registered-events"] });
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+    queryClient.invalidateQueries({ queryKey: ["my-registrations"] });
   };
-  const status = computeStatus();
-  const isPast = status === "Past";
-  const isAlreadyRegistered = status === "Registered";
+
+  const capacityHint =
+    maxCapacity == null
+      ? null
+      : hasRegistration
+        ? myStatus === "WAITLISTED"
+          ? "You're on the waitlist"
+          : `${localConfirmedCount} / ${maxCapacity} confirmed`
+        : isFull
+          ? "Full — join waitlist"
+          : `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} left`;
 
   const renderClubLogo = () => {
     switch (club?.toUpperCase()) {
@@ -77,6 +121,19 @@ export default function CardFlip({
     }
   };
 
+  const buttonLabel = (() => {
+    if (isRegistering) return "Registering...";
+    if (isCancelling) return "Cancelling...";
+    if (eventIsPast && !hasRegistration) return "Event has ended";
+    if (hasRegistration && eventIsPast) {
+      return myStatus === "WAITLISTED" ? "Waitlisted" : "Registered";
+    }
+    if (myStatus === "WAITLISTED") return "Leave waitlist";
+    if (myStatus === "CONFIRMED") return "Cancel registration";
+    if (isFull) return "Join waitlist";
+    return "Register";
+  })();
+
   return (
     <div
       className="relative w-full h-96 mx-auto group [perspective:2000px]"
@@ -91,7 +148,6 @@ export default function CardFlip({
           isFlipped
             ? "[transform:rotateY(180deg)]"
             : "[transform:rotateY(0deg)]",
-          // Prevent flip while CTA is hovered to avoid hover enter/leave thrash
           "group-hover/cta:[transform:rotateY(0deg)]"
         )}
       >
@@ -148,7 +204,6 @@ export default function CardFlip({
             </div>
           )}
 
-          {/* Bottom shadow overlay for better text readability */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-32 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
 
           <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -161,28 +216,34 @@ export default function CardFlip({
                   {subtitle}
                   {renderClubLogo()}
                 </p>
+                {capacityHint && (
+                  <p className="text-xs text-zinc-500 dark:text-zinc-300 tracking-tight">
+                    {capacityHint}
+                  </p>
+                )}
               </div>
               <div className="relative group/icon">
                 <span
                   className={cn(
                     "relative z-10 px-2 py-0.5 rounded-md text-[10px] font-medium",
                     "transition-transform duration-300 group-hover/icon:scale-105",
-                    status === "Live" &&
+                    badgeLabel === "Live" &&
                       "bg-red-500/15 text-red-400 border border-red-500/30",
-                    status === "Registered" &&
+                    badgeLabel === "Registered" &&
                       "bg-blue-500/15 text-blue-400 border border-blue-500/30",
-                    status === "Past" &&
+                    badgeLabel === "Waitlisted" &&
+                      "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+                    badgeLabel === "Past" &&
                       "bg-zinc-500/10 text-zinc-300 border border-zinc-500/20"
                   )}
                 >
-                  {status}
+                  {badgeLabel}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Back of card */}
         <div
           className={cn(
             "absolute inset-0 w-full h-full",
@@ -205,6 +266,11 @@ export default function CardFlip({
               <p className="text-sm text-zinc-600 dark:text-zinc-400 tracking-tight transition-all duration-500 ease-out-expo group-hover:translate-y-[-2px] line-clamp-2">
                 {description}
               </p>
+              {capacityHint && (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {capacityHint}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -230,7 +296,6 @@ export default function CardFlip({
           <div className="pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-800">
             <button
               type="button"
-              // Named group to let the flipper opt-out of rotating while CTA hovered
               data-cta
               className={cn(
                 "group/start group/cta relative block w-full",
@@ -241,32 +306,78 @@ export default function CardFlip({
                 "hover:from-blue-500/10 hover:from-0% hover:via-blue-500/5 hover:via-100% hover:to-transparent hover:to-100%",
                 "dark:hover:from-blue-500/20 dark:hover:from-0% dark:hover:via-blue-500/10 dark:hover:via-100% dark:hover:to-transparent dark:hover:to-100%",
                 "hover:scale-[1.005] hover:cursor-pointer",
-                isRegistering && "opacity-60 cursor-wait"
+                isBusy && "opacity-60 cursor-wait"
               )}
-              disabled={isRegistering || isPast || isAlreadyRegistered}
-              aria-busy={isRegistering}
+              disabled={isBusy || (eventIsPast && !hasRegistration) || (hasRegistration && eventIsPast)}
+              aria-busy={isBusy}
               onClick={async () => {
-                if (!eventId) return;
-                if (isPast || isAlreadyRegistered) return;
+                if (!eventId || isBusy) return;
+
+                if (hasRegistration) {
+                  if (eventIsPast) return;
+                  try {
+                    setIsCancelling(true);
+                    await api.delete(`/events/${eventId}/register`);
+                    toast.success("Registration cancelled successfully");
+                    if (myStatus === "CONFIRMED") {
+                      setLocalConfirmedCount((c) => Math.max(c - 1, 0));
+                    }
+                    setMyStatus(null);
+                    invalidateRegistrationQueries();
+                  } catch (e) {
+                    const maybeAxiosError = e as {
+                      response?: {
+                        status?: number;
+                        data?: { message?: string };
+                      };
+                    };
+                    const errStatus = maybeAxiosError.response?.status;
+                    const msg =
+                      maybeAxiosError.response?.data?.message ||
+                      "Failed to cancel registration";
+                    if (errStatus === 401) {
+                      router.push("/login");
+                      return;
+                    }
+                    toast.error(msg);
+                  } finally {
+                    setIsCancelling(false);
+                  }
+                  return;
+                }
+
+                if (eventIsPast) return;
                 try {
                   setIsRegistering(true);
-                  await api.post(`/events/${eventId}/register`);
-                  toast.success("Registered successfully");
-                  setHasRegistered(true);
+                  const res = await api.post(`/events/${eventId}/register`);
+                  const nextStatus =
+                    (res.data?.status as RegistrationStatus) || "CONFIRMED";
+                  const message =
+                    res.data?.message ||
+                    (nextStatus === "WAITLISTED"
+                      ? "You've been added to the waitlist"
+                      : "Registered successfully");
+                  if (nextStatus === "WAITLISTED") {
+                    toast.message(message);
+                  } else {
+                    toast.success(message);
+                    setLocalConfirmedCount((c) => c + 1);
+                  }
+                  setMyStatus(nextStatus);
+                  invalidateRegistrationQueries();
                 } catch (e) {
-                  // Narrow axios-like errors
                   const maybeAxiosError = e as {
                     response?: { status?: number; data?: { message?: string } };
                   };
-                  const status = maybeAxiosError.response?.status;
+                  const errStatus = maybeAxiosError.response?.status;
                   const msg =
                     maybeAxiosError.response?.data?.message ||
                     "Failed to register";
-                  if (status === 401) {
+                  if (errStatus === 401) {
                     router.push("/login");
                     return;
                   }
-                  if (status === 403) {
+                  if (errStatus === 403) {
                     toast.error("Only students can register.");
                     return;
                   }
@@ -278,13 +389,7 @@ export default function CardFlip({
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-zinc-900 dark:text-white transition-colors duration-300 group-hover/start:text-blue-600 dark:group-hover/start:text-blue-400">
-                  {isRegistering
-                    ? "Registering..."
-                    : isPast
-                    ? "Event has ended"
-                    : isAlreadyRegistered
-                    ? "Registered"
-                    : "Register"}
+                  {buttonLabel}
                 </span>
                 <div className="relative group/icon">
                   <div
@@ -294,7 +399,7 @@ export default function CardFlip({
                       "opacity-0 group-hover/start:opacity-100 scale-90 group-hover/start:scale-100"
                     )}
                   />
-                  {isRegistering ? (
+                  {isBusy ? (
                     <div className="relative z-10 h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                   ) : (
                     <ArrowRight className="relative z-10 w-4 h-4 text-blue-500 transition-all duration-300 group-hover/start:translate-x-0.5 group-hover/start:scale-110" />

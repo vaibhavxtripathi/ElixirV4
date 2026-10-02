@@ -6,6 +6,7 @@ export const createEventSchema = z.object({
     description: z.string().min(10),
     data: z.iso.datetime().or(z.string().min(1)), // ISO or let controller convert
     imageUrl: z.url().optional(),
+    maxCapacity: z.number().int().positive().nullable().optional(),
   }),
 });
 
@@ -25,5 +26,14 @@ export const updateEventSchema = z.object({
     data: z.string().min(1).optional(),
     imageUrl: z.string().url().optional(),
     clubId: z.string().optional(),
+    maxCapacity: z.number().int().positive().nullable().optional(),
   }),
+});
+
+export const cancelRegistrationSchema = z.object({
+  params: z.object({ eventId: z.string().min(1) }),
+});
+
+export const eventIdParamSchema = z.object({
+  params: z.object({ id: z.string().min(1) }),
 });

@@ -54,6 +54,7 @@ model Event {
   description   String
   imageUrl      String?
   date          DateTime
+  maxCapacity   Int?
   clubId        String
   club          Club                @relation(fields: [clubId], references: [id])
   createdAt     DateTime            @default(now())
@@ -62,11 +63,17 @@ model Event {
   @@map("events")
 }
 
+enum RegistrationStatus {
+  CONFIRMED
+  WAITLISTED
+}
+
 model EventRegistration {
-  id           String   @id @default(cuid())
+  id           String             @id @default(cuid())
   userId       String
   eventId      String
-  registeredAt DateTime @default(now())
+  status       RegistrationStatus @default(CONFIRMED)
+  registeredAt DateTime           @default(now())
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
