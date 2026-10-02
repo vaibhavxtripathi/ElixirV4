@@ -26,7 +26,13 @@ export default function Footer() {
             </Link>
 
             {/* Navigation Links - Mobile: Center, Desktop: Right */}
-            <div className="flex items-center justify-center sm:justify-end gap-4 sm:gap-6">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6">
+              <Link
+                href="/"
+                className="text-white/50 text-sm hover:text-white/70 transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+              >
+                Home
+              </Link>
               <Link
                 href="/events"
                 className="text-white/50 text-sm hover:text-white/70 transition-colors px-2 py-1 rounded-md hover:bg-white/5"
@@ -38,6 +44,18 @@ export default function Footer() {
                 className="text-white/50 text-sm hover:text-white/70 transition-colors px-2 py-1 rounded-md hover:bg-white/5"
               >
                 Blogs
+              </Link>
+              <Link
+                href="/mentors"
+                className="text-white/50 text-sm hover:text-white/70 transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+              >
+                Mentors
+              </Link>
+              <Link
+                href="/testimonials"
+                className="text-white/50 text-sm hover:text-white/70 transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+              >
+                Testimonials
               </Link>
               <Link
                 href="/contact"
