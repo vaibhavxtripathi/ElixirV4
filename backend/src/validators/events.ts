@@ -27,3 +27,7 @@ export const updateEventSchema = z.object({
     clubId: z.string().optional(),
   }),
 });
+
+export const cancelRegistrationSchema = z.object({
+  params: z.object({ eventId: z.string().min(1) }),
+});
