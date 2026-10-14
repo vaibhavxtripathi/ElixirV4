@@ -18,7 +18,7 @@ export function NavSecondary({
 }: {
   items: {
     title: string;
-    url: string;
+    url?: string;
     icon: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
@@ -35,15 +35,30 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                className="text-white hover:bg-white/10 hover:text-white"
-              >
-                <a href={item.url} onClick={handleLinkClick}>
-                  <item.icon className="text-white" />
-                  <span className="text-white">{item.title}</span>
-                </a>
-              </SidebarMenuButton>
+              {item.url ? (
+                <SidebarMenuButton
+                  asChild
+                  className="text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={item.url} onClick={handleLinkClick}>
+                    <item.icon className="text-white" />
+                    <span className="text-white">{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton
+                  type="button"
+                  disabled
+                  aria-label={`${item.title} — Coming soon`}
+                  className="text-white"
+                >
+                  <item.icon aria-hidden="true" />
+                  <span>{item.title}</span>
+                  <span className="ml-auto text-xs group-data-[collapsible=icon]:hidden">
+                    Coming soon
+                  </span>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
