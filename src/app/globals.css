@@ -207,52 +207,22 @@
   );
 }
 
-/* Tailwind CSS custom properties */
-@theme inline {
-  --color-divide: var(--divide);
-  --color-primary: var(--primary);
-  --color-canvas: var(--canvas);
-  --color-canvas-fill: var(--canvas-fill);
-  --color-dots: var(--dots);
-  --color-line: var(--line);
-  --color-pattern-fg: var(--pattern-fg);
-  @keyframes meteor {
-    0% {
-      transform: rotate(var(--angle)) translateX(0);
-      opacity: 1;
-    }
-    70% {
-      opacity: 1;
-    }
-    100% {
-      transform: rotate(var(--angle)) translateX(-500px);
-      opacity: 0;
-    }
-  }
-  @keyframes star-movement-bottom {
+/* Custom keyframes & shadow utility */
+@keyframes meteor {
   0% {
-    transform: translate(0%, 0%);
+    transform: rotate(var(--angle)) translateX(0);
     opacity: 1;
-    }
-  100% {
-    transform: translate(-100%, 0%);
-    opacity: 0;
-    }
   }
-  @keyframes star-movement-top {
-  0% {
-    transform: translate(0%, 0%);
+  70% {
     opacity: 1;
-    }
+  }
   100% {
-    transform: translate(100%, 0%);
+    transform: rotate(var(--angle)) translateX(-500px);
     opacity: 0;
-    }
   }
 }
 
-/* Shadow utility */
-@theme {
+:root {
   --shadow-aceternity: 0px 2px 3px -1px rgba(0, 0, 0, 0.1),
     0px 1px 0px 0px rgba(25, 28, 33, 0.02),
     0px 0px 0px 1px rgba(25, 28, 33, 0.08);

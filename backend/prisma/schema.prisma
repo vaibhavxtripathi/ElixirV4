@@ -125,7 +125,7 @@ model Testimonial {
   id        String   @id @default(cuid())
   name      String
   imageUrl  String?
-  batchYear Int
+  batchYear Int?
   content   String
   createdAt DateTime @default(now())
 

@@ -46,6 +46,7 @@ import {
   LoaderIcon,
   MoreVerticalIcon,
   TrendingUpIcon,
+  Search,
 } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
@@ -352,6 +353,7 @@ export function DataTable({
   const [selectedView, setSelectedView] = React.useState(0);
   const initial = views && views.length > 0 ? views[0].rows : initialData || [];
   const [data, setData] = React.useState(() => initial);
+  const [searchQuery, setSearchQuery] = React.useState("");
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({ status: false, type: false });
@@ -373,9 +375,22 @@ export function DataTable({
     useSensor(KeyboardSensor, {})
   );
 
+  const filteredData = React.useMemo(() => {
+    if (!searchQuery.trim()) return data;
+    const q = searchQuery.toLowerCase().trim();
+    return data.filter((item) => {
+      const headerMatch = item.header?.toLowerCase().includes(q);
+      const reviewerMatch = item.reviewer?.toLowerCase().includes(q);
+      const targetMatch = item.target?.toLowerCase().includes(q);
+      const limitMatch = item.limit?.toLowerCase().includes(q);
+      const clubMatch = (item as { clubName?: string }).clubName?.toLowerCase().includes(q);
+      return Boolean(headerMatch || reviewerMatch || targetMatch || limitMatch || clubMatch);
+    });
+  }, [data, searchQuery]);
+
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id.toString()) || [],
-    [data]
+    () => filteredData?.map(({ id }) => id.toString()) || [],
+    [filteredData]
   );
 
   // Build dynamic columns with dataset-specific headers and no status/type column
@@ -439,41 +454,50 @@ export function DataTable({
     {
       accessorKey: "header",
       header: labelMap.header,
-      cell: ({ row }) => (
-        <Input
-          defaultValue={row.original.header}
-          className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
-            updatingCells.has(`${row.original.id}-header`) ? "opacity-50" : ""
-          }`}
-          disabled={updatingCells.has(`${row.original.id}-header`)}
-          onBlur={async (e) => {
-            const value = e.currentTarget.value;
-            if (onUpdate && value !== row.original.header) {
-              const cellKey = `${row.original.id}-header`;
-              setUpdatingCells((prev) => new Set(prev).add(cellKey));
-              try {
-                await onUpdate(row.original, "header", value);
-                setData((prevData) =>
-                  prevData.map((item) =>
-                    item.id === row.original.id
-                      ? { ...item, header: value }
-                      : item
-                  )
-                );
-              } catch (error) {
-                console.error("Update failed:", error);
-                e.currentTarget.value = row.original.header;
-              } finally {
-                setUpdatingCells((prev) => {
-                  const newSet = new Set(prev);
-                  newSet.delete(cellKey);
-                  return newSet;
-                });
+      cell: ({ row }) => {
+        if (row.original.entity === "user") {
+          return (
+            <div className="h-7 sm:h-8 flex items-center px-3 text-xs sm:text-sm font-medium text-white select-text">
+              {row.original.header}
+            </div>
+          );
+        }
+        return (
+          <Input
+            defaultValue={row.original.header}
+            className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
+              updatingCells.has(`${row.original.id}-header`) ? "opacity-50" : ""
+            }`}
+            disabled={updatingCells.has(`${row.original.id}-header`)}
+            onBlur={async (e) => {
+              const value = e.currentTarget.value;
+              if (onUpdate && value !== row.original.header) {
+                const cellKey = `${row.original.id}-header`;
+                setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                try {
+                  await onUpdate(row.original, "header", value);
+                  setData((prevData) =>
+                    prevData.map((item) =>
+                      item.id === row.original.id
+                        ? { ...item, header: value }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Update failed:", error);
+                  e.currentTarget.value = row.original.header;
+                } finally {
+                  setUpdatingCells((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(cellKey);
+                    return newSet;
+                  });
+                }
               }
-            }
-          }}
-        />
-      ),
+            }}
+          />
+        );
+      },
       enableHiding: false,
     },
     // target (role/date/status/expertise)
@@ -746,43 +770,52 @@ export function DataTable({
     {
       accessorKey: "reviewer",
       header: labelMap.reviewer,
-      cell: ({ row }) => (
-        <Input
-          defaultValue={row.original.reviewer}
-          className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
-            updatingCells.has(`${row.original.id}-reviewer`) ? "opacity-50" : ""
-          }`}
-          disabled={updatingCells.has(`${row.original.id}-reviewer`)}
-          onBlur={async (e) => {
-            const value = e.currentTarget.value;
-            if (onUpdate && value !== row.original.reviewer) {
-              const cellKey = `${row.original.id}-reviewer`;
-              setUpdatingCells((prev) => new Set(prev).add(cellKey));
-              try {
-                await onUpdate(row.original, "reviewer", value);
-                // Update local state after successful backend update
-                setData((prevData) =>
-                  prevData.map((item) =>
-                    item.id === row.original.id
-                      ? { ...item, reviewer: value }
-                      : item
-                  )
-                );
-              } catch (error) {
-                console.error("Update failed:", error);
-                // Reset input to original value on error
-                e.currentTarget.value = row.original.reviewer;
-              } finally {
-                setUpdatingCells((prev) => {
-                  const newSet = new Set(prev);
-                  newSet.delete(cellKey);
-                  return newSet;
-                });
+      cell: ({ row }) => {
+        if (row.original.entity === "user") {
+          return (
+            <div className="h-7 sm:h-8 flex items-center px-3 text-xs sm:text-sm text-white/80 select-text">
+              {row.original.reviewer}
+            </div>
+          );
+        }
+        return (
+          <Input
+            defaultValue={row.original.reviewer}
+            className={`h-7 sm:h-8 bg-transparent border-transparent focus-visible:border focus-visible:bg-background text-xs sm:text-sm ${
+              updatingCells.has(`${row.original.id}-reviewer`) ? "opacity-50" : ""
+            }`}
+            disabled={updatingCells.has(`${row.original.id}-reviewer`)}
+            onBlur={async (e) => {
+              const value = e.currentTarget.value;
+              if (onUpdate && value !== row.original.reviewer) {
+                const cellKey = `${row.original.id}-reviewer`;
+                setUpdatingCells((prev) => new Set(prev).add(cellKey));
+                try {
+                  await onUpdate(row.original, "reviewer", value);
+                  // Update local state after successful backend update
+                  setData((prevData) =>
+                    prevData.map((item) =>
+                      item.id === row.original.id
+                        ? { ...item, reviewer: value }
+                        : item
+                    )
+                  );
+                } catch (error) {
+                  console.error("Update failed:", error);
+                  // Reset input to original value on error
+                  e.currentTarget.value = row.original.reviewer;
+                } finally {
+                  setUpdatingCells((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(cellKey);
+                    return newSet;
+                  });
+                }
               }
-            }
-          }}
-        />
-      ),
+            }}
+          />
+        );
+      },
     },
     // mentors image url (additional column only when Mentors view)
     {
@@ -895,7 +928,7 @@ export function DataTable({
   ];
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns: computedColumns,
     state: {
       sorting,
@@ -951,34 +984,64 @@ export function DataTable({
       defaultValue="outline"
       className="flex w-full flex-col justify-start gap-4"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 px-2 sm:px-3 lg:px-5">
-        <Label
-          htmlFor="view-selector"
-          className="text-xs sm:text-sm text-muted-foreground"
-        >
-          Dataset
-        </Label>
-        <Select
-          value={String(selectedView)}
-          onValueChange={(v) => setSelectedView(Number(v))}
-        >
-          <SelectTrigger
-            className="flex w-full sm:w-fit text-xs sm:text-sm"
-            id="view-selector"
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-2 sm:px-3 lg:px-5">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Label
+            htmlFor="view-selector"
+            className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap"
           >
-            <SelectValue placeholder="Select dataset" />
-          </SelectTrigger>
-          <SelectContent>
-            {(views && views.length
-              ? views
-              : [{ label: "Outline", rows: initial }]
-            ).map((v, idx) => (
-              <SelectItem key={v.label} value={String(idx)}>
-                {v.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            Dataset
+          </Label>
+          <Select
+            value={String(selectedView)}
+            onValueChange={(v) => {
+              setSelectedView(Number(v));
+              setSearchQuery("");
+            }}
+          >
+            <SelectTrigger
+              className="w-[140px] sm:w-[160px] text-xs sm:text-sm"
+              id="view-selector"
+            >
+              <SelectValue placeholder="Select dataset" />
+            </SelectTrigger>
+            <SelectContent>
+              {(views && views.length
+                ? views
+                : [{ label: "Outline", rows: initial }]
+              ).map((v, idx) => (
+                <SelectItem key={v.label} value={String(idx)}>
+                  {v.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative flex-1 sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+          <Input
+            placeholder={
+              activeLabel === "Users"
+                ? "Search users by name or email..."
+                : `Search ${activeLabel.toLowerCase()}...`
+            }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 pr-8 h-9 bg-white/5 border-white/10 text-white placeholder:text-white/40 text-xs sm:text-sm rounded-lg focus-visible:ring-1 focus-visible:ring-blue-500"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs p-1"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
         <TabsList className="hidden">
           <TabsTrigger value="outline">Outline</TabsTrigger>
           <TabsTrigger value="past-performance" className="gap-1">
@@ -1001,7 +1064,6 @@ export function DataTable({
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>
-      </div>
       <TabsContent
         value="outline"
         className="relative flex flex-col gap-2 sm:gap-3 overflow-hidden px-1 sm:px-2 lg:px-5"

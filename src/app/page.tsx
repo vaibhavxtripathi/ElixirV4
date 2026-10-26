@@ -37,7 +37,7 @@ interface BackendTestimonial {
 }
 
 async function getHomeTestimonials(): Promise<BackendTestimonial[]> {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   try {
     // Increased timeout for production - 5 seconds
@@ -81,7 +81,6 @@ export default async function HomePage() {
   const testimonials = (testimonialsRaw || []).map((t) => ({
     author: {
       name: t.name ?? "Anonymous",
-      handle: t.batchYear ? `Batch ${t.batchYear}` : t.handle ?? "",
       avatar:
         t.imageUrl ??
         t.image ??

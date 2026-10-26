@@ -41,7 +41,11 @@ export function NavMain({
               <SidebarMenuButton
                 tooltip={item.title}
                 className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/10 data-[active=true]:text-white"
-                isActive={currentUrl === item.url}
+                isActive={
+                  currentUrl === item.url ||
+                  (item.url === "/admin?view=manage-data" &&
+                    currentUrl === "/admin?view=manage-users")
+                }
                 asChild
               >
                 <Link href={item.url} onClick={handleLinkClick}>

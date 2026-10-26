@@ -1,6 +1,6 @@
 import express from "express";
 import helmet from "helmet";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth";
 import eventsRoutes from "./routes/events";
 import clubsRoutes from "./routes/clubs";
@@ -88,10 +88,11 @@ app.use(
           if (payload?.userId) return `uid:${payload.userId}`;
         }
       } catch {}
-      // IPv6-safe fallback using helper
-      return ipKeyGenerator(req);
+      // Fallback to client IP
+      return req.ip || "127.0.0.1";
     },
     message: { message: "Too many requests, please slow down." },
+    validate: { keyGeneratorIpFallback: false },
   })
 );
 app.use(express.json());

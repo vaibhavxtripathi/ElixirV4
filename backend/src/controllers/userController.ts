@@ -169,7 +169,7 @@ export const getPlatformAnalytics = async (req: any, res: Response) => {
 // Update user => admin only
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { firstName, lastName, email, clubId } = req.body;
 
     if (!id) {
@@ -211,7 +211,7 @@ export const updateUser = async (req: Request, res: Response) => {
 // Delete user => admin only
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!id) {
       return res.status(400).json({ message: "User ID is required" });

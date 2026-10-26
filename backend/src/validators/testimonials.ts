@@ -4,7 +4,7 @@ export const createTestimonialSchema = z.object({
   body: z.object({
     name: z.string().min(1),
     imageUrl: z.string().url().optional().or(z.literal("")),
-    batchYear: z.number().int().min(1900).max(3000),
+    batchYear: z.number().int().min(1900).max(3000).optional(),
     content: z.string().min(1),
   }),
 });

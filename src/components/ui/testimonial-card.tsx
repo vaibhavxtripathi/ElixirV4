@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export interface TestimonialAuthor {
   name: string;
-  handle: string;
+  handle?: string;
   avatar: string;
 }
 
@@ -75,14 +75,18 @@ export function TestimonialCard({
           )}>
             {author.name}
           </h3>
-          <p className={cn(
-            "text-white/60 mt-1",
-            useFixedWidth
-              ? "text-xs sm:text-sm"
-              : "text-xs sm:text-sm lg:text-base"
-          )}>
-            {author.handle}
-          </p>
+          {author.handle && (
+            <p
+              className={cn(
+                "text-white/60 mt-1",
+                useFixedWidth
+                  ? "text-xs sm:text-sm"
+                  : "text-xs sm:text-sm lg:text-base"
+              )}
+            >
+              {author.handle}
+            </p>
+          )}
         </div>
       </div>
       <p

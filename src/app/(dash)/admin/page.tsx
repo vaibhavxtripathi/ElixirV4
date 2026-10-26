@@ -37,7 +37,6 @@ import {
   schema as settingsTableSchema,
 } from "@/components/data-table";
 import { z } from "zod";
-import { MoreHorizontal } from "lucide-react";
 
 interface User {
   id: string;
@@ -185,7 +184,6 @@ function AdminDashboardContent() {
       const data = {
         name: testimonialForm.name.trim(),
         content: testimonialForm.content.trim(),
-        batchYear: parseInt(testimonialForm.batchYear),
         imageUrl: testimonialForm.imageUrl.trim() || undefined,
       };
       return (await api.post("/testimonials", data)).data;
@@ -194,7 +192,6 @@ function AdminDashboardContent() {
       setTestimonialForm({
         name: "",
         content: "",
-        batchYear: "",
         imageUrl: "",
       });
       toast.success("Testimonial created");
@@ -223,7 +220,6 @@ function AdminDashboardContent() {
   const [testimonialForm, setTestimonialForm] = useState({
     name: "",
     content: "",
-    batchYear: "",
     imageUrl: "",
   });
 
@@ -329,7 +325,7 @@ function AdminDashboardContent() {
   const showCreateMentor = view === "create-mentor";
   const showCreateTestimonial = view === "create-testimonial";
   const showCreateEvent = view === "create-event";
-  const showManageUsers = view === "manage-users";
+  const showManageUsers = view === "manage-data" || view === "manage-users";
   const showReviewBlogs = view === "review-blogs";
 
   return (
@@ -355,18 +351,6 @@ function AdminDashboardContent() {
                 Welcome back! Here&apos;s what&apos;s happening with your
                 platform.
               </p>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Button className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs sm:text-sm px-3 sm:px-4 py-2">
-                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                Quick Create
-              </Button>
-              <Button
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 p-2 sm:p-3"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
             </div>
           </motion.div>
 
@@ -856,18 +840,6 @@ function AdminDashboardContent() {
                                   newRole: value,
                                 });
                                 toast.success("User role updated successfully");
-                              } else if (field === "header") {
-                                await api.put(`/users/${row.backendId}`, {
-                                  firstName: value,
-                                });
-                                toast.success("User name updated successfully");
-                              } else if (field === "reviewer") {
-                                await api.put(`/users/${row.backendId}`, {
-                                  email: value,
-                                });
-                                toast.success(
-                                  "User email updated successfully"
-                                );
                               } else if (field === "limit") {
                                 await api.put(`/users/${row.backendId}`, {
                                   clubId: value,
@@ -976,8 +948,8 @@ function AdminDashboardContent() {
                                   "Testimonial name updated successfully"
                                 );
                               } else if (field === "target") {
-                                const year = parseInt(value as string);
-                                if (isNaN(year)) {
+                                const year = value ? parseInt(value as string) : null;
+                                if (value && isNaN(year!)) {
                                   throw new Error(
                                     "Batch year must be a number"
                                   );
@@ -989,7 +961,7 @@ function AdminDashboardContent() {
                                   }
                                 );
                                 toast.success(
-                                  "Testimonial batch year updated successfully"
+                                  "Testimonial updated successfully"
                                 );
                               } else if (field === "limit") {
                                 await api.put(
@@ -1416,48 +1388,25 @@ function AdminDashboardContent() {
                 >
                   <Card className="bg-white/5 border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300">
                     <CardContent className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                          <Label
-                            htmlFor="testimonial-name"
-                            className="text-white font-medium"
-                          >
-                            Name
-                          </Label>
-                          <Input
-                            id="testimonial-name"
-                            placeholder="Enter name"
-                            value={testimonialForm.name}
-                            onChange={(e) =>
-                              setTestimonialForm({
-                                ...testimonialForm,
-                                name: e.target.value,
-                              })
-                            }
-                            className="bg-white/5 border-white/20 text-white placeholder:text-white/50 h-11 rounded-lg"
-                          />
-                        </div>
-                        <div className="space-y-3">
-                          <Label
-                            htmlFor="testimonial-batch"
-                            className="text-white font-medium"
-                          >
-                            Batch Year
-                          </Label>
-                          <Input
-                            id="testimonial-batch"
-                            type="number"
-                            placeholder="e.g., 2024"
-                            value={testimonialForm.batchYear}
-                            onChange={(e) =>
-                              setTestimonialForm({
-                                ...testimonialForm,
-                                batchYear: e.target.value,
-                              })
-                            }
-                            className="bg-white/5 border-white/20 text-white placeholder:text-white/50 h-11 rounded-lg"
-                          />
-                        </div>
+                      <div className="space-y-3">
+                        <Label
+                          htmlFor="testimonial-name"
+                          className="text-white font-medium"
+                        >
+                          Name
+                        </Label>
+                        <Input
+                          id="testimonial-name"
+                          placeholder="Enter name"
+                          value={testimonialForm.name}
+                          onChange={(e) =>
+                            setTestimonialForm({
+                              ...testimonialForm,
+                              name: e.target.value,
+                            })
+                          }
+                          className="bg-white/5 border-white/20 text-white placeholder:text-white/50 h-11 rounded-lg"
+                        />
                       </div>
                       <div className="space-y-3">
                         <Label
@@ -1509,23 +1458,11 @@ function AdminDashboardContent() {
                             onClick={() => {
                               if (
                                 !testimonialForm.name.trim() ||
-                                !testimonialForm.content.trim() ||
-                                !testimonialForm.batchYear.trim()
+                                !testimonialForm.content.trim()
                               ) {
                                 toast.error(
                                   "Please fill in all required fields"
                                 );
-                                return;
-                              }
-                              const batchYear = parseInt(
-                                testimonialForm.batchYear
-                              );
-                              if (
-                                isNaN(batchYear) ||
-                                batchYear < 1900 ||
-                                batchYear > 2100
-                              ) {
-                                toast.error("Please enter a valid batch year");
                                 return;
                               }
                               createTestimonial.mutate();

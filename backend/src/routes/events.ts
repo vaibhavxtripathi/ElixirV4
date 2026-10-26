@@ -31,7 +31,7 @@ router.get(
 router.post(
   "/",
   authenticateToken,
-  requireRole(["CLUB_HEAD"]),
+  requireRole(["CLUB_HEAD", "ADMIN"]),
   validate(createEventSchema),
   asyncHandler(createEvent)
 );

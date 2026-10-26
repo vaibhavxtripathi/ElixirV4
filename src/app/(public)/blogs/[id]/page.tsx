@@ -1,5 +1,5 @@
 async function getBlog(id: string) {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   const encoded = encodeURIComponent(id);
   try {
     let res = await fetch(`${base}/blogs/${encoded}`, {
@@ -27,9 +27,10 @@ import BlogContentRenderer from "./BlogContentRenderer";
 export default async function BlogDetail({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const data = await getBlog(params.id);
+  const { id } = await params;
+  const data = await getBlog(id);
   const blog = data?.blog;
   if (!blog) return <div className="pt-36 text-center">Blog not found.</div>;
 

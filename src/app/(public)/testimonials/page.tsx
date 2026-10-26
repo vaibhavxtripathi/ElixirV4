@@ -8,7 +8,7 @@ import Container from "@/components/container";
 import PageHeader from "@/components/PageHeader";
 
 async function getTestimonials() {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   try {
     const res = await fetch(`${base}/testimonials`, {
       next: { revalidate: 60 },
@@ -41,7 +41,6 @@ export default async function TestimonialsPage() {
                 key={testimonial.id}
                 author={{
                   name: testimonial.name,
-                  handle: `Batch of ${testimonial.batchYear ?? "—"}`,
                   avatar:
                     testimonial.imageUrl && testimonial.imageUrl.trim() !== ""
                       ? testimonial.imageUrl

@@ -23,7 +23,7 @@ type EventItem = {
 };
 
 export default function EventsGrid({ page }: { page: number }) {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const { data: eventsResponse, isLoading: eventsLoading } = useQuery({
     queryKey: ["events", page],

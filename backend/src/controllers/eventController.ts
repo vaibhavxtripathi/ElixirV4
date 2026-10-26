@@ -65,6 +65,16 @@ export const getMyClubEvents = async (req: any, res: Response) => {
     });
 
     if (!user?.club) {
+      if (req.user?.role === "ADMIN") {
+        const events = await prisma.event.findMany({
+          include: {
+            club: { select: { name: true, imageUrl: true } },
+            registrations: { select: { id: true } },
+          },
+          orderBy: { date: "desc" },
+        });
+        return res.json({ events });
+      }
       return res
         .status(400)
         .json({ message: "You are not associated with any club" });
@@ -85,10 +95,10 @@ export const getMyClubEvents = async (req: any, res: Response) => {
   }
 };
 
-// create event (only for club heads)
+// create event (for club heads and admins)
 export const createEvent = async (req: any, res: Response) => {
   try {
-    const { title, description, data, imageUrl } = req.body;
+    const { title, description, data, imageUrl, clubId } = req.body;
     const userId = req.user?.userId;
 
     if (!title || !description || !data || !imageUrl)
@@ -100,10 +110,17 @@ export const createEvent = async (req: any, res: Response) => {
       include: { club: true },
     });
 
-    if (!user?.club) {
+    let targetClubId = clubId || user?.club?.id;
+
+    if (!targetClubId && req.user?.role === "ADMIN") {
+      const firstClub = await prisma.club.findFirst();
+      targetClubId = firstClub?.id;
+    }
+
+    if (!targetClubId) {
       return res
         .status(400)
-        .json({ message: "You must be a club head to create an event" });
+        .json({ message: "You must be associated with a club or specify a club to create an event" });
     }
 
     const event = await prisma.event.create({
@@ -112,7 +129,7 @@ export const createEvent = async (req: any, res: Response) => {
         description,
         date: new Date(data),
         imageUrl,
-        clubId: user.club.id,
+        clubId: targetClubId,
       },
       include: {
         club: { select: { name: true, imageUrl: true } },
@@ -243,7 +260,7 @@ export const getEventRegistrations = async (req: any, res: Response) => {
 // Update event => admin only
 export const updateEvent = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { title, description, data, imageUrl, clubId } = req.body;
     const user: any = (req as any).user;
 
@@ -300,7 +317,7 @@ export const updateEvent = async (req: Request, res: Response) => {
 // Delete event => admin or club head
 export const deleteEvent = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const user: any = (req as any).user;
 
     if (!id) {

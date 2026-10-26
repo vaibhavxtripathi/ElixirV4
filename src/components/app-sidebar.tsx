@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import {
   ArrowUpCircleIcon,
   CalendarIcon,
+  DatabaseIcon,
   FileTextIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
@@ -139,9 +140,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: FileTextIcon,
           },
           {
-            title: "Manage Users",
-            url: "/admin?view=manage-users",
-            icon: UsersIcon,
+            title: "Manage Data",
+            url: "/admin?view=manage-data",
+            icon: DatabaseIcon,
           },
         ]
       : me?.user

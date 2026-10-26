@@ -18,10 +18,6 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
   },
-  eslint: {
-    // Enforce linting during builds
-    ignoreDuringBuilds: false,
-  },
   typescript: {
     // Enforce typechecking during builds
     ignoreBuildErrors: false,
@@ -36,6 +32,7 @@ const nextConfig: NextConfig = {
   },
   // Disable source maps in development for faster builds
   productionBrowserSourceMaps: false,
+  turbopack: {},
   // Optimize bundle splitting
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
