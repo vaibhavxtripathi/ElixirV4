@@ -12,12 +12,13 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { GDGLogo, GFGLogo, CCLogo } from "@/icons/general";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface CardFlipProps {
   title: string;
@@ -44,8 +45,14 @@ export default function CardFlip({
 }: CardFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(Boolean(isRegistered));
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setHasRegistered(Boolean(isRegistered));
+  }, [isRegistered]);
 
   const computeStatus = (): "Registered" | "Live" | "Past" => {
     if (hasRegistered) return "Registered";
@@ -62,6 +69,11 @@ export default function CardFlip({
   const status = computeStatus();
   const isPast = status === "Past";
   const isAlreadyRegistered = status === "Registered";
+  const eventIsPast =
+    !!eventDate &&
+    !Number.isNaN(new Date(eventDate).getTime()) &&
+    new Date(eventDate).getTime() < Date.now();
+  const isBusy = isRegistering || isCancelling;
 
   const renderClubLogo = () => {
     switch (club?.toUpperCase()) {
@@ -241,32 +253,80 @@ export default function CardFlip({
                 "hover:from-blue-500/10 hover:from-0% hover:via-blue-500/5 hover:via-100% hover:to-transparent hover:to-100%",
                 "dark:hover:from-blue-500/20 dark:hover:from-0% dark:hover:via-blue-500/10 dark:hover:via-100% dark:hover:to-transparent dark:hover:to-100%",
                 "hover:scale-[1.005] hover:cursor-pointer",
-                isRegistering && "opacity-60 cursor-wait"
+                isBusy && "opacity-60 cursor-wait"
               )}
-              disabled={isRegistering || isPast || isAlreadyRegistered}
-              aria-busy={isRegistering}
+              disabled={
+                isBusy ||
+                (isPast && !isAlreadyRegistered) ||
+                (isAlreadyRegistered && eventIsPast)
+              }
+              aria-busy={isBusy}
               onClick={async () => {
-                if (!eventId) return;
-                if (isPast || isAlreadyRegistered) return;
+                if (!eventId || isBusy) return;
+
+                if (isAlreadyRegistered) {
+                  if (eventIsPast) return;
+                  try {
+                    setIsCancelling(true);
+                    await api.delete(`/events/${eventId}/register`);
+                    toast.success("Registration cancelled successfully");
+                    setHasRegistered(false);
+                    queryClient.invalidateQueries({
+                      queryKey: ["registered-events"],
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["events"] });
+                    queryClient.invalidateQueries({
+                      queryKey: ["my-registrations"],
+                    });
+                  } catch (e) {
+                    const maybeAxiosError = e as {
+                      response?: {
+                        status?: number;
+                        data?: { message?: string };
+                      };
+                    };
+                    const errStatus = maybeAxiosError.response?.status;
+                    const msg =
+                      maybeAxiosError.response?.data?.message ||
+                      "Failed to cancel registration";
+                    if (errStatus === 401) {
+                      router.push("/login");
+                      return;
+                    }
+                    toast.error(msg);
+                  } finally {
+                    setIsCancelling(false);
+                  }
+                  return;
+                }
+
+                if (isPast) return;
                 try {
                   setIsRegistering(true);
                   await api.post(`/events/${eventId}/register`);
                   toast.success("Registered successfully");
                   setHasRegistered(true);
+                  queryClient.invalidateQueries({
+                    queryKey: ["registered-events"],
+                  });
+                  queryClient.invalidateQueries({ queryKey: ["events"] });
+                  queryClient.invalidateQueries({
+                    queryKey: ["my-registrations"],
+                  });
                 } catch (e) {
                   // Narrow axios-like errors
                   const maybeAxiosError = e as {
                     response?: { status?: number; data?: { message?: string } };
                   };
-                  const status = maybeAxiosError.response?.status;
+                  const errStatus = maybeAxiosError.response?.status;
                   const msg =
                     maybeAxiosError.response?.data?.message ||
                     "Failed to register";
-                  if (status === 401) {
+                  if (errStatus === 401) {
                     router.push("/login");
                     return;
                   }
-                  if (status === 403) {
+                  if (errStatus === 403) {
                     toast.error("Only students can register.");
                     return;
                   }
@@ -280,10 +340,14 @@ export default function CardFlip({
                 <span className="text-sm font-medium text-zinc-900 dark:text-white transition-colors duration-300 group-hover/start:text-blue-600 dark:group-hover/start:text-blue-400">
                   {isRegistering
                     ? "Registering..."
-                    : isPast
+                    : isCancelling
+                    ? "Cancelling..."
+                    : isPast && !isAlreadyRegistered
                     ? "Event has ended"
-                    : isAlreadyRegistered
+                    : isAlreadyRegistered && eventIsPast
                     ? "Registered"
+                    : isAlreadyRegistered
+                    ? "Cancel registration"
                     : "Register"}
                 </span>
                 <div className="relative group/icon">
@@ -294,7 +358,7 @@ export default function CardFlip({
                       "opacity-0 group-hover/start:opacity-100 scale-90 group-hover/start:scale-100"
                     )}
                   />
-                  {isRegistering ? (
+                  {isBusy ? (
                     <div className="relative z-10 h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                   ) : (
                     <ArrowRight className="relative z-10 w-4 h-4 text-blue-500 transition-all duration-300 group-hover/start:translate-x-0.5 group-hover/start:scale-110" />

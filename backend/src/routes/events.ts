@@ -4,6 +4,7 @@ import {
   getMyClubEvents,
   createEvent,
   registerEvent,
+  cancelRegistration,
   getRegisteredEvents,
   getEventRegistrations,
   updateEvent,
@@ -15,6 +16,7 @@ import {
   createEventSchema,
   listEventsSchema,
   updateEventSchema,
+  cancelRegistrationSchema,
 } from "../validators/events";
 import { idParamSchema } from "../validators/blogs";
 import { asyncHandler } from "../utils/asyncHandler";
@@ -39,6 +41,12 @@ router.post(
   "/:eventId/register",
   authenticateToken,
   asyncHandler(registerEvent)
+);
+router.delete(
+  "/:eventId/register",
+  authenticateToken,
+  validate(cancelRegistrationSchema),
+  asyncHandler(cancelRegistration)
 );
 router.get("/registered", authenticateToken, asyncHandler(getRegisteredEvents));
 router.get(

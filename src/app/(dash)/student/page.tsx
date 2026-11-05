@@ -69,6 +69,37 @@ function StudentDashboardContent() {
     },
   });
 
+  const cancelRegistration = useMutation({
+    mutationFn: async (eventId: string) =>
+      (await api.delete(`/events/${eventId}/register`)).data,
+    onSuccess: () => {
+      toast.success("Registration cancelled successfully");
+      qc.invalidateQueries({ queryKey: ["my-registrations"] });
+      qc.invalidateQueries({ queryKey: ["registered-events"] });
+      qc.invalidateQueries({ queryKey: ["events"] });
+    },
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { status?: number; data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message ||
+          "Failed to cancel registration"
+      );
+    },
+  });
+
+  const handleCancelRegistration = (eventId: string, eventTitle: string) => {
+    if (
+      !confirm(
+        `Cancel your registration for "${eventTitle}"? This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    cancelRegistration.mutate(eventId);
+  };
+
   // UI state for dialogs
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState<Registration["event"] | null>(
@@ -488,6 +519,23 @@ function StudentDashboardContent() {
                                 >
                                   View Details
                                 </Button>
+                                {new Date(registration.event.date) >
+                                  new Date() && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-md text-xs px-3 py-1.5 w-full"
+                                    disabled={cancelRegistration.isPending}
+                                    onClick={() =>
+                                      handleCancelRegistration(
+                                        registration.event.id,
+                                        registration.event.title
+                                      )
+                                    }
+                                  >
+                                    Cancel
+                                  </Button>
+                                )}
                               </div>
                             </div>
 
@@ -603,6 +651,23 @@ function StudentDashboardContent() {
                                 >
                                   View Details
                                 </Button>
+                                {new Date(registration.event.date) >
+                                  new Date() && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-md"
+                                    disabled={cancelRegistration.isPending}
+                                    onClick={() =>
+                                      handleCancelRegistration(
+                                        registration.event.id,
+                                        registration.event.title
+                                      )
+                                    }
+                                  >
+                                    Cancel
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           </div>

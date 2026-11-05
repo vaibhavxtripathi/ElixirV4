@@ -161,6 +161,60 @@ export const registerEvent = async (req: any, res: Response) => {
   }
 };
 
+// cancel registration for an event (authenticated student)
+
+export const cancelRegistration = async (req: any, res: Response) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user?.userId;
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (new Date(event.date) < new Date()) {
+      return res
+        .status(400)
+        .json({ message: "Cannot cancel registration for a past event" });
+    }
+
+    const registration = await prisma.eventRegistration.findUnique({
+      where: {
+        userId_eventId: {
+          userId,
+          eventId,
+        },
+      },
+    });
+
+    if (!registration) {
+      return res
+        .status(404)
+        .json({ message: "You are not registered for this event" });
+    }
+
+    await prisma.eventRegistration.delete({
+      where: {
+        userId_eventId: {
+          userId,
+          eventId,
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Registration cancelled successfully" });
+  } catch (error) {
+    console.error("Error cancelling registration:", error);
+    res.status(500).json({ message: "Error cancelling registration" });
+  }
+};
+
 // get student's registered events
 
 export const getRegisteredEvents = async (req: any, res: Response) => {
