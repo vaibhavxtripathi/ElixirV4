@@ -1,27 +1,40 @@
 import { Router } from "express";
 import {
   getAllEvents,
+  getEventById,
   getMyClubEvents,
   createEvent,
   registerEvent,
+  cancelRegistration,
   getRegisteredEvents,
   getEventRegistrations,
   updateEvent,
   deleteEvent,
 } from "../controllers/eventController";
-import { authenticateToken, requireRole } from "../middleware/auth";
+import {
+  authenticateToken,
+  optionalAuthenticateToken,
+  requireRole,
+} from "../middleware/auth";
 import { validate } from "../middleware/validate";
 import {
   createEventSchema,
   listEventsSchema,
   updateEventSchema,
+  cancelRegistrationSchema,
+  eventIdParamSchema,
 } from "../validators/events";
 import { idParamSchema } from "../validators/blogs";
 import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
-router.get("/", validate(listEventsSchema), asyncHandler(getAllEvents));
+router.get(
+  "/",
+  optionalAuthenticateToken,
+  validate(listEventsSchema),
+  asyncHandler(getAllEvents)
+);
 router.get(
   "/mine",
   authenticateToken,
@@ -40,12 +53,24 @@ router.post(
   authenticateToken,
   asyncHandler(registerEvent)
 );
+router.delete(
+  "/:eventId/register",
+  authenticateToken,
+  validate(cancelRegistrationSchema),
+  asyncHandler(cancelRegistration)
+);
 router.get("/registered", authenticateToken, asyncHandler(getRegisteredEvents));
 router.get(
   "/:id/registrations",
   authenticateToken,
   requireRole(["CLUB_HEAD", "ADMIN"]),
   asyncHandler(getEventRegistrations)
+);
+router.get(
+  "/:id",
+  optionalAuthenticateToken,
+  validate(eventIdParamSchema),
+  asyncHandler(getEventById)
 );
 router.put(
   "/:id",

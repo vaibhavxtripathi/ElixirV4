@@ -30,6 +30,24 @@ export const authenticateToken = (
   }
 };
 
+/** Attach req.user when a valid token is present; otherwise continue unauthenticated. */
+export const optionalAuthenticateToken = (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token) {
+      req.user = verifyToken(token);
+    }
+  } catch {
+    // ignore invalid tokens for public endpoints
+  }
+  next();
+};
+
 export const requireRole = (roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });

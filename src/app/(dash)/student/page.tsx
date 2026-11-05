@@ -27,6 +27,7 @@ import { toast } from "sonner";
 
 interface Registration {
   id: string;
+  status?: "CONFIRMED" | "WAITLISTED";
   event: {
     id: string;
     title: string;
@@ -45,6 +46,9 @@ function StudentDashboardContent() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["my-registrations"],
     queryFn: async () => (await api.get("/events/registered")).data,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000,
   });
 
   // Blog: my submissions
@@ -68,6 +72,39 @@ function StudentDashboardContent() {
       qc.invalidateQueries({ queryKey: ["my-blogs"] });
     },
   });
+
+  const cancelRegistration = useMutation({
+    mutationFn: async (eventId: string) =>
+      (await api.delete(`/events/${eventId}/register`)).data,
+    onSuccess: () => {
+      toast.success("Registration cancelled successfully");
+      qc.invalidateQueries({ queryKey: ["my-registrations"] });
+      qc.invalidateQueries({ queryKey: ["registered-events"] });
+      qc.invalidateQueries({ queryKey: ["events"] });
+    },
+    onError: (e: unknown) => {
+      const maybeAxiosError = e as {
+        response?: { status?: number; data?: { message?: string } };
+      };
+      toast.error(
+        maybeAxiosError.response?.data?.message ||
+          "Failed to cancel registration"
+      );
+    },
+  });
+
+  const handleCancelRegistration = (
+    eventId: string,
+    eventTitle: string,
+    status?: "CONFIRMED" | "WAITLISTED"
+  ) => {
+    const action =
+      status === "WAITLISTED" ? "leave the waitlist for" : "cancel your registration for";
+    if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} "${eventTitle}"?`)) {
+      return;
+    }
+    cancelRegistration.mutate(eventId);
+  };
 
   // UI state for dialogs
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -398,21 +435,36 @@ function StudentDashboardContent() {
                                   <h3 className="text-base font-semibold text-white flex-1">
                                     {registration.event.title}
                                   </h3>
-                                  <Badge
-                                    variant="outline"
-                                    className={cn(
-                                      "text-xs shrink-0",
-                                      new Date(registration.event.date) >
-                                        new Date()
-                                        ? "bg-green-500/5 text-green-400 border border-green-500/20"
-                                        : "bg-red-500/5 text-red-400 border border-red-500/20"
-                                    )}
-                                  >
-                                    {new Date(registration.event.date) >
-                                    new Date()
-                                      ? "Upcoming"
-                                      : "Past"}
-                                  </Badge>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <Badge
+                                      variant="outline"
+                                      className={cn(
+                                        "text-xs shrink-0",
+                                        new Date(registration.event.date) >
+                                          new Date()
+                                          ? "bg-green-500/5 text-green-400 border border-green-500/20"
+                                          : "bg-red-500/5 text-red-400 border border-red-500/20"
+                                      )}
+                                    >
+                                      {new Date(registration.event.date) >
+                                      new Date()
+                                        ? "Upcoming"
+                                        : "Past"}
+                                    </Badge>
+                                    <Badge
+                                      variant="outline"
+                                      className={cn(
+                                        "text-xs shrink-0",
+                                        registration.status === "WAITLISTED"
+                                          ? "bg-amber-500/5 text-amber-400 border border-amber-500/20"
+                                          : "bg-blue-500/5 text-blue-400 border border-blue-500/20"
+                                      )}
+                                    >
+                                      {registration.status === "WAITLISTED"
+                                        ? "Waitlisted"
+                                        : "Confirmed"}
+                                    </Badge>
+                                  </div>
                                 </div>
                                 <p className="text-xs text-white/60 line-clamp-2">
                                   {registration.event.description}
@@ -488,6 +540,26 @@ function StudentDashboardContent() {
                                 >
                                   View Details
                                 </Button>
+                                {new Date(registration.event.date) >
+                                  new Date() && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-md text-xs px-3 py-1.5 w-full"
+                                    disabled={cancelRegistration.isPending}
+                                    onClick={() =>
+                                      handleCancelRegistration(
+                                        registration.event.id,
+                                        registration.event.title,
+                                        registration.status
+                                      )
+                                    }
+                                  >
+                                    {registration.status === "WAITLISTED"
+                                      ? "Leave waitlist"
+                                      : "Cancel"}
+                                  </Button>
+                                )}
                               </div>
                             </div>
 
@@ -528,6 +600,19 @@ function StudentDashboardContent() {
                                     new Date()
                                       ? "Upcoming"
                                       : "Past"}
+                                  </Badge>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "text-xs",
+                                      registration.status === "WAITLISTED"
+                                        ? "bg-amber-500/5 text-amber-400 border border-amber-500/20"
+                                        : "bg-blue-500/5 text-blue-400 border border-blue-500/20"
+                                    )}
+                                  >
+                                    {registration.status === "WAITLISTED"
+                                      ? "Waitlisted"
+                                      : "Confirmed"}
                                   </Badge>
                                 </div>
                                 <p className="text-sm text-white/60 mb-3">
@@ -603,6 +688,26 @@ function StudentDashboardContent() {
                                 >
                                   View Details
                                 </Button>
+                                {new Date(registration.event.date) >
+                                  new Date() && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-md"
+                                    disabled={cancelRegistration.isPending}
+                                    onClick={() =>
+                                      handleCancelRegistration(
+                                        registration.event.id,
+                                        registration.event.title,
+                                        registration.status
+                                      )
+                                    }
+                                  >
+                                    {registration.status === "WAITLISTED"
+                                      ? "Leave waitlist"
+                                      : "Cancel"}
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           </div>
